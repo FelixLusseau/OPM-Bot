@@ -1,0 +1,18 @@
+{
+  "name": "CR-Ping",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "Félix Lusseau",
+  "license": "ISC",
+  "dependencies": {
+    "@varandas/clash-royale-api": "^1.1.12",
+    "chart": "^0.1.2",
+    "discord.js": "^14.6.0",
+    "dotenv": "^16.0.3",
+    "fs": "^0.0.1-security"
+  }
+}

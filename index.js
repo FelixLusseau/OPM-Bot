@@ -3,6 +3,7 @@ const { EmbedBuilder } = require('discord.js');
 const Chart = require("chart");
 const { ClashRoyaleAPI } = require('@varandas/clash-royale-api')
 require("dotenv").config();
+const fetch = require("node-fetch");
 
 // const { sendAnswer } = require("./utils.js");
 
@@ -14,13 +15,17 @@ const api = new ClashRoyaleAPI(process.env.CR_TOKEN)
 
 bot.login(process.env.BOT_TOKEN);
 
+
 bot.on("messageCreate", async (message) => {
   if (message.author.tag == bot.user.tag) return;
+
   if (message.content === "!medals") {
-    var Labels = [];
-    var Datas = [];
+    let Labels = [];
+    let Datas = [];
+    let Race = "";
     api.getClanCurrentRiverRace("#YRLJGL9")
       .then((response) => {
+        //console.log(response.clans.periodLogs)
         return response
       })
       .catch((err) => {
@@ -28,12 +33,23 @@ bot.on("messageCreate", async (message) => {
       })
     let RiverRace = await api.getClanCurrentRiverRace("#YRLJGL9")
     for (let i = 0; i < RiverRace.clans.length; i++) {
-      var labels = RiverRace.clans[i].name
+      let labels = RiverRace.clans[i].name
       Labels.push(labels);
-      var data = RiverRace.clans[i].periodPoints
+      let data = RiverRace.clans[i].periodPoints
       Datas.push(data);
       //console.log(RiverRace.clans[i].name)
       //console.log(RiverRace.clans[i].periodPoints)
+
+      api.getClanByTag(RiverRace.clans[i].tag)
+        .then((clan) => {
+          //console.log(clan)
+          return clan
+        })
+        .catch((err) => {
+          console.log("CR-API error : ", err)
+        })
+      let clan = await api.getClanByTag(RiverRace.clans[i].tag)
+      Race += "- __" + RiverRace.clans[i].name + "__ " + " : **" + RiverRace.clans[i].periodPoints + " medal" + (RiverRace.clans[i].periodPoints > 1 ? "s" : "") + "**\n(" + RiverRace.clans[i].tag + ", " + clan.location.name + ", " + clan.clanWarTrophies + " tr, " + clan.members + " members)" + "\n\n"
     }
     // console.log(RiverRace.clan)
     // console.log(Labels)
@@ -73,18 +89,18 @@ bot.on("messageCreate", async (message) => {
     try {
       const medalsEmbed = new EmbedBuilder()
         .setColor(0x0099FF)
-        .setTitle('Current river race')
+        .setTitle('__Current river race__ :')
         //.setURL('https://discord.js.org/')
         .setAuthor({ name: bot.user.tag, iconURL: bot.user.avatar /* , url: 'https://discord.js.org' */ })
-        //.setDescription(chartUrl)
+        .setDescription(Race)
         .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')
         /* .addFields(
           { name: 'Regular field title', value: 'Some value here' },
           { name: '\u200B', value: '\u200B' },
           { name: 'Inline field title', value: 'Some value here', inline: true },
           { name: 'Inline field title', value: 'Some value here', inline: true },
-        )
-        .addFields({ name: 'Inline field title', value: 'Some value here', inline: true })*/
+        ) */
+        //.addFields({ name: 'Inline field title', value: 'Some value here', inline: true })
         .setImage(chartUrl)
         .setTimestamp()
         .setFooter({ text: 'by OPM | Féfé ⚡', iconURL: 'https://avatars.githubusercontent.com/u/94113911?s=400&v=4' });
@@ -96,7 +112,7 @@ bot.on("messageCreate", async (message) => {
     }
   }
   else if (message.content === "!attacks") {
-    var Players = "";
+    let Players = "";
     api.getClanCurrentRiverRace("#YRLJGL9")
       .then((response) => {
         return response

@@ -56,8 +56,8 @@ module.exports = {
                 if (RiverRace.clan.participants[j].name == members[i].name && RiverRace.clan.participants[j].decksUsedToday != 4) {
                     //console.log(members[i].name)
                     //console.log(RiverRace.clan.participants[j].decksUsedToday)
-                    let decksUsedToday = 4 - RiverRace.clan.participants[j].decksUsedToday
-                    switch (decksUsedToday) {
+                    let decksRemainingToday = 4 - RiverRace.clan.participants[j].decksUsedToday
+                    switch (decksRemainingToday) {
                         case 4:
                             Players4 += members[i].name + "\n";
                             break;
@@ -73,6 +73,20 @@ module.exports = {
                     }
                     remainingPlayers++
                 }
+                /* else if (RiverRace.clan.participants[j].decksUsedToday != 4 && RiverRace.clan.participants[j].decksUsedToday != 4) {
+                    let decksRemainingToday = 4 - RiverRace.clan.participants[j].decksUsedToday
+                    switch (decksRemainingToday) {
+                        case 3:
+                            Players3 += members[i].name + "(out of the clan)\n";
+                            break;
+                        case 2:
+                            Players2 += members[i].name + "(out of the clan)\n";
+                            break;
+                        case 1:
+                            Players1 += members[i].name + "(out of the clan)\n";
+                            break;
+                    }
+                } */
             }
         }
         //console.log(Players)

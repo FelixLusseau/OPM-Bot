@@ -4,8 +4,8 @@ const { EmbedBuilder } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('ffrace')
-        .setDescription('Replies the current race !')
+        .setName('ffriver')
+        .setDescription('Replies the current river !')
         .addStringOption(option =>
             option.setName('clan')
                 .setDescription('Clan to check')
@@ -20,13 +20,12 @@ module.exports = {
     async execute(bot, api, interaction) {
         await interaction.deferReply({ ephemeral: false });
         const clan = interaction.options.getString('clan');
-        const raceEmbed = new EmbedBuilder();
+        const riverEmbed = new EmbedBuilder();
         let Labels = [];
         let Datas = [];
         let Race = "";
         api.getClanCurrentRiverRace(clan)
             .then((response) => {
-                //console.log(response.clans.periodLogs)
                 return response
             })
             .catch((err) => {
@@ -34,73 +33,22 @@ module.exports = {
             })
         let RiverRace = await api.getClanCurrentRiverRace(clan)
         for (let i = 0; i < RiverRace.clans.length; i++) {
-            if (RiverRace.clans[i].fame >= 10000) {
-                continue
-            }
             let labels = RiverRace.clans[i].name
             Labels.push(labels);
-            let data = RiverRace.clans[i].periodPoints
+            let data = RiverRace.clans[i].fame
             Datas.push(data);
-            //console.log(RiverRace.clans[i].name)
-            //console.log(RiverRace.clans[i].periodPoints)
-
-            /* api.getClanByTag(RiverRace.clans[i].tag)
-            .then((clan) => {
-                //console.log(clan)
-                return clan
-            })
-            .catch((err) => {
-                console.log("CR-API error : ", err)
-            })
-            let clan = await api.getClanByTag(RiverRace.clans[i].tag) */
-            //console.log(clan)
-            // console.log(clan.name)
-            // console.log(clan.tag)
-            // console.log(clan.badgeId)
-            // console.log(clan.members)
-            // console.log(clan.clanWarTrophies)
-            // console.log(clan.location.name)
-
-            /* for (let i = 0; i < badgesData.length; i++) {
-                //console.log(badgesData[i].id)
-                if (badgesData[i].id == clan.badgeId) {
-                    Race += ":https://raw.githubusercontent.com/RoyaleAPI/cr-api-assets/master/badges/" + badgesData[i].name + ".png:"
-                    break
-                }
-            } */
-            //console.log(RiverRace)
-            //console.log(RiverRace.clans[i])
-            //console.log(RiverRace.clans[i].participants.length)
         }
-        let sortedClans = RiverRace.clans.sort((a, b) => (a.periodPoints < b.periodPoints) ? 1 : -1)
-        //console.log(sortedClans)
+        RiverRace.clans.sort((a, b) => (a.fame < b.fame) ? 1 : -1)
         for (let i = 0; i < RiverRace.clans.length; i++) {
             let decksRemaining = 200
             let playersRemaining = 50
-            for (let j = 0; i < RiverRace.clans[i].participants.length; j++) {
-                //console.log(RiverRace.clans[i].participants[j])
-                if (RiverRace.clans[i].participants[j] == undefined) // strange bug to correct
-                    break
-                decksRemaining -= RiverRace.clans[i].participants[j].decksUsedToday
-                if (RiverRace.clans[i].participants[j].decksUsedToday != 0)
-                    playersRemaining -= 1
-            }
-            //console.log(playersRemaining)
-            //console.log(decksRemaining)
-            let ratio = (RiverRace.clans[i].periodPoints / (200 - decksRemaining)).toFixed(2).toString()
             if (RiverRace.clans[i].fame >= 10000) {
-                Race += "- __" + RiverRace.clans[i].name + "__ : War finished \n\n"
+                Race += "- __" + RiverRace.clans[i].name + "__ : **War finished**\n<:Retro:1010557231214886933> Tag : " + RiverRace.clans[i].tag + "\n\n"
                 continue
             }
-            Race += "- __" + RiverRace.clans[i].name + "__ :\n<:Retro:1010557231214886933> Tag : " + RiverRace.clans[i].tag + /* "", " + clan.location.name + ", " + clan.clanWarTrophies + " tr, " + clan.members + " members */ "\n<:fame:876320149878235136> Pts : " + RiverRace.clans[i].periodPoints + "\n<:fameAvg:946276069634375801> Ratio : " + ratio + "\n<:decksRemaining:946275903812546620> Decks : " + decksRemaining + "\n<:remainingSlots:951032915221950494> Players : " + playersRemaining + "\n\n"
+            Race += "- __" + RiverRace.clans[i].name + "__ :\n<:Retro:1010557231214886933> Tag : " + RiverRace.clans[i].tag + "\n<:fame:876320149878235136> Pts : " + RiverRace.clans[i].fame + "\n\n"
         }
-        // console.log(RiverRace.clan)
-        // console.log(Labels)
-        // console.log(Datas)
-        let max = 45000;
-        if (RiverRace.clan.periodPoints > max) { // Collosseum
-            max = 135000;
-        }
+        let max = 10000;
         const chart = {
             type: 'horizontalBar',
             data: {
@@ -151,11 +99,10 @@ module.exports = {
         };
         const encodedChart = encodeURIComponent(JSON.stringify(chart));
         const chartUrl = `https://quickchart.io/chart?c=${encodedChart}`;
-        //console.log(chart)
         try {
-            raceEmbed
+            riverEmbed
                 .setColor(0x0099FF)
-                .setTitle('__Current war day__ :')
+                .setTitle('__Current river race__ :')
                 .setAuthor({ name: bot.user.tag, iconURL: bot.user.avatar /* , url: 'https://discord.js.org' */ })
                 .setDescription(Race)
                 .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')
@@ -166,6 +113,6 @@ module.exports = {
             console.log(e);
         }
 
-        interaction.editReply({ embeds: [raceEmbed] });
+        interaction.editReply({ embeds: [riverEmbed] });
     },
 };

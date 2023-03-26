@@ -5,7 +5,7 @@ const { ClashRoyaleAPI } = require('@varandas/clash-royale-api')
 const Discord = require("discord.js");
 require("dotenv").config();
 
-const bot = new Client({ intents: [GatewayIntentBits.Guilds] });
+const bot = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers] });
 bot.commands = new Collection();
 
 // Initialize the CR api

@@ -29,7 +29,7 @@ module.exports = {
             //console.log(RiverRace.clans[i].name)
             //console.log(RiverRace.clans[i].periodPoints)
 
-            api.getClanByTag(RiverRace.clans[i].tag)
+            /* api.getClanByTag(RiverRace.clans[i].tag)
                 .then((clan) => {
                     //console.log(clan)
                     return clan
@@ -37,7 +37,7 @@ module.exports = {
                 .catch((err) => {
                     console.log("CR-API error : ", err)
                 })
-            let clan = await api.getClanByTag(RiverRace.clans[i].tag)
+            let clan = await api.getClanByTag(RiverRace.clans[i].tag) */
             //console.log(clan)
             // console.log(clan.name)
             // console.log(clan.tag)
@@ -56,15 +56,19 @@ module.exports = {
             //console.log(RiverRace.clans[i])
             //console.log(RiverRace.clans[i].participants.length)
             let decksRemaining = 200
+            let playersRemaining = 50
             for (let j = 0; i < RiverRace.clans[i].participants.length; j++) {
                 //console.log(RiverRace.clans[i].participants[j])
                 if (RiverRace.clans[i].participants[j] == undefined) // strange bug to correct
                     break
                 decksRemaining -= RiverRace.clans[i].participants[j].decksUsedToday
+                if (RiverRace.clans[i].participants[j].decksUsedToday != 0)
+                    playersRemaining -= 1
             }
+            //console.log(playersRemaining)
             //console.log(decksRemaining)
             let ratio = (RiverRace.clans[i].periodPoints / (200 - decksRemaining)).toFixed(2).toString()
-            Race += "- __" + RiverRace.clans[i].name + "__ " + " :" + "\n(" + RiverRace.clans[i].tag + ", " + clan.location.name + ", " + clan.clanWarTrophies + " tr, " + clan.members + " members)\n**Pts : " + RiverRace.clans[i].periodPoints + "\nRatio : " + ratio + "\nDecks : " + decksRemaining + "**\n\n"
+            Race += "- __" + RiverRace.clans[i].name + "__ " + " :\n<:Retro:1010557231214886933> Tag : " + RiverRace.clans[i].tag + /* "", " + clan.location.name + ", " + clan.clanWarTrophies + " tr, " + clan.members + " members */ "\n<:fame:876320149878235136> Pts : " + RiverRace.clans[i].periodPoints + "\n<:fameAvg:946276069634375801> Ratio : " + ratio + "\n<:decksRemaining:946275903812546620> Decks : " + decksRemaining + "\n<:remainingSlots:951032915221950494> Players : " + playersRemaining + "\n\n"
         }
         // console.log(RiverRace.clan)
         // console.log(Labels)

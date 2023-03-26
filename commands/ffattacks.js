@@ -5,22 +5,34 @@ const { EmbedBuilder } = require('discord.js');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('ffattacks')
-        .setDescription('Replies the remaining attacks !'),
+        .setDescription('Replies the remaining attacks !')
+        .addStringOption(option =>
+            option.setName('clan')
+                .setDescription('Clan to check')
+                .addChoices(
+                    { name: 'OPM', value: '#YRLJGL9' },
+                    { name: 'NF', value: '#L2L8V08' },
+                    { name: 'TDS', value: '#LVQ8P8YG' },
+                    { name: '100pct', value: '#LLUC90PP' },
+                    { name: 'TPM', value: '#G2CY2PPL' },
+                )
+                .setRequired(true)),
     async execute(bot, api, interaction) {
         await interaction.deferReply({ ephemeral: false });
+        const clan = interaction.options.getString('clan');
         const attacksEmbed = new EmbedBuilder();
         let Players4 = "";
         let Players3 = "";
         let Players2 = "";
         let Players1 = "";
-        api.getClanCurrentRiverRace("#YRLJGL9")
+        api.getClanCurrentRiverRace(clan)
             .then((response) => {
                 return response
             })
             .catch((err) => {
                 console.log("CR-API error : ", err)
             })
-        let RiverRace = await api.getClanCurrentRiverRace("#YRLJGL9")
+        let RiverRace = await api.getClanCurrentRiverRace(clan)
         let points = RiverRace.clan.periodPoints.toString()
         let decksRemaining = 200
         for (let i = 0; i < RiverRace.clan.participants.length; i++) {
@@ -29,7 +41,7 @@ module.exports = {
         //console.log(decksRemaining)
         let ratio = (RiverRace.clan.periodPoints / (200 - decksRemaining)).toFixed(2).toString()
         let remainingPlayers = 0
-        api.getClanMembers("#YRLJGL9")
+        api.getClanMembers(clan)
             .then((members) => {
                 //console.log(members)
                 return members
@@ -37,7 +49,7 @@ module.exports = {
             .catch((err) => {
                 console.log("CR-API error : ", err)
             })
-        let members = await api.getClanMembers("#YRLJGL9")
+        let members = await api.getClanMembers(clan)
         for (let i = 0; i < members.length; i++) {
             //console.log(RiverRace.clan.participants.length)
             for (let j = 0; j < RiverRace.clan.participants.length; j++) {

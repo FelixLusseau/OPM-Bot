@@ -5,12 +5,24 @@ const { EmbedBuilder } = require('discord.js');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('ffopponents')
-        .setDescription('Replies the current opponents !'),
+        .setDescription('Replies the current opponents !')
+        .addStringOption(option =>
+            option.setName('clan')
+                .setDescription('Clan to check')
+                .addChoices(
+                    { name: 'OPM', value: '#YRLJGL9' },
+                    { name: 'NF', value: '#L2L8V08' },
+                    { name: 'TDS', value: '#LVQ8P8YG' },
+                    { name: '100pct', value: '#LLUC90PP' },
+                    { name: 'TPM', value: '#G2CY2PPL' },
+                )
+                .setRequired(true)),
     async execute(bot, api, interaction) {
         await interaction.deferReply({ ephemeral: false });
+        const clan = interaction.options.getString('clan');
         const opponentsEmbed = new EmbedBuilder();
         let Race = "";
-        api.getClanCurrentRiverRace("#YRLJGL9")
+        api.getClanCurrentRiverRace(clan)
             .then((response) => {
                 //console.log(response.clans.periodLogs)
                 return response
@@ -18,7 +30,7 @@ module.exports = {
             .catch((err) => {
                 console.log("CR-API error : ", err)
             })
-        let RiverRace = await api.getClanCurrentRiverRace("#YRLJGL9")
+        let RiverRace = await api.getClanCurrentRiverRace(clan)
         for (let i = 0; i < RiverRace.clans.length; i++) {
             api.getClanByTag(RiverRace.clans[i].tag)
                 .then((clan) => {

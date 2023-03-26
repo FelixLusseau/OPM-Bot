@@ -5,14 +5,26 @@ const { EmbedBuilder } = require('discord.js');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('ffrace')
-        .setDescription('Replies the current race !'),
+        .setDescription('Replies the current race !')
+        .addStringOption(option =>
+            option.setName('clan')
+                .setDescription('Clan to check')
+                .addChoices(
+                    { name: 'OPM', value: '#YRLJGL9' },
+                    { name: 'NF', value: '#L2L8V08' },
+                    { name: 'TDS', value: '#LVQ8P8YG' },
+                    { name: '100pct', value: '#LLUC90PP' },
+                    { name: 'TPM', value: '#G2CY2PPL' },
+                )
+                .setRequired(true)),
     async execute(bot, api, interaction) {
         await interaction.deferReply({ ephemeral: false });
+        const clan = interaction.options.getString('clan');
         const raceEmbed = new EmbedBuilder();
         let Labels = [];
         let Datas = [];
         let Race = "";
-        api.getClanCurrentRiverRace("#YRLJGL9")
+        api.getClanCurrentRiverRace(clan)
             .then((response) => {
                 //console.log(response.clans.periodLogs)
                 return response
@@ -20,7 +32,7 @@ module.exports = {
             .catch((err) => {
                 console.log("CR-API error : ", err)
             })
-        let RiverRace = await api.getClanCurrentRiverRace("#YRLJGL9")
+        let RiverRace = await api.getClanCurrentRiverRace(clan)
         for (let i = 0; i < RiverRace.clans.length; i++) {
             let labels = RiverRace.clans[i].name
             Labels.push(labels);
@@ -103,8 +115,27 @@ module.exports = {
                             }
                         }
                     ]
+                },
+                plugins: {
+                    customCanvasBackgroundColor: {
+                        color: '#FFFFFF',
+                    }
                 }
-            }
+            },
+            plugins:
+                [
+                    {
+                        id: 'customCanvasBackgroundColor',
+                        beforeDraw: (chart, args, options) => {
+                            const { ctx } = chart;
+                            ctx.save();
+                            ctx.globalCompositeOperation = 'destination-over';
+                            ctx.fillStyle = options.color || '#99ffff';
+                            ctx.fillRect(0, 0, chart.width, chart.height);
+                            ctx.restore();
+                        },
+                    },
+                ]
         };
         const encodedChart = encodeURIComponent(JSON.stringify(chart));
         const chartUrl = `https://quickchart.io/chart?c=${encodedChart}`;

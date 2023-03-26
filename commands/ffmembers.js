@@ -5,11 +5,23 @@ const { EmbedBuilder } = require('discord.js');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('ffmembers')
-        .setDescription('Replies the current members of the clan !'),
+        .setDescription('Replies the current members of the clan !')
+        .addStringOption(option =>
+            option.setName('clan')
+                .setDescription('The clan to check')
+                .addChoices(
+                    { name: 'OPM', value: '#YRLJGL9' },
+                    { name: 'NF', value: '#L2L8V08' },
+                    { name: 'TDS', value: '#LVQ8P8YG' },
+                    { name: '100pct', value: '#LLUC90PP' },
+                    { name: 'TPM', value: '#G2CY2PPL' },
+                )
+                .setRequired(true)),
     async execute(bot, api, interaction) {
         await interaction.deferReply({ ephemeral: false });
+        const clan = interaction.options.getString('clan');
         const membersEmbed = new EmbedBuilder();
-        api.getClanMembers("#YRLJGL9")
+        api.getClanMembers(clan)
             .then((response) => {
                 //console.log(response)
                 return response
@@ -17,7 +29,7 @@ module.exports = {
             .catch((err) => {
                 console.log("CR-API error : ", err)
             })
-        let response = await api.getClanMembers("#YRLJGL9")
+        let response = await api.getClanMembers(clan)
         let Members = "";
         //console.log(response.length)
         Members += "**" + response.length + " members**\n\n"

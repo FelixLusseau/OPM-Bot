@@ -50,7 +50,7 @@ module.exports = {
         }
         let max = 10000;
         const chart = {
-            type: 'horizontalBar',
+            type: 'bar',
             data: {
                 labels: Labels,
                 datasets: [
@@ -66,7 +66,7 @@ module.exports = {
             options: {
                 'scales':
                 {
-                    'xAxes': [
+                    'yAxes': [
                         {
                             'ticks':
                             {

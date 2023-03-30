@@ -42,7 +42,7 @@ module.exports = {
         for (let i = 0; i < RiverRace.clans.length; i++) {
             let decksRemaining = 200
             let playersRemaining = 50
-            if (RiverRace.clans[i].fame >= 10000) {
+            if (RiverRace.periodType != "colosseum" && RiverRace.clans[i].fame >= 10000) {
                 Race += "- __" + RiverRace.clans[i].name + "__ : **War finished**\n<:Retro:1010557231214886933> Tag : " + RiverRace.clans[i].tag + "\n\n"
                 continue
             }

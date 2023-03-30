@@ -85,6 +85,7 @@ module.exports = {
             })
         let members = await api.getClanMembers(clan)
         for (let j = 0; j < RiverRace.clan.participants.length; j++) {
+            //console.log(RiverRace.clan.participants[j])
             let inclan = false
             for (let i = 0; i < members.length; i++) {
                 //console.log(RiverRace.clan.participants.length)

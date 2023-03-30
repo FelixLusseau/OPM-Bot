@@ -33,13 +33,35 @@ module.exports = {
                 console.log("CR-API error : ", err)
             })
         let RiverRace = await api.getClanCurrentRiverRace(clan)
-        let points = RiverRace.clan.periodPoints.toString()
+        let points = 0
+        if (RiverRace.periodType == "colosseum") { points = RiverRace.clan.fame.toString() }
+        else { points = RiverRace.clan.periodPoints.toString() }
         let decksRemaining = 200
         for (let i = 0; i < RiverRace.clan.participants.length; i++) {
             decksRemaining -= RiverRace.clan.participants[i].decksUsedToday
         }
         //console.log(decksRemaining)
-        let ratio = (RiverRace.clan.periodPoints / (200 - decksRemaining)).toFixed(2).toString()
+        let ratio = 0
+        const d = new Date();
+        const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        //console.log(d)
+        const day = weekday[d.getDay()]
+        const hour = d.getHours() + ":" + d.getMinutes()
+        const warHour = "11:53"
+        /* console.log(day == "Thursday")
+        console.log(hour > warHour)
+        console.log((day == "Thursday" && hour > warHour) || (day == "Friday" && hour < warHour)) */
+        if (RiverRace.periodType == "colosseum") {
+            if ((day == "Thursday" && hour > warHour) || (day == "Friday" && hour < warHour))
+                ratio = (RiverRace.clan.fame / (200 - decksRemaining)).toFixed(2).toString()
+            if ((day == "Friday" && hour > warHour) || (day == "Saturday" && hour < warHour))
+                ratio = (RiverRace.clan.fame / (400 - decksRemaining)).toFixed(2).toString()
+            if ((day == "Saturday" && hour > warHour) || (day == "Sunday" && hour < warHour))
+                ratio = (RiverRace.clan.fame / (600 - decksRemaining)).toFixed(2).toString()
+            if ((day == "Sunday" && hour > warHour) || (day == "Monday" && hour < warHour))
+                ratio = (RiverRace.clan.fame / (800 - decksRemaining)).toFixed(2).toString()
+        }
+        else { (RiverRace.clan.periodPoints / (200 - decksRemaining)).toFixed(2).toString() }
         let remainingPlayers = 0
         api.getClanMembers(clan)
             .then((members) => {
@@ -97,7 +119,7 @@ module.exports = {
             //let RoyaleAPI = "\n" + "https://royaleapi.com/clan/YRLJGL9" + "\n"
             attacksEmbed
                 .setColor(0x0099FF)
-                .setTitle('__Remaining attacks__ :')
+                .setTitle("__Remaining attacks " + ((RiverRace.periodType == "colosseum") ? "(Colosseum)__ " : "__ ") + ":")
                 .setAuthor({ name: bot.user.tag, iconURL: bot.user.avatar /* , url: 'https://discord.js.org' */ })
                 .setDescription('<:fame:876320149878235136> **Points** : ' + points + "\n" + '<:fameAvg:946276069634375801> **Ratio** : ' + ratio + "\n" + '<:remainingSlots:951032915221950494> **Players** : ' + remainingPlayers.toString() + "\n" + '<:decksRemaining:946275903812546620> **Attacks** : ' + decksRemaining + '\n')
                 .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')

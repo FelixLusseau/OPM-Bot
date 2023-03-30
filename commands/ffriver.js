@@ -48,7 +48,9 @@ module.exports = {
             }
             Race += "- __" + RiverRace.clans[i].name + "__ :\n<:Retro:1010557231214886933> Tag : " + RiverRace.clans[i].tag + "\n<:fame:876320149878235136> Pts : " + RiverRace.clans[i].fame + "\n\n"
         }
-        let max = 10000;
+        let max = 0
+        if (RiverRace.periodType == "colosseum") max = 135000
+        else max = 10000
         const chart = {
             type: 'bar',
             data: {
@@ -102,7 +104,7 @@ module.exports = {
         try {
             riverEmbed
                 .setColor(0x0099FF)
-                .setTitle('__Current river race__ :')
+                .setTitle((RiverRace.periodType == "colosseum") ? "__Colosseum__ :" : "__Current river race__ :")
                 .setAuthor({ name: bot.user.tag, iconURL: bot.user.avatar /* , url: 'https://discord.js.org' */ })
                 .setDescription(Race)
                 .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')

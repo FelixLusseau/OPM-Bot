@@ -34,12 +34,16 @@ module.exports = {
             })
         let RiverRace = await api.getClanCurrentRiverRace(clan)
         for (let i = 0; i < RiverRace.clans.length; i++) {
-            if (RiverRace.clans[i].fame >= 10000) {
+            if (RiverRace.periodType != "colosseum" && RiverRace.clans[i].fame >= 10000) {
                 continue
             }
             let labels = RiverRace.clans[i].name
             Labels.push(labels);
-            let data = RiverRace.clans[i].periodPoints
+            let data = 0
+            if (RiverRace.periodType == "colosseum")
+                data = RiverRace.clans[i].fame
+            else
+                data = RiverRace.clans[i].periodPoints
             Datas.push(data);
             //console.log(RiverRace.clans[i].name)
             //console.log(RiverRace.clans[i].periodPoints)
@@ -72,7 +76,10 @@ module.exports = {
             //console.log(RiverRace.clans[i])
             //console.log(RiverRace.clans[i].participants.length)
         }
-        let sortedClans = RiverRace.clans.sort((a, b) => (a.periodPoints < b.periodPoints) ? 1 : -1)
+        if (RiverRace.periodType == "colosseum")
+            RiverRace.clans.sort((a, b) => (a.fame < b.fame) ? 1 : -1)
+        else
+            RiverRace.clans.sort((a, b) => (a.periodPoints < b.periodPoints) ? 1 : -1)
         //console.log(sortedClans)
         for (let i = 0; i < RiverRace.clans.length; i++) {
             let decksRemaining = 200
@@ -87,20 +94,42 @@ module.exports = {
             }
             //console.log(playersRemaining)
             //console.log(decksRemaining)
-            let ratio = (RiverRace.clans[i].periodPoints / (200 - decksRemaining)).toFixed(2).toString()
-            if (RiverRace.clans[i].fame >= 10000) {
+            let points = 0
+            if (RiverRace.periodType == "colosseum")
+                points = RiverRace.clans[i].fame
+            else
+                points = RiverRace.clans[i].periodPoints
+            let ratio = 0
+            const d = new Date();
+            const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+            const day = weekday[d.getDay()]
+            const hour = d.getHours() + ":" + d.getMinutes()
+            const warHour = "11:53"
+            if (RiverRace.periodType == "colosseum") {
+                if ((day == "Thursday" && hour > warHour) || (day == "Friday" && hour < warHour))
+                    ratio = (RiverRace.clans[i].fame / (200 - decksRemaining)).toFixed(2).toString()
+                if ((day == "Friday" && hour > warHour) || (day == "Saturday" && hour < warHour))
+                    ratio = (RiverRace.clans[i].fame / (400 - decksRemaining)).toFixed(2).toString()
+                if ((day == "Saturday" && hour > warHour) || (day == "Sunday" && hour < warHour))
+                    ratio = (RiverRace.clans[i].fame / (600 - decksRemaining)).toFixed(2).toString()
+                if ((day == "Sunday" && hour > warHour) || (day == "Monday" && hour < warHour))
+                    ratio = (RiverRace.clans[i].fame / (800 - decksRemaining)).toFixed(2).toString()
+            }
+            else { (RiverRace.clans[i].periodPoints / (200 - decksRemaining)).toFixed(2).toString() }
+            if (RiverRace.periodType != "colosseum" && RiverRace.clans[i].fame >= 10000) {
                 Race += "- __" + RiverRace.clans[i].name + "__ : War finished \n\n"
                 continue
             }
-            Race += "- __" + RiverRace.clans[i].name + "__ :\n<:Retro:1010557231214886933> Tag : " + RiverRace.clans[i].tag + /* "", " + clan.location.name + ", " + clan.clanWarTrophies + " tr, " + clan.members + " members */ "\n<:fame:876320149878235136> Pts : " + RiverRace.clans[i].periodPoints + "\n<:fameAvg:946276069634375801> Ratio : " + ratio + "\n<:decksRemaining:946275903812546620> Decks : " + decksRemaining + "\n<:remainingSlots:951032915221950494> Players : " + playersRemaining + "\n\n"
+            Race += "- __" + RiverRace.clans[i].name + "__ :\n<:Retro:1010557231214886933> Tag : " + RiverRace.clans[i].tag + "\n<:fame:876320149878235136> Pts : " + points + "\n<:fameAvg:946276069634375801> Ratio : " + ratio + "\n<:decksRemaining:946275903812546620> Decks : " + decksRemaining + "\n<:remainingSlots:951032915221950494> Players : " + playersRemaining + "\n\n"
         }
         // console.log(RiverRace.clan)
         // console.log(Labels)
         // console.log(Datas)
-        let max = 45000;
-        if (RiverRace.clan.periodPoints > max) { // Collosseum
-            max = 135000;
-        }
+        let max = 0
+        if (RiverRace.periodType == "colosseum")
+            max = 135000
+        else
+            max = 45000
         const chart = {
             type: 'horizontalBar',
             data: {
@@ -155,7 +184,7 @@ module.exports = {
         try {
             raceEmbed
                 .setColor(0x0099FF)
-                .setTitle('__Current war day__ :')
+                .setTitle("__Current war day " + ((RiverRace.periodType == "colosseum") ? "(Colosseum)__ " : "__ ") + ":")
                 .setAuthor({ name: bot.user.tag, iconURL: bot.user.avatar /* , url: 'https://discord.js.org' */ })
                 .setDescription(Race)
                 .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')

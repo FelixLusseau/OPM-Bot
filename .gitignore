@@ -2,3 +2,4 @@
 node_modules
 draft.js
 *.log
+package-lock.json

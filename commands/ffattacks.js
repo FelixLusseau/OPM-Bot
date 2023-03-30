@@ -50,9 +50,10 @@ module.exports = {
                 console.log("CR-API error : ", err)
             })
         let members = await api.getClanMembers(clan)
-        for (let i = 0; i < members.length; i++) {
-            //console.log(RiverRace.clan.participants.length)
-            for (let j = 0; j < RiverRace.clan.participants.length; j++) {
+        for (let j = 0; j < RiverRace.clan.participants.length; j++) {
+            let inclan = false
+            for (let i = 0; i < members.length; i++) {
+                //console.log(RiverRace.clan.participants.length)
                 if (RiverRace.clan.participants[j].name == members[i].name && RiverRace.clan.participants[j].decksUsedToday != 4) {
                     //console.log(members[i].name)
                     //console.log(RiverRace.clan.participants[j].decksUsedToday)
@@ -72,21 +73,23 @@ module.exports = {
                             break;
                     }
                     remainingPlayers++
+                    inclan = true
+                    break
                 }
-                /* else if (RiverRace.clan.participants[j].decksUsedToday != 4 && RiverRace.clan.participants[j].decksUsedToday != 4) {
-                    let decksRemainingToday = 4 - RiverRace.clan.participants[j].decksUsedToday
-                    switch (decksRemainingToday) {
-                        case 3:
-                            Players3 += members[i].name + "(out of the clan)\n";
-                            break;
-                        case 2:
-                            Players2 += members[i].name + "(out of the clan)\n";
-                            break;
-                        case 1:
-                            Players1 += members[i].name + "(out of the clan)\n";
-                            break;
-                    }
-                } */
+            }
+            if (!inclan && RiverRace.clan.participants[j].decksUsedToday != 0 && RiverRace.clan.participants[j].decksUsedToday != 4) {
+                let decksRemainingToday = 4 - RiverRace.clan.participants[j].decksUsedToday
+                switch (decksRemainingToday) {
+                    case 3:
+                        Players3 += RiverRace.clan.participants[j].name + " **(out of the clan !!)**\n";
+                        break;
+                    case 2:
+                        Players2 += RiverRace.clan.participants[j].name + " **(out of the clan !!)**\n";
+                        break;
+                    case 1:
+                        Players1 += RiverRace.clan.participants[j].name + " **(out of the clan !!)**\n";
+                        break;
+                }
             }
         }
         //console.log(Players)

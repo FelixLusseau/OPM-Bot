@@ -16,15 +16,27 @@ module.exports = {
                     { name: '100pct', value: '#LLUC90PP' },
                     { name: 'TPM', value: '#G2CY2PPL' },
                 )
-                .setRequired(true)),
+                .setRequired(true))
+        .addBooleanOption(option =>
+            option.setName('ping')
+                .setDescription('Ping the players who don\'t have attacked left')),
     async execute(bot, api, interaction) {
+        const guildId = interaction.guildId
+        const guild = bot.guilds.cache.find((g) => g.id === guildId);
+
+        if (!guild)
+            return console.log(`Can't find any guild with the ID "${guildId}"`);
+
+        //console.log(guild.members)
         await interaction.deferReply({ ephemeral: false });
         const clan = interaction.options.getString('clan');
+        const pingBool = interaction.options.getBoolean('ping');
         const attacksEmbed = new EmbedBuilder();
         let Players4 = "";
         let Players3 = "";
         let Players2 = "";
         let Players1 = "";
+        let ping = "";
         api.getClanCurrentRiverRace(clan)
             .then((response) => {
                 return response
@@ -96,6 +108,23 @@ module.exports = {
                     }
                     remainingPlayers++
                     inclan = true
+                    if (pingBool) {
+                        guild.members
+                            .fetch()
+                            .then((memberss) => {
+                                //console.log(members)
+                                //console.log(members[i].name)
+                                memberss.forEach((member) => {
+                                    //console.log(member.nickname)
+                                    members[i].name = members[i].name.replace('\ufe0f', "")
+                                    if (member.user.username == members[i].name || member.nickname == members[i].name) {
+                                        //console.log(member.user.username)
+                                        ping += "<@" + member.user.id + "> "
+                                    }
+                                }
+                                )
+                            });
+                    }
                     break
                 }
             }
@@ -111,6 +140,23 @@ module.exports = {
                     case 1:
                         Players1 += RiverRace.clan.participants[j].name + " **(out of the clan !!)**\n";
                         break;
+                }
+                if (pingBool) {
+                    guild.members
+                        .fetch()
+                        .then((memberss) => {
+                            //console.log(members)
+                            //console.log(members[i].name)
+                            memberss.forEach((member) => {
+                                //console.log(member.nickname)
+                                RiverRace.clan.participants[j].name = RiverRace.clan.participants[j].name.replace('\ufe0f', "")
+                                if (member.user.username == RiverRace.clan.participants[j].name || member.nickname == RiverRace.clan.participants[j].name) {
+                                    //console.log(member.user.username)
+                                    ping += "<@" + member.user.id + "> "
+                                }
+                            }
+                            )
+                        });
                 }
             }
         }
@@ -133,7 +179,10 @@ module.exports = {
                 .setFooter({ text: 'by OPM | Féfé ⚡', iconURL: 'https://avatars.githubusercontent.com/u/94113911?s=400&v=4' });
 
         }
-
         interaction.editReply({ embeds: [attacksEmbed] });
+        if (pingBool) {
+            await guild.members.fetch();
+            interaction.channel.send(ping);
+        }
     },
 };

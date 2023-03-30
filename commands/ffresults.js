@@ -38,7 +38,7 @@ module.exports = {
         try {
             resultsEmbed
                 .setColor(0x0099FF)
-                .setTitle('__Player war results__ :')
+                .setTitle('__Players\' war results__ :')
                 .setAuthor({ name: bot.user.tag, iconURL: bot.user.avatar /* , url: 'https://discord.js.org' */ })
                 .setDescription(Players)
                 .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')

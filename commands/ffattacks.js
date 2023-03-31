@@ -74,7 +74,7 @@ module.exports = {
                 ratio = (RiverRace.clan.fame / (800 - decksRemaining)).toFixed(2).toString()
         }
         else { (RiverRace.clan.periodPoints / (200 - decksRemaining)).toFixed(2).toString() }
-        let remainingPlayers = 0
+        let remainingPlayers = 50
         api.getClanMembers(clan)
             .then((members) => {
                 //console.log(members)
@@ -88,6 +88,9 @@ module.exports = {
             //console.log(RiverRace.clan.participants[j])
             let inclan = false
             for (let i = 0; i < members.length; i++) {
+                if (RiverRace.clan.participants[j].name == members[i].name && RiverRace.clan.participants[j].decksUsedToday == 4) {
+                    remainingPlayers--
+                }
                 //console.log(RiverRace.clan.participants.length)
                 if (RiverRace.clan.participants[j].name == members[i].name && RiverRace.clan.participants[j].decksUsedToday != 4) {
                     //console.log(members[i].name)
@@ -99,15 +102,17 @@ module.exports = {
                             break;
                         case 3:
                             Players3 += members[i].name + "\n";
+                            remainingPlayers--
                             break;
                         case 2:
                             Players2 += members[i].name + "\n";
+                            remainingPlayers--
                             break;
                         case 1:
                             Players1 += members[i].name + "\n";
+                            remainingPlayers--
                             break;
                     }
-                    remainingPlayers++
                     inclan = true
                     if (pingBool) {
                         guild.members
@@ -129,6 +134,8 @@ module.exports = {
                     break
                 }
             }
+            // if (!inclan && RiverRace.clan.participants[j].decksUsedToday == 4)
+            //     remainingPlayers--
             if (!inclan && RiverRace.clan.participants[j].decksUsedToday != 0 && RiverRace.clan.participants[j].decksUsedToday != 4) {
                 let decksRemainingToday = 4 - RiverRace.clan.participants[j].decksUsedToday
                 switch (decksRemainingToday) {
@@ -142,6 +149,7 @@ module.exports = {
                         Players1 += RiverRace.clan.participants[j].name + " **(out of the clan !!)**\n";
                         break;
                 }
+                remainingPlayers--
                 if (pingBool) {
                     guild.members
                         .fetch()

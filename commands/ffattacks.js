@@ -90,6 +90,7 @@ module.exports = {
             for (let i = 0; i < members.length; i++) {
                 if (RiverRace.clan.participants[j].name == members[i].name && RiverRace.clan.participants[j].decksUsedToday == 4) {
                     remainingPlayers--
+                    inclan = true
                 }
                 //console.log(RiverRace.clan.participants.length)
                 if (RiverRace.clan.participants[j].name == members[i].name && RiverRace.clan.participants[j].decksUsedToday != 4) {
@@ -134,8 +135,11 @@ module.exports = {
                     break
                 }
             }
-            // if (!inclan && RiverRace.clan.participants[j].decksUsedToday == 4)
-            //     remainingPlayers--
+            if (!inclan && RiverRace.clan.participants[j].decksUsedToday == 4) {
+                remainingPlayers--
+                // console.log(RiverRace.clan.participants[j].name)
+                // console.log(inclan)
+            }
             if (!inclan && RiverRace.clan.participants[j].decksUsedToday != 0 && RiverRace.clan.participants[j].decksUsedToday != 4) {
                 let decksRemainingToday = 4 - RiverRace.clan.participants[j].decksUsedToday
                 switch (decksRemainingToday) {

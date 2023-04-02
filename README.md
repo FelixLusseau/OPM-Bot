@@ -2,6 +2,7 @@
 
 [![Author](https://img.shields.io/badge/author-@FelixLusseau-blue)](https://github.com/FelixLusseau)
 ![version](https://img.shields.io/badge/version-1.2.0-green)
+[![CodeQL](https://github.com/FelixLusseau/OPM-Bot/actions/workflows/codeql.yml/badge.svg)](https://github.com/FelixLusseau/OPM-Bot/actions/workflows/codeql.yml)
 
 <br>
 A Discord bot to manage the Clash Royale clans and clan wars of the One Punch Man Family.

@@ -50,6 +50,7 @@ module.exports = {
             } */
             Race += "- __" + RiverRace.clans[i].name + "__ " + " :\n" + RiverRace.clans[i].tag + ", " + clan.location.name + ", " + clan.clanWarTrophies + " tr, " + clan.members + " members\n\n"
         }
+        Race += "\n\u200b"
         try {
             opponentsEmbed
                 .setColor(0x0099FF)

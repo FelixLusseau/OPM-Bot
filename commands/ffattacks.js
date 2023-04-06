@@ -73,7 +73,7 @@ module.exports = {
             if ((day == "Sunday" && hour > warHour) || (day == "Monday" && hour < warHour))
                 ratio = (RiverRace.clan.fame / (800 - decksRemaining)).toFixed(2).toString()
         }
-        else { (RiverRace.clan.periodPoints / (200 - decksRemaining)).toFixed(2).toString() }
+        else { ratio = (RiverRace.clan.periodPoints / (200 - decksRemaining)).toFixed(2).toString() }
         let remainingPlayers = 50
         api.getClanMembers(clan)
             .then((members) => {

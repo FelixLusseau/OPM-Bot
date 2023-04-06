@@ -115,7 +115,7 @@ module.exports = {
                 if ((day == "Sunday" && hour > warHour) || (day == "Monday" && hour < warHour))
                     ratio = (RiverRace.clans[i].fame / (800 - decksRemaining)).toFixed(2).toString()
             }
-            else { (RiverRace.clans[i].periodPoints / (200 - decksRemaining)).toFixed(2).toString() }
+            else { ratio = (RiverRace.clans[i].periodPoints / (200 - decksRemaining)).toFixed(2).toString() }
             if (RiverRace.periodType != "colosseum" && RiverRace.clans[i].fame >= 10000) {
                 Race += "- __" + RiverRace.clans[i].name + "__ : War finished \n\n"
                 continue

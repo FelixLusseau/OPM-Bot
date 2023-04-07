@@ -3,7 +3,9 @@ const path = require('node:path');
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
 const { ClashRoyaleAPI } = require('@varandas/clash-royale-api')
 const Discord = require("discord.js");
+const cron = require('node-cron');
 require("dotenv").config();
+const ffattacks = require('./commands/ffattacks.js');
 
 const bot = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
 bot.commands = new Collection();
@@ -12,6 +14,11 @@ bot.commands = new Collection();
 const api = new ClashRoyaleAPI(process.env.CR_TOKEN)
 
 bot.login(process.env.BOT_TOKEN);
+
+cron.schedule('*/1 * * * *', () => {
+  const channel = bot.channels.cache.get('1071574094274904078');
+  ffattacks.ffattacks(bot, api, null, true, '1071574094274904075', channel, '#YRLJGL9')
+});
 
 const commandsPath = path.join(__dirname, 'commands');
 const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));

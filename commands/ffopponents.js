@@ -32,7 +32,7 @@ module.exports = {
         await interaction.deferReply({ ephemeral: false });
         const clan = interaction.options.getString('clan');
         const opponentsEmbed = new EmbedBuilder();
-        let Race = "";
+        let Opponents = "";
         api.getClanCurrentRiverRace(clan)
             .then((response) => {
                 //console.log(response.clans.periodLogs)
@@ -55,11 +55,11 @@ module.exports = {
             /* for (let i = 0; i < badgesData.length; i++) {
                 //console.log(badgesData[i].id)
                 if (badgesData[i].id == clan.badgeId) {
-                  Race += ":https://raw.githubusercontent.com/RoyaleAPI/cr-api-assets/master/badges/" + badgesData[i].name + ".png:"
+                  Opponents += ":https://raw.githubusercontent.com/RoyaleAPI/cr-api-assets/master/badges/" + badgesData[i].name + ".png:"
                   break
                 }
             } */
-            Race += "- __**" + RiverRace.clans[i].name + "**__ " + " :\n" + RiverRace.clans[i].tag + ", " + clan.location.name + ", " + clan.clanWarTrophies + " tr, " + clan.members + " members\n\n"
+            Opponents += "- __**" + RiverRace.clans[i].name + "**__ " + " :\n" + RiverRace.clans[i].tag + ", " + clan.location.name + ", " + clan.clanWarTrophies + " tr, " + clan.members + " members\n\n"
             let history = await fetchClanHist(RiverRace.clans[i].tag.substring(1));
             for (let h = 0; h < history.items.length; h++) {
                 // console.log(history.items[h].seasonId);
@@ -69,34 +69,34 @@ module.exports = {
                         // console.log(history.items[h].standings[s].clan.name);
                         // console.log(history.items[h].standings[s].rank);
                         // console.log(history.items[h].standings[s].clan.fame);
-                        Race += "Season " + history.items[h].seasonId + " : **" + history.items[h].standings[s].rank
+                        Opponents += "Season " + history.items[h].seasonId + " : **" + history.items[h].standings[s].rank
                         switch (history.items[h].standings[s].rank) {
                             case 1:
-                                Race += "st** with **"
+                                Opponents += "st** with **"
                                 break;
                             case 2:
-                                Race += "nd** with **"
+                                Opponents += "nd** with **"
                                 break;
                             case 3:
-                                Race += "rd** with **"
+                                Opponents += "rd** with **"
                                 break;
                             default:
-                                Race += "th** with **"
+                                Opponents += "th** with **"
                                 break;
                         }
-                        Race += history.items[h].standings[s].clan.fame + "**\n"
+                        Opponents += history.items[h].standings[s].clan.fame + "**\n"
                     }
                 }
             }
-            Race += "\n\n"
+            Opponents += "\n\n"
         }
-        Race += "\u200b"
+        Opponents += "\u200b"
         try {
             opponentsEmbed
                 .setColor(0x0099FF)
                 .setTitle('__Current opponents__ :')
                 .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' /* , url: 'https://discord.js.org' */ })
-                .setDescription(Race)
+                .setDescription(Opponents)
                 .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')
                 .setTimestamp()
                 .setFooter({ text: 'by OPM | Féfé ⚡', iconURL: 'https://avatars.githubusercontent.com/u/94113911?s=400&v=4' });

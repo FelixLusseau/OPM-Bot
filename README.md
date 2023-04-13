@@ -14,6 +14,7 @@ A Discord bot to manage the Clash Royale clans and clan wars of the One Punch Ma
 Commands list :
  - `/ffhelp` : Shows the help menu
  - `/ffattacks` : Shows the remaining attacks of the day and can ping remaining players
+ - `/ffavg` : Shows the average war points of the players
  - `/ffmembers` : Shows the members of the clan
  - `/ffopponents` : Shows information about the war opponents and their Colosseum history the last 3 seasons
  - `/ffrace` : Shows the current war day status (or Colosseum)

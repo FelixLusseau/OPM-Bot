@@ -11,6 +11,7 @@ module.exports = {
         const Help = "\u200B\n__Commands list__ :\n\n"
             + "- `/ffhelp` : Shows this help menu\n"
             + "- `/ffattacks` : Shows the remaining attacks of the day\n"
+            + "- `/ffavg` : Shows the average war points of the players\n"
             + "- `/ffmembers` : Shows the members of the clan\n"
             + "- `/ffopponents` : Shows information about the war opponents\n"
             + "- `/ffrace` : Shows the current war day status (or Colosseum)\n"

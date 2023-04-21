@@ -120,7 +120,12 @@ module.exports = {
                 Race += "- __" + RiverRace.clans[i].name + "__ : War finished \n\n"
                 continue
             }
-            Race += "- __" + RiverRace.clans[i].name + "__ :\n<:Retro:1010557231214886933> Tag : " + RiverRace.clans[i].tag + "\n<:fame:876320149878235136> Pts : " + points + "\n<:fameAvg:946276069634375801> Ratio : " + ratio + "\n<:decksRemaining:946275903812546620> Decks : " + decksRemaining + "\n<:remainingSlots:951032915221950494> Players : " + playersRemaining + "\n\n"
+            Race += "- __" + RiverRace.clans[i].name
+                + "__ :\n<:Retro:1010557231214886933> Tag : " + RiverRace.clans[i].tag
+                + "\n<:fame:876320149878235136> Pts : " + points
+                + "\n<:fameAvg:946276069634375801> Ratio : **" + ratio
+                + "**\n<:decksRemaining:946275903812546620> Decks : " + decksRemaining
+                + "\n<:remainingSlots:951032915221950494> Players : " + playersRemaining + "\n\n"
         }
         // console.log(RiverRace.clan)
         // console.log(Labels)

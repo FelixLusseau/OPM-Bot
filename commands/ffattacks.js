@@ -194,7 +194,7 @@ module.exports = {
 
         }
         interaction.editReply({ embeds: [attacksEmbed] });
-        if (pingBool) {
+        if (pingBool && ping != "") {
             await guild.members.fetch();
             interaction.channel.send(ping);
         }

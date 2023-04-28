@@ -59,7 +59,7 @@ module.exports = {
         //console.log(d)
         const day = weekday[d.getDay()]
         const hour = d.getHours() + ":" + d.getMinutes()
-        const warHour = "11:53"
+        const warHour = "11:31"
         /* console.log(day == "Thursday")
         console.log(hour > warHour)
         console.log((day == "Thursday" && hour > warHour) || (day == "Friday" && hour < warHour)) */

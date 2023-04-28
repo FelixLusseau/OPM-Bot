@@ -103,8 +103,8 @@ module.exports = {
             const d = new Date();
             const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
             const day = weekday[d.getDay()]
-            const hour = d.getHours() + ":" + d.getMinutes()
-            const warHour = "11:53"
+            const hour = (('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2))
+            const warHour = "11:35"
             if (RiverRace.periodType == "colosseum") {
                 if ((day == "Thursday" && hour > warHour) || (day == "Friday" && hour < warHour))
                     ratio = (RiverRace.clans[i].fame / (200 - decksRemaining)).toFixed(2).toString()

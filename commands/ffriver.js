@@ -49,7 +49,7 @@ module.exports = {
             Race += "- __" + RiverRace.clans[i].name + "__ :\n<:Retro:1010557231214886933> Tag : " + RiverRace.clans[i].tag + "\n<:fame:876320149878235136> Pts : " + RiverRace.clans[i].fame + "\n\n"
         }
         let max = 0
-        if (RiverRace.periodType == "colosseum") max = 135000
+        if (RiverRace.periodType == "colosseum") max = 180000
         else max = 10000
         const chart = {
             type: 'bar',

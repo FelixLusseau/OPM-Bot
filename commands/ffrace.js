@@ -132,7 +132,7 @@ module.exports = {
         // console.log(Datas)
         let max = 0
         if (RiverRace.periodType == "colosseum")
-            max = 135000
+            max = 180000
         else
             max = 45000
         const chart = {

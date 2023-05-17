@@ -117,10 +117,10 @@ module.exports = {
             }
             else { ratio = (RiverRace.clans[i].periodPoints / (200 - decksRemaining)).toFixed(2).toString() }
             if (RiverRace.periodType != "colosseum" && RiverRace.clans[i].fame >= 10000) {
-                Race += "- __" + RiverRace.clans[i].name + "__ : War finished \n\n"
+                Race += "- __" + (RiverRace.clans[i].tag == clan ? "**" + RiverRace.clans[i].name + "**" : RiverRace.clans[i].name) + "__ : War finished \n\n"
                 continue
             }
-            Race += "- __" + RiverRace.clans[i].name
+            Race += "- __" + (RiverRace.clans[i].tag == clan ? "**" + RiverRace.clans[i].name + "**" : RiverRace.clans[i].name)
                 + "__ :\n<:Retro:1010557231214886933> Tag : " + RiverRace.clans[i].tag
                 + "\n<:fame:876320149878235136> Pts : " + points
                 + "\n<:fameAvg:946276069634375801> Ratio : **" + ratio

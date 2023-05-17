@@ -187,8 +187,6 @@ module.exports = {
             if (Players2 != "") { attacksEmbed.addFields({ name: '__2 attacks :__', value: Players2 }) }
             if (Players1 != "") { attacksEmbed.addFields({ name: '__1 attack :__', value: Players1 }) }
             attacksEmbed
-                //.addFields({ name: '\u200B', value: RoyaleAPI })
-                //.addFields({ name: '\u200B', value: '\u200B' })
                 .setTimestamp()
                 .setFooter({ text: 'by OPM | Féfé ⚡', iconURL: 'https://avatars.githubusercontent.com/u/94113911?s=400&v=4' });
 

@@ -1,17 +1,8 @@
 const { SlashCommandBuilder } = require('discord.js');
 const Discord = require("discord.js");
 const { EmbedBuilder } = require('discord.js');
+const functions = require('../functions.js');
 
-async function fetchClanHist(tag) {
-    const response = await fetch("https://api.clashroyale.com/v1/clans/%23" + tag + "/riverracelog", {
-        headers: {
-            authorization: `Bearer ${process.env.CR_TOKEN}`,
-        },
-    });
-    const jsonData = await response.json();
-    //console.log(jsonData);
-    return jsonData;
-}
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -60,7 +51,7 @@ module.exports = {
                 }
             } */
             Opponents += "- __**" + RiverRace.clans[i].name + "**__ " + " :\n" + RiverRace.clans[i].tag + ", " + clan.location.name + ", " + clan.clanWarTrophies + " tr, " + clan.members + " members\n\n"
-            let history = await fetchClanHist(RiverRace.clans[i].tag.substring(1));
+            let history = await functions.fetchHist(RiverRace.clans[i].tag.substring(1));
             for (let h = 0; h < history.items.length; h++) {
                 // console.log(history.items[h].seasonId);
                 // console.log(history.items[h].sectionIndex);

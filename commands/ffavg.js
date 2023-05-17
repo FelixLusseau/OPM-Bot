@@ -1,17 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const Discord = require("discord.js");
 const { EmbedBuilder } = require('discord.js');
-
-async function fetchPlayersHist(tag) {
-    const response = await fetch("https://api.clashroyale.com/v1/clans/%23" + tag + "/riverracelog", {
-        headers: {
-            authorization: `Bearer ${process.env.CR_TOKEN}`,
-        },
-    });
-    const jsonData = await response.json();
-    //console.log(jsonData);
-    return jsonData;
-}
+const functions = require('../functions.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -36,7 +26,7 @@ module.exports = {
         await interaction.deferReply({ ephemeral: false });
         const clan = interaction.options.getString('clan');
         const limit = interaction.options.getInteger('limit');
-        let avg = await fetchPlayersHist(clan.substring(1));
+        let avg = await functions.fetchHist(clan.substring(1));
         let avgArray = {};
         let seasonId = avg.items[0].seasonId;
         if (avg.items[0].sectionIndex < 3)
@@ -46,12 +36,13 @@ module.exports = {
                 break;
             if (avg.items[0].standings[h].clan.tag == clan) {
                 for (let p = 0; p < avg.items[0].standings[h].clan.participants.length; p++) {
-                    //console.log(avg.items[0].standings[h].clan.participants[p].name);
-                    avgArray[avg.items[0].standings[h].clan.participants[p].name] = {};
-                    avgArray[avg.items[0].standings[h].clan.participants[p].name]['fame'] = avg.items[0].standings[h].clan.participants[p].fame;
-                    //console.log(avgArray[avg.items[0].standings[h].clan.participants[p].name]);
-                    avgArray[avg.items[0].standings[h].clan.participants[p].name]['string'] = avg.items[0].standings[h].clan.participants[p].fame.toString() + " ";
-                    avgArray[avg.items[0].standings[h].clan.participants[p].name]['count'] = 1;
+                    let participant = avg.items[0].standings[h].clan.participants[p];
+                    //console.log(participant.name);
+                    avgArray[participant.name] = {};
+                    avgArray[participant.name]['fame'] = participant.fame;
+                    //console.log(avgArray[participant.name]);
+                    avgArray[participant.name]['string'] = participant.fame.toString() + " ";
+                    avgArray[participant.name]['count'] = 1;
                 }
             }
         }
@@ -65,19 +56,20 @@ module.exports = {
             for (let h = 0; h < avg.items[p].standings.length; h++) {
                 if (avg.items[p].standings[h].clan.tag == clan) {
                     for (let q = 0; q < avg.items[p].standings[h].clan.participants.length; q++) {
-                        if (!(avg.items[p].standings[h].clan.participants[q].name in avgArray)) {
-                            avgArray[avg.items[p].standings[h].clan.participants[q].name] = {};
+                        let participant = avg.items[p].standings[h].clan.participants[q];
+                        if (!(participant.name in avgArray)) {
+                            avgArray[participant.name] = {};
                         }
-                        //console.log(avg.items[p].standings[h].clan.participants[q].name)
-                        if (avgArray[avg.items[p].standings[h].clan.participants[q].name]['fame'] > 0) {
-                            avgArray[avg.items[p].standings[h].clan.participants[q].name]['fame'] += avg.items[p].standings[h].clan.participants[q].fame;
-                            avgArray[avg.items[p].standings[h].clan.participants[q].name]['string'] += avg.items[p].standings[h].clan.participants[q].fame.toString() + " ";
-                            avgArray[avg.items[p].standings[h].clan.participants[q].name]['count'] += 1;
+                        //console.log(participant.name)
+                        if (avgArray[participant.name]['fame'] > 0) {
+                            avgArray[participant.name]['fame'] += participant.fame;
+                            avgArray[participant.name]['string'] += participant.fame.toString() + " ";
+                            avgArray[participant.name]['count'] += 1;
                         }
                         else {
-                            avgArray[avg.items[p].standings[h].clan.participants[q].name]['fame'] = avg.items[p].standings[h].clan.participants[q].fame;
-                            avgArray[avg.items[p].standings[h].clan.participants[q].name]['string'] = avg.items[p].standings[h].clan.participants[q].fame.toString() + " ";
-                            avgArray[avg.items[p].standings[h].clan.participants[q].name]['count'] = 1;
+                            avgArray[participant.name]['fame'] = participant.fame;
+                            avgArray[participant.name]['string'] = participant.fame.toString() + " ";
+                            avgArray[participant.name]['count'] = 1;
                         }
                     }
                 }

@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const Discord = require("discord.js");
 const { EmbedBuilder } = require('discord.js');
+const functions = require('../functions.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -49,31 +50,13 @@ module.exports = {
         if (RiverRace.periodType == "colosseum") { points = RiverRace.clan.fame.toString() }
         else { points = RiverRace.clan.periodPoints.toString() }
         let decksRemaining = 200
-        for (let i = 0; i < RiverRace.clan.participants.length; i++) {
-            decksRemaining -= RiverRace.clan.participants[i].decksUsedToday
+        let participants = RiverRace.clan.participants
+        for (let i = 0; i < participants.length; i++) {
+            decksRemaining -= participants[i].decksUsedToday
         }
         //console.log(decksRemaining)
         let ratio = 0
-        const d = new Date();
-        const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-        //console.log(d)
-        const day = weekday[d.getDay()]
-        const hour = (('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2))
-        const warHour = "11:31"
-        /* console.log(day == "Thursday")
-        console.log(hour > warHour)
-        console.log((day == "Thursday" && hour > warHour) || (day == "Friday" && hour < warHour)) */
-        if (RiverRace.periodType == "colosseum") {
-            if ((day == "Thursday" && hour > warHour) || (day == "Friday" && hour < warHour))
-                ratio = (RiverRace.clan.fame / (200 - decksRemaining)).toFixed(2).toString()
-            if ((day == "Friday" && hour > warHour) || (day == "Saturday" && hour < warHour))
-                ratio = (RiverRace.clan.fame / (400 - decksRemaining)).toFixed(2).toString()
-            if ((day == "Saturday" && hour > warHour) || (day == "Sunday" && hour < warHour))
-                ratio = (RiverRace.clan.fame / (600 - decksRemaining)).toFixed(2).toString()
-            if ((day == "Sunday" && hour > warHour) || (day == "Monday" && hour < warHour))
-                ratio = (RiverRace.clan.fame / (800 - decksRemaining)).toFixed(2).toString()
-        }
-        else { ratio = (RiverRace.clan.periodPoints / (200 - decksRemaining)).toFixed(2).toString() }
+        ratio = functions.ratio(RiverRace, decksRemaining)
         let remainingPlayers = 50
         api.getClanMembers(clan)
             .then((members) => {
@@ -84,19 +67,19 @@ module.exports = {
                 console.log("CR-API error : ", err)
             })
         let members = await api.getClanMembers(clan)
-        for (let j = 0; j < RiverRace.clan.participants.length; j++) {
-            //console.log(RiverRace.clan.participants[j])
+        for (let j = 0; j < participants.length; j++) {
+            //console.log(participants[j])
             let inclan = false
             for (let i = 0; i < members.length; i++) {
-                if (RiverRace.clan.participants[j].name == members[i].name && RiverRace.clan.participants[j].decksUsedToday == 4) {
+                if (participants[j].name == members[i].name && participants[j].decksUsedToday == 4) {
                     remainingPlayers--
                     inclan = true
                 }
-                //console.log(RiverRace.clan.participants.length)
-                if (RiverRace.clan.participants[j].name == members[i].name && RiverRace.clan.participants[j].decksUsedToday != 4) {
+                //console.log(participants.length)
+                if (participants[j].name == members[i].name && participants[j].decksUsedToday != 4) {
                     //console.log(members[i].name)
-                    //console.log(RiverRace.clan.participants[j].decksUsedToday)
-                    let decksRemainingToday = 4 - RiverRace.clan.participants[j].decksUsedToday
+                    //console.log(participants[j].decksUsedToday)
+                    let decksRemainingToday = 4 - participants[j].decksUsedToday
                     switch (decksRemainingToday) {
                         case 4:
                             Players4 += members[i].name + "\n";
@@ -135,22 +118,22 @@ module.exports = {
                     break
                 }
             }
-            if (!inclan && RiverRace.clan.participants[j].decksUsedToday == 4) {
+            if (!inclan && participants[j].decksUsedToday == 4) {
                 remainingPlayers--
-                // console.log(RiverRace.clan.participants[j].name)
+                // console.log(participants[j].name)
                 // console.log(inclan)
             }
-            if (!inclan && RiverRace.clan.participants[j].decksUsedToday != 0 && RiverRace.clan.participants[j].decksUsedToday != 4) {
-                let decksRemainingToday = 4 - RiverRace.clan.participants[j].decksUsedToday
+            if (!inclan && participants[j].decksUsedToday != 0 && participants[j].decksUsedToday != 4) {
+                let decksRemainingToday = 4 - participants[j].decksUsedToday
                 switch (decksRemainingToday) {
                     case 3:
-                        Players3 += RiverRace.clan.participants[j].name + " **(out of the clan !!)**\n";
+                        Players3 += participants[j].name + " **(out of the clan !!)**\n";
                         break;
                     case 2:
-                        Players2 += RiverRace.clan.participants[j].name + " **(out of the clan !!)**\n";
+                        Players2 += participants[j].name + " **(out of the clan !!)**\n";
                         break;
                     case 1:
-                        Players1 += RiverRace.clan.participants[j].name + " **(out of the clan !!)**\n";
+                        Players1 += participants[j].name + " **(out of the clan !!)**\n";
                         break;
                 }
                 remainingPlayers--
@@ -162,8 +145,8 @@ module.exports = {
                             //console.log(members[i].name)
                             memberss.forEach((member) => {
                                 //console.log(member.nickname)
-                                RiverRace.clan.participants[j].name = RiverRace.clan.participants[j].name.replace('\ufe0f', "")
-                                if (member.user.username == RiverRace.clan.participants[j].name || member.nickname == RiverRace.clan.participants[j].name) {
+                                participants[j].name = participants[j].name.replace('\ufe0f', "")
+                                if (member.user.username == participants[j].name || member.nickname == participants[j].name) {
                                     //console.log(member.user.username)
                                     ping += "<@" + member.user.id + "> "
                                 }

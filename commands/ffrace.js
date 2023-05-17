@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const Discord = require("discord.js");
 const { EmbedBuilder } = require('discord.js');
+const functions = require('../functions.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -33,22 +34,23 @@ module.exports = {
                 console.log("CR-API error : ", err)
             })
         let RiverRace = await api.getClanCurrentRiverRace(clan)
-        for (let i = 0; i < RiverRace.clans.length; i++) {
-            if (RiverRace.periodType != "colosseum" && RiverRace.clans[i].fame >= 10000) {
+        let clans = RiverRace.clans
+        for (let i = 0; i < clans.length; i++) {
+            if (RiverRace.periodType != "colosseum" && clans[i].fame >= 10000) {
                 continue
             }
-            let labels = RiverRace.clans[i].name
+            let labels = clans[i].name
             Labels.push(labels);
             let data = 0
             if (RiverRace.periodType == "colosseum")
-                data = RiverRace.clans[i].fame
+                data = clans[i].fame
             else
-                data = RiverRace.clans[i].periodPoints
+                data = clans[i].periodPoints
             Datas.push(data);
-            //console.log(RiverRace.clans[i].name)
-            //console.log(RiverRace.clans[i].periodPoints)
+            //console.log(clans[i].name)
+            //console.log(clans[i].periodPoints)
 
-            /* api.getClanByTag(RiverRace.clans[i].tag)
+            /* api.getClanByTag(clans[i].tag)
             .then((clan) => {
                 //console.log(clan)
                 return clan
@@ -56,7 +58,7 @@ module.exports = {
             .catch((err) => {
                 console.log("CR-API error : ", err)
             })
-            let clan = await api.getClanByTag(RiverRace.clans[i].tag) */
+            let clan = await api.getClanByTag(clans[i].tag) */
             //console.log(clan)
             // console.log(clan.name)
             // console.log(clan.tag)
@@ -73,55 +75,40 @@ module.exports = {
                 }
             } */
             //console.log(RiverRace)
-            //console.log(RiverRace.clans[i])
-            //console.log(RiverRace.clans[i].participants.length)
+            //console.log(clans[i])
+            //console.log(clans[i].participants.length)
         }
         if (RiverRace.periodType == "colosseum")
-            RiverRace.clans.sort((a, b) => (a.fame < b.fame) ? 1 : -1)
+            clans.sort((a, b) => (a.fame < b.fame) ? 1 : -1)
         else
-            RiverRace.clans.sort((a, b) => (a.periodPoints < b.periodPoints) ? 1 : -1)
+            clans.sort((a, b) => (a.periodPoints < b.periodPoints) ? 1 : -1)
         //console.log(sortedClans)
-        for (let i = 0; i < RiverRace.clans.length; i++) {
+        for (let i = 0; i < clans.length; i++) {
             let decksRemaining = 200
             let playersRemaining = 50
-            for (let j = 0; i < RiverRace.clans[i].participants.length; j++) {
-                //console.log(RiverRace.clans[i].participants[j])
-                if (RiverRace.clans[i].participants[j] == undefined) // strange bug to correct
+            for (let j = 0; i < clans[i].participants.length; j++) {
+                //console.log(clans[i].participants[j])
+                if (clans[i].participants[j] == undefined) // strange bug to correct
                     break
-                decksRemaining -= RiverRace.clans[i].participants[j].decksUsedToday
-                if (RiverRace.clans[i].participants[j].decksUsedToday != 0)
+                decksRemaining -= clans[i].participants[j].decksUsedToday
+                if (clans[i].participants[j].decksUsedToday != 0)
                     playersRemaining -= 1
             }
             //console.log(playersRemaining)
             //console.log(decksRemaining)
             let points = 0
             if (RiverRace.periodType == "colosseum")
-                points = RiverRace.clans[i].fame
+                points = clans[i].fame
             else
-                points = RiverRace.clans[i].periodPoints
+                points = clans[i].periodPoints
             let ratio = 0
-            const d = new Date();
-            const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-            const day = weekday[d.getDay()]
-            const hour = (('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2))
-            const warHour = "11:35"
-            if (RiverRace.periodType == "colosseum") {
-                if ((day == "Thursday" && hour > warHour) || (day == "Friday" && hour < warHour))
-                    ratio = (RiverRace.clans[i].fame / (200 - decksRemaining)).toFixed(2).toString()
-                if ((day == "Friday" && hour > warHour) || (day == "Saturday" && hour < warHour))
-                    ratio = (RiverRace.clans[i].fame / (400 - decksRemaining)).toFixed(2).toString()
-                if ((day == "Saturday" && hour > warHour) || (day == "Sunday" && hour < warHour))
-                    ratio = (RiverRace.clans[i].fame / (600 - decksRemaining)).toFixed(2).toString()
-                if ((day == "Sunday" && hour > warHour) || (day == "Monday" && hour < warHour))
-                    ratio = (RiverRace.clans[i].fame / (800 - decksRemaining)).toFixed(2).toString()
-            }
-            else { ratio = (RiverRace.clans[i].periodPoints / (200 - decksRemaining)).toFixed(2).toString() }
-            if (RiverRace.periodType != "colosseum" && RiverRace.clans[i].fame >= 10000) {
-                Race += "- __" + (RiverRace.clans[i].tag == clan ? "**" + RiverRace.clans[i].name + "**" : RiverRace.clans[i].name) + "__ : War finished \n\n"
+            ratio = functions.ratio(RiverRace, decksRemaining)
+            if (RiverRace.periodType != "colosseum" && clans[i].fame >= 10000) {
+                Race += "- __" + (clans[i].tag == clan ? "**" + clans[i].name + "**" : clans[i].name) + "__ : War finished \n\n"
                 continue
             }
-            Race += "- __" + (RiverRace.clans[i].tag == clan ? "**" + RiverRace.clans[i].name + "**" : RiverRace.clans[i].name)
-                + "__ :\n<:Retro:1010557231214886933> Tag : " + RiverRace.clans[i].tag
+            Race += "- __" + (clans[i].tag == clan ? "**" + clans[i].name + "**" : clans[i].name)
+                + "__ :\n<:Retro:1010557231214886933> Tag : " + clans[i].tag
                 + "\n<:fame:876320149878235136> Pts : " + points
                 + "\n<:fameAvg:946276069634375801> Ratio : **" + ratio
                 + "**\n<:decksRemaining:946275903812546620> Decks : " + decksRemaining

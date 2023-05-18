@@ -56,7 +56,7 @@ module.exports = {
         }
         //console.log(decksRemaining)
         let ratio = 0
-        ratio = functions.ratio(RiverRace, decksRemaining, i)
+        ratio = functions.ratio(RiverRace, decksRemaining, -1)
         let remainingPlayers = 50
         api.getClanMembers(clan)
             .then((members) => {

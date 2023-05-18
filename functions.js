@@ -1,4 +1,5 @@
-function ratio(RiverRace, decksRemaining) {
+function ratio(RiverRace, decksRemaining, i) {
+    let clans = RiverRace.clans
     const d = new Date();
     const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     //console.log(d)
@@ -10,15 +11,15 @@ function ratio(RiverRace, decksRemaining) {
     console.log((day == "Thursday" && hour > warHour) || (day == "Friday" && hour < warHour)) */
     if (RiverRace.periodType == "colosseum") {
         if ((day == "Thursday" && hour > warHour) || (day == "Friday" && hour < warHour))
-            ratio = (RiverRace.clan.fame / (200 - decksRemaining)).toFixed(2).toString()
+            ratio = (clans[i].fame / (200 - decksRemaining)).toFixed(2).toString()
         if ((day == "Friday" && hour > warHour) || (day == "Saturday" && hour < warHour))
-            ratio = (RiverRace.clan.fame / (400 - decksRemaining)).toFixed(2).toString()
+            ratio = (clans[i].fame / (400 - decksRemaining)).toFixed(2).toString()
         if ((day == "Saturday" && hour > warHour) || (day == "Sunday" && hour < warHour))
-            ratio = (RiverRace.clan.fame / (600 - decksRemaining)).toFixed(2).toString()
+            ratio = (clans[i].fame / (600 - decksRemaining)).toFixed(2).toString()
         if ((day == "Sunday" && hour > warHour) || (day == "Monday" && hour < warHour))
-            ratio = (RiverRace.clan.fame / (800 - decksRemaining)).toFixed(2).toString()
+            ratio = (clans[i].fame / (800 - decksRemaining)).toFixed(2).toString()
     }
-    else { ratio = (RiverRace.clan.periodPoints / (200 - decksRemaining)).toFixed(2).toString() }
+    else { ratio = (clans[i].periodPoints / (200 - decksRemaining)).toFixed(2).toString() }
     return ratio
 }
 

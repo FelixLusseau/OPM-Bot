@@ -102,7 +102,7 @@ module.exports = {
             else
                 points = clans[i].periodPoints
             let ratio = 0
-            ratio = functions.ratio(RiverRace, decksRemaining)
+            ratio = functions.ratio(RiverRace, decksRemaining, i)
             if (RiverRace.periodType != "colosseum" && clans[i].fame >= 10000) {
                 Race += "- __" + (clans[i].tag == clan ? "**" + clans[i].name + "**" : clans[i].name) + "__ : War finished \n\n"
                 continue

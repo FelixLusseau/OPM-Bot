@@ -1,3 +1,5 @@
+const fs = require('fs');
+
 function ratio(RiverRace, decksRemaining, i) {
     let clan
     if (i > -1) clan = RiverRace.clans[i]
@@ -7,7 +9,12 @@ function ratio(RiverRace, decksRemaining, i) {
     //console.log(d)
     const day = weekday[d.getDay()]
     const hour = (('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2))
-    const warHour = "11:31"
+    const warHour = fs.readFileSync('./reset-hours/' + RiverRace.clan.name, 'utf8', (err, data) => {
+        if (err) {
+            return;
+        }
+        return data;
+    });
     /* console.log(day == "Thursday")
     console.log(hour > warHour)
     console.log((day == "Thursday" && hour > warHour) || (day == "Friday" && hour < warHour)) */

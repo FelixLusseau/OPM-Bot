@@ -2,7 +2,55 @@ const { SlashCommandBuilder } = require('discord.js');
 const Discord = require("discord.js");
 const { EmbedBuilder } = require('discord.js');
 
+async function ffresults(bot, api, interaction, guildId, channel, clan) {
+    if (guildId == null) { guildId = interaction.guildId }
+    const guild = bot.guilds.cache.find((g) => g.id === guildId);
+
+    if (!guild)
+        return console.log(`Can't find any guild with the ID "${guildId}"`);
+
+    //console.log(guild.members)
+    if (interaction != null) {
+        await interaction.deferReply({ ephemeral: false });
+    }
+    if (clan == null) { clan = interaction.options.getString('clan'); }
+    const resultsEmbed = new EmbedBuilder();
+    let Players = "";
+    api.getClanCurrentRiverRace(clan)
+        .then((response) => {
+            return response
+        })
+        .catch((err) => {
+            console.log("CR-API error : ", err)
+        })
+    let RiverRace = await api.getClanCurrentRiverRace(clan)
+    RiverRace.clan.participants.sort((a, b) => (a.fame < b.fame) ? 1 : -1)
+    for (let j = 0; j < RiverRace.clan.participants.length; j++) {
+        if (RiverRace.clan.participants[j].decksUsed > 0 && RiverRace.clan.participants[j].fame > 0)
+            Players += "- " + RiverRace.clan.participants[j].name + " : **" + RiverRace.clan.participants[j].fame + " pts**\n"
+    }
+    try {
+        resultsEmbed
+            .setColor(0x0099FF)
+            .setTitle('__Players\' war results__ :')
+            .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' /* , url: 'https://discord.js.org' */ })
+            .setDescription((Players.length > 0) ? Players : "No players have attacked yet !")
+            .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')
+            .setTimestamp()
+            .setFooter({ text: 'by OPM | Féfé ⚡', iconURL: 'https://avatars.githubusercontent.com/u/94113911?s=400&v=4' });
+    } catch (e) {
+        console.log(e);
+    }
+
+    if (interaction != null) { interaction.editReply({ embeds: [resultsEmbed] }); }
+    else {
+        channel.send({ embeds: [resultsEmbed] });
+        await guild.members.fetch();
+    }
+}
+
 module.exports = {
+    ffresults,
     data: new SlashCommandBuilder()
         .setName('ffresults')
         .setDescription('Replies the current war points of the players !')
@@ -18,36 +66,6 @@ module.exports = {
                 )
                 .setRequired(true)),
     async execute(bot, api, interaction) {
-        await interaction.deferReply({ ephemeral: false });
-        const clan = interaction.options.getString('clan');
-        const resultsEmbed = new EmbedBuilder();
-        let Players = "";
-        api.getClanCurrentRiverRace(clan)
-            .then((response) => {
-                return response
-            })
-            .catch((err) => {
-                console.log("CR-API error : ", err)
-            })
-        let RiverRace = await api.getClanCurrentRiverRace(clan)
-        RiverRace.clan.participants.sort((a, b) => (a.fame < b.fame) ? 1 : -1)
-        for (let j = 0; j < RiverRace.clan.participants.length; j++) {
-            if (RiverRace.clan.participants[j].decksUsed > 0 && RiverRace.clan.participants[j].fame > 0)
-                Players += "- " + RiverRace.clan.participants[j].name + " : **" + RiverRace.clan.participants[j].fame + " pts**\n"
-        }
-        try {
-            resultsEmbed
-                .setColor(0x0099FF)
-                .setTitle('__Players\' war results__ :')
-                .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' /* , url: 'https://discord.js.org' */ })
-                .setDescription(Players)
-                .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')
-                .setTimestamp()
-                .setFooter({ text: 'by OPM | Féfé ⚡', iconURL: 'https://avatars.githubusercontent.com/u/94113911?s=400&v=4' });
-        } catch (e) {
-            console.log(e);
-        }
-
-        interaction.editReply({ embeds: [resultsEmbed] });
+        ffresults(bot, api, interaction, null, null, null)
     },
 };

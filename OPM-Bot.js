@@ -6,6 +6,7 @@ const Discord = require("discord.js");
 const cron = require('node-cron');
 require("dotenv").config();
 const ffattacks = require('./commands/ffattacks.js');
+const reports = require('./reports.js');
 
 const bot = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
 bot.commands = new Collection();
@@ -18,7 +19,8 @@ bot.login(process.env.BOT_TOKEN);
 cron.schedule('*/1 * * * *', () => {
   const channel = bot.channels.cache.get(process.env.DEV_CHANNEL_ID);
   const guildID = process.env.DEV_GUILD_ID;
-  ffattacks.ffattacks(bot, api, null, true, guildID, channel, '#YRLJGL9')
+  //ffattacks.ffattacks(bot, api, null, true, guildID, channel, '#YRLJGL9')
+  reports.report(bot, api, null, null, guildID, channel, '#YRLJGL9')
 });
 
 const commandsPath = path.join(__dirname, 'commands');

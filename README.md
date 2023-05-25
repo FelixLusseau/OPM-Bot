@@ -3,8 +3,12 @@
 <img src="OPM-Stats.png" alt="Punch in fire" width="150" height="150"/> <br>
 
 [![Author](https://img.shields.io/badge/author-@FelixLusseau-blue)](https://github.com/FelixLusseau)
-![version](https://img.shields.io/badge/version-2.0.0-green)
+![version](https://img.shields.io/github/package-json/v/FelixLusseau/OPM-Bot)
 [![CodeQL](https://github.com/FelixLusseau/OPM-Bot/actions/workflows/codeql.yml/badge.svg)](https://github.com/FelixLusseau/OPM-Bot/actions/workflows/codeql.yml)
+
+![Linux](https://svgshare.com/i/Zhy.svg)
+[![GitHub latest commit](https://img.shields.io/github/last-commit/FelixLusseau/OPM-Bot)](https://gitHub.com/FelixLusseau/OPM-Bot/commit/)
+[![Maintenance](https://img.shields.io/badge/maintained%3F-yes-green.svg)](https://GitHub.com/FelixLusseau/OPM-Bot/graphs/commit-activity)
 
 <br>
 A Discord bot to manage the Clash Royale clans and clan wars of the One Punch Man Family.

@@ -1,6 +1,6 @@
 # OPM Bot
 
-<img src="OPM-Stats.png" alt="Punch in fire" width="100" height="100"/> <br>
+<img src="OPM-Stats.png" alt="Punch in fire" width="150" height="150"/> <br>
 
 [![Author](https://img.shields.io/badge/author-@FelixLusseau-blue)](https://github.com/FelixLusseau)
 ![version](https://img.shields.io/badge/version-2.0.0-green)

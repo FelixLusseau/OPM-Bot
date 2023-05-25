@@ -9,7 +9,7 @@ const bot = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.G
 bot.commands = new Collection();
 
 // Initialize the CR api
-const api = new ClashRoyaleAPI(process.env.CR_TOKEN)
+global.api = new ClashRoyaleAPI(process.env.CR_TOKEN)
 
 bot.login(process.env.BOT_TOKEN);
 

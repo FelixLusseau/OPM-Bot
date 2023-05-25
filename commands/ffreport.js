@@ -18,7 +18,7 @@ module.exports = {
                 )
                 .setRequired(true)),
     async execute(bot, api, interaction) {
-        await interaction.reply({ ephemeral: true, content: "War Report" });
+        await interaction.reply({ ephemeral: false, content: "War Report" });
         const clan = interaction.options.getString('clan');
         const channel = interaction.channel;
         const guild = interaction.guildId;

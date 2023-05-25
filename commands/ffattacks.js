@@ -1,23 +1,23 @@
 const { SlashCommandBuilder } = require('discord.js');
 const Discord = require("discord.js");
 const { EmbedBuilder } = require('discord.js');
-const functions = require('../functions.js');
+const functions = require('../utils/functions.js');
 
 async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan) {
     // console.log(interaction)
     // console.log(pingBool)
-    if (guildId == null) { /* const */ guildId = interaction.guildId }
+    if (interaction != null) {
+        await interaction.deferReply({ ephemeral: false });
+        pingBool = interaction.options.getBoolean('ping');
+        clan = interaction.options.getString('clan');
+        guildId = interaction.guildId;
+    }
     const guild = bot.guilds.cache.find((g) => g.id === guildId);
 
     if (!guild)
         return console.log(`Can't find any guild with the ID "${guildId}"`);
 
     //console.log(guild.members)
-    if (interaction != null) {
-        await interaction.deferReply({ ephemeral: false });
-    }
-    if (clan == null) { /* const */ clan = interaction.options.getString('clan'); }
-    //const pingBool = interaction.options.getBoolean('ping');
     const attacksEmbed = new EmbedBuilder();
     let Players4 = "";
     let Players3 = "";
@@ -142,33 +142,52 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
         }
     }
     //console.log(Players)
+    let attacks = ""
     if (Players4 != "" || Players3 != "" || Players2 != "" || Players1 != "") {
         //let RoyaleAPI = "\n" + "https://royaleapi.com/clan/YRLJGL9" + "\n"
+        attacks = '<:fame:876320149878235136> **Points** : ' + points + "\n" + '<:fameAvg:946276069634375801> **Ratio** : ' + ratio + "\n" + '<:remainingSlots:951032915221950494> **Players** : ' + remainingPlayers.toString() + "\n" + '<:decksRemaining:946275903812546620> **Attacks** : ' + decksRemaining + '\n'
         attacksEmbed
             .setColor(0x0099FF)
             .setTitle("__Remaining attacks " + ((RiverRace.periodType == "colosseum") ? "(Colosseum)__ " : "__ ") + ":")
             .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' /* , url: 'https://discord.js.org' */ })
-            .setDescription('<:fame:876320149878235136> **Points** : ' + points + "\n" + '<:fameAvg:946276069634375801> **Ratio** : ' + ratio + "\n" + '<:remainingSlots:951032915221950494> **Players** : ' + remainingPlayers.toString() + "\n" + '<:decksRemaining:946275903812546620> **Attacks** : ' + decksRemaining + '\n')
+            .setDescription(attacks)
             .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')
-        if (Players4 != "") { attacksEmbed.addFields({ name: '__4 attacks :__', value: Players4 }) }
-        if (Players3 != "") { attacksEmbed.addFields({ name: '__3 attacks :__', value: Players3 }) }
-        if (Players2 != "") { attacksEmbed.addFields({ name: '__2 attacks :__', value: Players2 }) }
-        if (Players1 != "") { attacksEmbed.addFields({ name: '__1 attack :__', value: Players1 }) }
-        attacksEmbed
-            //.addFields({ name: '\u200B', value: RoyaleAPI })
-            //.addFields({ name: '\u200B', value: '\u200B' })
             .setTimestamp()
             .setFooter({ text: 'by OPM | Féfé ⚡', iconURL: 'https://avatars.githubusercontent.com/u/94113911?s=400&v=4' });
+        if (Players4 != "") {
+            attacksEmbed.addFields({ name: '__4 attacks__ :', value: Players4 })
+            attacks += '\n__**4 attacks**__ :\n' + Players4
+        }
+        if (Players3 != "") {
+            attacksEmbed.addFields({ name: '__3 attacks__ :', value: Players3 })
+            attacks += '\n__**3 attacks**__\n :' + Players3
+        }
+        if (Players2 != "") {
+            attacksEmbed.addFields({ name: '__2 attacks__ :', value: Players2 })
+            attacks += '\n__**2 attacks**__ :\n' + Players2
+        }
+        if (Players1 != "") {
+            attacksEmbed.addFields({ name: '__1 attack__ :', value: Players1 })
+            attacks += '\n__**1 attack**__ :\n' + Players1
+        }
 
     }
-    if (interaction != null) { interaction.editReply({ embeds: [attacksEmbed] }); }
-    else {
-        channel.send({ embeds: [attacksEmbed] });
-        await guild.members.fetch();
-        if (ping != "") {
-            channel.send(ping);
+    if (interaction != null) {
+        interaction.editReply({ embeds: [attacksEmbed] });
+        if (pingBool) {
+            await guild.members.fetch();
+            if (ping != "")
+                interaction.channel.send(ping);
         }
     }
+    // else {
+    //     channel.send({ embeds: [attacksEmbed] });
+    //     await guild.members.fetch();
+    //     if (ping != "") {
+    //         channel.send(ping);
+    //     }
+    // }
+    return attacks
 };
 
 module.exports = {
@@ -186,10 +205,10 @@ module.exports = {
                     { name: '100pct', value: '#LLUC90PP' },
                     { name: 'TPM', value: '#G2CY2PPL' },
                 )
-                .setRequired(true)),
-    /* .addBooleanOption(option =>
-        option.setName('ping')
-            .setDescription('Ping the players who don\'t have attacked left')) */
+                .setRequired(true))
+        .addBooleanOption(option =>
+            option.setName('ping')
+                .setDescription('Ping the players who don\'t have attacked left')),
     async execute(bot, api, interaction) {
         ffattacks(bot, api, interaction, false, null, null, null)
     },

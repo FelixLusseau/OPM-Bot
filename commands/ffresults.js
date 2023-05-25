@@ -3,17 +3,17 @@ const Discord = require("discord.js");
 const { EmbedBuilder } = require('discord.js');
 
 async function ffresults(bot, api, interaction, guildId, channel, clan) {
-    if (guildId == null) { guildId = interaction.guildId }
+    if (interaction != null) {
+        await interaction.deferReply({ ephemeral: false });
+        clan = interaction.options.getString('clan');
+        guildId = interaction.guildId;
+    }
     const guild = bot.guilds.cache.find((g) => g.id === guildId);
 
     if (!guild)
         return console.log(`Can't find any guild with the ID "${guildId}"`);
 
     //console.log(guild.members)
-    if (interaction != null) {
-        await interaction.deferReply({ ephemeral: false });
-    }
-    if (clan == null) { clan = interaction.options.getString('clan'); }
     const resultsEmbed = new EmbedBuilder();
     let Players = "";
     api.getClanCurrentRiverRace(clan)
@@ -30,23 +30,25 @@ async function ffresults(bot, api, interaction, guildId, channel, clan) {
             Players += "- " + RiverRace.clan.participants[j].name + " : **" + RiverRace.clan.participants[j].fame + " pts**\n"
     }
     try {
-        resultsEmbed
-            .setColor(0x0099FF)
-            .setTitle('__Players\' war results__ :')
-            .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' /* , url: 'https://discord.js.org' */ })
-            .setDescription((Players.length > 0) ? Players : "No players have attacked yet !")
-            .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')
-            .setTimestamp()
-            .setFooter({ text: 'by OPM | Féfé ⚡', iconURL: 'https://avatars.githubusercontent.com/u/94113911?s=400&v=4' });
+        if (interaction) {
+            resultsEmbed
+                .setColor(0x0099FF)
+                .setTitle('__Players\' war results__ :')
+                .setDescription((Players.length > 0) ? Players : "No players have attacked yet !")
+                .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' /* , url: 'https://discord.js.org' */ })
+                .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')
+                .setTimestamp()
+                .setFooter({ text: 'by OPM | Féfé ⚡', iconURL: 'https://avatars.githubusercontent.com/u/94113911?s=400&v=4' });
+        }
     } catch (e) {
         console.log(e);
     }
 
     if (interaction != null) { interaction.editReply({ embeds: [resultsEmbed] }); }
-    else {
-        channel.send({ embeds: [resultsEmbed] });
-        await guild.members.fetch();
-    }
+    // else {
+    //     channel.send({ embeds: [resultsEmbed] });
+    // }
+    return Players
 }
 
 module.exports = {

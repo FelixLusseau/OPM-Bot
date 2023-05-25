@@ -1,7 +1,7 @@
 # OPM Bot
 
 [![Author](https://img.shields.io/badge/author-@FelixLusseau-blue)](https://github.com/FelixLusseau)
-![version](https://img.shields.io/badge/version-1.5.0-green)
+![version](https://img.shields.io/badge/version-2.0.0-green)
 [![CodeQL](https://github.com/FelixLusseau/OPM-Bot/actions/workflows/codeql.yml/badge.svg)](https://github.com/FelixLusseau/OPM-Bot/actions/workflows/codeql.yml)
 
 <br>
@@ -15,8 +15,13 @@ Commands list :
  - `/ffhelp` : Shows the help menu
  - `/ffattacks` : Shows the remaining attacks of the day and can ping remaining players
  - `/ffavg` : Shows the average war points of the players
+ - `/ffgethours` : Shows the hours of the daily reports and resets
  - `/ffmembers` : Shows the members of the clan
  - `/ffopponents` : Shows information about the war opponents and their Colosseum history the last 3 seasons
  - `/ffrace` : Shows the current war day status (or Colosseum)
  - `/ffresults` : Shows the points of all the war participants
  - `/ffriver` : Shows the current river race (or Colosseum)
+ - `/ffreport` : Shows the war report
+ - `/ffsethours` : Sets the hours for the daily reports and resets
+
+Scheduled war report has been added to the bot ! It will be sent every day from friday to monday at the reset hour in the clan war channel.

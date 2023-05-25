@@ -5,7 +5,7 @@ const fs = require('fs');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('ffgetresethour')
+        .setName('ffgethours')
         .setDescription('Get the hours for the reset and report !'),
     async execute(bot, api, interaction) {
         await interaction.deferReply({ ephemeral: false });

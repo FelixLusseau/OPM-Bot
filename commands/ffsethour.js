@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require('discord.js');
 const Discord = require("discord.js");
 const { EmbedBuilder } = require('discord.js');
 const fs = require('fs');
+const schedule = require('../utils/schedule.js');
 
 function isValidTimeFormat(input) {
     // Regular expression pattern to match "hh:mm" format
@@ -13,7 +14,7 @@ function isValidTimeFormat(input) {
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('ffsetresethour')
+        .setName('ffsethour')
         .setDescription('Set the hour for the reset and report !')
         .addStringOption(option =>
             option.setName('clan')
@@ -53,6 +54,10 @@ module.exports = {
             } catch (err) {
                 console.error(err);
             }
+            reportCron[APIClan.name].stop
+            reportTimes[APIClan.name] = hour;
+            schedule.schedule(bot, APIClan.name, hour, clan, process.env.DEV_GUILD_ID)
+            console.log(reportTimes)
         }
         else {
             valid = false;
@@ -61,7 +66,7 @@ module.exports = {
             resultsEmbed
                 .setColor(0x0099FF)
                 .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' /* , url: 'https://discord.js.org' */ })
-                .setDescription((valid ? "**" + hour + "** is now the reset hour for **" + APIClan.name + "** !" : "**" + hour + "** is not a valid hour !"))
+                .setDescription((valid ? "`" + hour + "` is now the reset hour for **" + APIClan.name + "** !" : "**" + hour + "** is not a valid hour !"))
                 .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')
                 .setTimestamp()
                 .setFooter({ text: 'by OPM | Féfé ⚡', iconURL: 'https://avatars.githubusercontent.com/u/94113911?s=400&v=4' });

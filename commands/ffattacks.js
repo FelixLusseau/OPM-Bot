@@ -160,7 +160,7 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
         }
         if (Players3 != "") {
             attacksEmbed.addFields({ name: '__3 attacks__ :', value: Players3 })
-            attacks += '\n__**3 attacks**__\n :' + Players3
+            attacks += '\n__**3 attacks**__ :\n' + Players3
         }
         if (Players2 != "") {
             attacksEmbed.addFields({ name: '__2 attacks__ :', value: Players2 })

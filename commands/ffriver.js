@@ -5,7 +5,7 @@ const { EmbedBuilder } = require('discord.js');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('ffriver')
-        .setDescription('Replies the current river !')
+        .setDescription('Replies the current river scores and positions !')
         .addStringOption(option =>
             option.setName('clan')
                 .setDescription('Clan to check')
@@ -24,7 +24,8 @@ module.exports = {
         let Labels = [];
         let Datas = [];
         let Race = "";
-        api.getClanCurrentRiverRace(clan)
+
+        api.getClanCurrentRiverRace(clan) // Get info about the River Race
             .then((response) => {
                 return response
             })
@@ -32,25 +33,41 @@ module.exports = {
                 console.log("CR-API error : ", err)
             })
         let RiverRace = await api.getClanCurrentRiverRace(clan)
+
+        // Chart data processing
         for (let i = 0; i < RiverRace.clans.length; i++) {
             let labels = RiverRace.clans[i].name
             Labels.push(labels);
             let data = RiverRace.clans[i].fame
             Datas.push(data);
         }
-        RiverRace.clans.sort((a, b) => (a.fame < b.fame) ? 1 : -1)
+
+        RiverRace.clans.sort((a, b) => (a.fame < b.fame) ? 1 : -1) // Sort clans by fame
         for (let i = 0; i < RiverRace.clans.length; i++) {
-            let decksRemaining = 200
-            let playersRemaining = 50
+            // If the clan has already reached 10k fame in normal days, show it as finished
             if (RiverRace.periodType != "colosseum" && RiverRace.clans[i].fame >= 10000) {
-                Race += "- __" + (RiverRace.clans[i].tag == clan ? "**" + RiverRace.clans[i].name + "**" : RiverRace.clans[i].name) + "__ : **War finished**\n<:Retro:1010557231214886933> Tag : " + RiverRace.clans[i].tag + "\n\n"
+                Race += "- __"
+                    + (RiverRace.clans[i].tag == clan ? "**" + RiverRace.clans[i].name + "**" : RiverRace.clans[i].name)
+                    + "__ : **War finished**\n<:Retro:1010557231214886933> Tag : "
+                    + RiverRace.clans[i].tag + "\n\n"
                 continue
             }
-            Race += "- __" + (RiverRace.clans[i].tag == clan ? "**" + RiverRace.clans[i].name + "**" : RiverRace.clans[i].name) + "__ :\n<:Retro:1010557231214886933> Tag : " + RiverRace.clans[i].tag + "\n<:fame:876320149878235136> Pts : **" + RiverRace.clans[i].fame + "**\n\n"
+            // Else show the current name, tag and fame
+            Race += "- __"
+                + (RiverRace.clans[i].tag == clan ? "**" + RiverRace.clans[i].name + "**" : RiverRace.clans[i].name)
+                + "__ :\n<:Retro:1010557231214886933> Tag : "
+                + RiverRace.clans[i].tag
+                + "\n<:fame:876320149878235136> Pts : **"
+                + RiverRace.clans[i].fame
+                + "**\n\n"
         }
+
+        // Define the max value of the chart depending on the periode type
         let max = 0
         if (RiverRace.periodType == "colosseum") max = 180000
         else max = 10000
+
+        // Chart creation
         const chart = {
             type: 'bar',
             data: {
@@ -101,11 +118,12 @@ module.exports = {
         };
         const encodedChart = encodeURIComponent(JSON.stringify(chart));
         const chartUrl = `https://quickchart.io/chart?c=${encodedChart}`;
+
         try {
             riverEmbed
                 .setColor(0x0099FF)
                 .setTitle((RiverRace.periodType == "colosseum") ? "__Colosseum__ :" : "__Current river race__ :")
-                .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' /* , url: 'https://discord.js.org' */ })
+                .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' })
                 .setDescription(Race)
                 .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')
                 .setImage(chartUrl)

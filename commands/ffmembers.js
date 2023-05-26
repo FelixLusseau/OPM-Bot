@@ -21,9 +21,8 @@ module.exports = {
         await interaction.deferReply({ ephemeral: false });
         const clan = interaction.options.getString('clan');
         const membersEmbed = new EmbedBuilder();
-        api.getClanMembers(clan)
+        api.getClanMembers(clan) // Get the clans' members from the Supercell API
             .then((response) => {
-                //console.log(response)
                 return response
             })
             .catch((err) => {
@@ -31,17 +30,16 @@ module.exports = {
             })
         let response = await api.getClanMembers(clan)
         let Members = "";
-        //console.log(response.length)
         Members += "**" + response.length + " members**\n\n"
+        // Make the string with the members' names, tags, roles, levels and trophies
         for (let i = 0; i < response.length; i++) {
-            Members += "- **" + response[i].name + "** \n(" + response[i].tag + ", " + response[i].role + ", " + response[i].expLevel + " lvl, " + response[i].trophies + " tr)" + "\n\n"
+            Members += "- **" + response[i].name + "** \n(" + response[i].tag + ", " + response[i].role + ", lvl" + response[i].expLevel + ", " + response[i].trophies + " tr)" + "\n\n"
         }
-        //console.log(Members)
         try {
             membersEmbed
                 .setColor(0x0099FF)
                 .setTitle('__Current clan members__ :')
-                .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' /* , url: 'https://discord.js.org' */ })
+                .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' })
                 .setDescription(Members)
                 .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')
                 .setTimestamp()

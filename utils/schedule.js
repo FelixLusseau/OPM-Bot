@@ -2,7 +2,6 @@ const cron = require('node-cron');
 const reports = require('./reports.js');
 
 function schedule(bot, key, value, tag, guildID) {
-    // console.log('schedule')
     let chanID = 0
     switch (key) {
         case 'one punch man':
@@ -23,8 +22,11 @@ function schedule(bot, key, value, tag, guildID) {
         default:
             break;
     }
-    // chanID = process.env.DEV_CHANNEL_ID
-    // console.log(chanID)
+    // Uncomment these lines to test the report in the dev channel
+    // guildID = process.env.DEV_GUILD_ID
+    // chanID = process.env.DEV_CHANNEL_ID 
+
+    // Schedule the reports and save them in the global reportCron dictionary
     reportCron[key] = cron.schedule(value.substring(3, 5) + ' ' + value.substring(0, 2) + ' * * 5-7,1', () => {
         const channel = bot.channels.cache.get(chanID);
         reports.report(bot, api, null, null, guildID, channel, tag)

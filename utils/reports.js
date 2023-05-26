@@ -3,9 +3,10 @@ const ffresults = require('../commands/ffresults');
 const { EmbedBuilder } = require('discord.js');
 
 async function report(bot, api, interaction, pingBool, guildId, channel, clan) {
-    // console.log('ccreport')
+    // Get the attacks and results from the ffattacks and ffresults functions
     const attacks = await ffattacks.ffattacks(bot, api, interaction, pingBool, guildId, channel, clan)
-    const results = await ffresults.ffresults(bot, api, interaction, guildId, channel, clan)
+    const results = await ffresults.ffresults(bot, api, interaction, guildId, clan)
+
     const reportEmbed = new EmbedBuilder();
     reportEmbed
         .setColor(0x0099FF)
@@ -22,7 +23,6 @@ async function report(bot, api, interaction, pingBool, guildId, channel, clan) {
         .setTimestamp()
         .setFooter({ text: 'by OPM | Féfé ⚡', iconURL: 'https://avatars.githubusercontent.com/u/94113911?s=400&v=4' });
     channel.send({ embeds: [reportEmbed] });
-    // console.log(clan)
 }
 
 module.exports = {

@@ -11,6 +11,7 @@ bot.commands = new Collection();
 // Initialize the CR api
 global.api = new ClashRoyaleAPI(process.env.CR_TOKEN)
 
+// Connect the bot to Discord
 bot.login(process.env.BOT_TOKEN);
 
 const commandsPath = path.join(__dirname, 'commands');
@@ -18,6 +19,7 @@ const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('
 const eventsPath = path.join(__dirname, 'events');
 const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
 
+// Load the commands
 for (const file of commandFiles) {
   const filePath = path.join(commandsPath, file);
   const command = require(filePath);
@@ -29,6 +31,7 @@ for (const file of commandFiles) {
   }
 }
 
+// Load the events
 for (const file of eventFiles) {
   const filePath = path.join(eventsPath, file);
   const event = require(filePath);

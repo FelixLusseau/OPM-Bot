@@ -27,7 +27,7 @@ module.exports = {
             });
         });
         // console.log(reportTimes)
-        const guildID = process.env.DEV_GUILD_ID;
+        const guildID = process.env.OPM_GUILD_ID;
         global.reportCron = {}
         for (const [key, value] of Object.entries(reportTimes)) {
             // console.log(key, value);

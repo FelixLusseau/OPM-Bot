@@ -56,7 +56,7 @@ module.exports = {
             }
             reportCron[APIClan.name].stop
             reportTimes[APIClan.name] = hour;
-            schedule.schedule(bot, APIClan.name, hour, clan, process.env.DEV_GUILD_ID)
+            schedule.schedule(bot, APIClan.name, hour, clan, process.env.OPM_GUILD_ID)
             // console.log(reportTimes)
         }
         else {

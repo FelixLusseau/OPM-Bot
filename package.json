@@ -1,6 +1,6 @@
 {
   "name": "CR-Ping",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "",
   "main": "OPM-Bot.js",
   "scripts": {
@@ -13,6 +13,7 @@
     "chart": "^0.1.2",
     "discord.js": "^14.6.0",
     "dotenv": "^16.0.3",
+    "exceljs": "^4.3.0",
     "fs": "^0.0.1-security",
     "node-cron": "^3.0.2",
     "node-fetch": "^2.6.9"

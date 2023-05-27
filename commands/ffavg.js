@@ -19,7 +19,7 @@ module.exports = {
                 .setRequired(true))
         .addIntegerOption(option =>
             option.setName('limit')
-                .setDescription('Max weeks to check')),
+                .setDescription('Max weeks to check (from 1 to 10)')),
 
     async execute(bot, api, interaction) {
         await interaction.deferReply({ ephemeral: false });
@@ -29,18 +29,18 @@ module.exports = {
         let avg = await functions.fetchHist(clan.substring(1)); // Get the clans' score history
         let avgArray = {};
         let seasonId = avg.items[0].seasonId;
-        if (avg.items[0].sectionIndex < 3)
-            seasonId = avg.items[0].seasonId - 1;
+        // if (avg.items[0].sectionIndex < 3)
+        //     seasonId = avg.items[0].seasonId - 1;
         // Initialize the dictionary with the last week
         for (let h = 0; h < avg.items[0].standings.length; h++) {
-            if (!limit)
-                break;
+            // if (!limit)
+            //     break;
             if (avg.items[0].standings[h].clan.tag == clan) {
                 for (let p = 0; p < avg.items[0].standings[h].clan.participants.length; p++) {
                     let participant = avg.items[0].standings[h].clan.participants[p];
                     avgArray[participant.name] = {};
                     avgArray[participant.name]['fame'] = participant.fame;
-                    avgArray[participant.name]['string'] = participant.fame.toString() + " ";
+                    avgArray[participant.name]['array'] = [participant.fame, null, null, null, null, null, null, null, null, null];
                     avgArray[participant.name]['count'] = 1;
                 }
             }
@@ -62,12 +62,13 @@ module.exports = {
                         }
                         if (avgArray[participant.name]['fame'] > 0) {
                             avgArray[participant.name]['fame'] += participant.fame;
-                            avgArray[participant.name]['string'] += participant.fame.toString() + " ";
+                            avgArray[participant.name]['array'][p] = participant.fame;
                             avgArray[participant.name]['count'] += 1;
                         }
                         else {
                             avgArray[participant.name]['fame'] = participant.fame;
-                            avgArray[participant.name]['string'] = participant.fame.toString() + " ";
+                            avgArray[participant.name]['array'] = [null, null, null, null, null, null, null, null, null, null];
+                            avgArray[participant.name]['array'][p] = participant.fame;
                             avgArray[participant.name]['count'] = 1;
                         }
                     }
@@ -85,20 +86,22 @@ module.exports = {
         let counter = 0;
         // Make the message
         for (const [key, value] of Object.entries(sortedAvgObject)) {
-            if (value['fame'] > 0 && ((value['count'] > 2 && !limit) || limit)) {
-                counter++;
-                Averages += `- __${key}__ :\n`
-                    + `    Avg : **${(value['fame'] / value['count']).toFixed(0)}**\n`
-                    + `    Scores : ${value['string']}\n`
-                    + `    Count = ${value['count']}`
-                    + `\n\n`;
-            }
-            if (counter > 10) { // Cut the message if it's too long
-                interaction.channel.send(Averages);
-                Averages = "";
-                counter = 0;
-            }
+            // if (value['fame'] > 0 && ((value['count'] > 2 && !limit) || limit)) {
+            //     counter++;
+            //     Averages += `- __${key}__ :\n`
+            //         + `    Avg : **${(value['fame'] / value['count']).toFixed(0)}**\n`
+            //         + `    Scores : ${value['string']}\n`
+            //         + `    Count = ${value['count']}`
+            //         + `\n\n`;
+            // }
+            avgArray[key]['fame'] = value['fame'] / value['count'];
+            // if (counter > 10) { // Cut the message if it's too long
+            //     //interaction.channel.send(Averages);
+            //     Averages = "";
+            //     counter = 0;
+            // }
         }
+        functions.excel(sortedAvgObject)
         interaction.editReply('__**Players\' averages**__ :');
     },
 };

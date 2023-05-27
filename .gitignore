@@ -4,3 +4,4 @@ draft.js
 *.log
 package-lock.json
 reset-hours/
+*.xlsx

@@ -1,22 +1,20 @@
 const { SlashCommandBuilder } = require('discord.js');
-const Discord = require("discord.js");
 const { EmbedBuilder } = require('discord.js');
 
-async function ffresults(bot, api, interaction, guildId, channel, clan) {
+async function ffresults(bot, api, interaction, guildId, clan) {
+    // Check if the command was run by an interaction or a scheduled message
     if (interaction != null) {
         await interaction.deferReply({ ephemeral: false });
         clan = interaction.options.getString('clan');
         guildId = interaction.guildId;
     }
     const guild = bot.guilds.cache.find((g) => g.id === guildId);
-
     if (!guild)
         return console.log(`Can't find any guild with the ID "${guildId}"`);
 
-    //console.log(guild.members)
     const resultsEmbed = new EmbedBuilder();
     let Players = "";
-    api.getClanCurrentRiverRace(clan)
+    api.getClanCurrentRiverRace(clan) // Get info about the River Race
         .then((response) => {
             return response
         })
@@ -24,9 +22,12 @@ async function ffresults(bot, api, interaction, guildId, channel, clan) {
             console.log("CR-API error : ", err)
         })
     let RiverRace = await api.getClanCurrentRiverRace(clan)
+
+    // Sort the players by fame
     RiverRace.clan.participants.sort((a, b) => (a.fame < b.fame) ? 1 : -1)
     for (let j = 0; j < RiverRace.clan.participants.length; j++) {
         if (RiverRace.clan.participants[j].decksUsed > 0 && RiverRace.clan.participants[j].fame > 0)
+            // Make a list of the players who have attacked and their fame
             Players += "- " + RiverRace.clan.participants[j].name + " : **" + RiverRace.clan.participants[j].fame + " pts**\n"
     }
     try {
@@ -35,7 +36,7 @@ async function ffresults(bot, api, interaction, guildId, channel, clan) {
                 .setColor(0x0099FF)
                 .setTitle('__Players\' war results__ :')
                 .setDescription((Players.length > 0) ? Players : "No players have attacked yet !")
-                .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' /* , url: 'https://discord.js.org' */ })
+                .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' })
                 .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')
                 .setTimestamp()
                 .setFooter({ text: 'by OPM | Féfé ⚡', iconURL: 'https://avatars.githubusercontent.com/u/94113911?s=400&v=4' });
@@ -45,10 +46,7 @@ async function ffresults(bot, api, interaction, guildId, channel, clan) {
     }
 
     if (interaction != null) { interaction.editReply({ embeds: [resultsEmbed] }); }
-    // else {
-    //     channel.send({ embeds: [resultsEmbed] });
-    // }
-    return Players
+    return Players // Return the list of players and their fame for the report
 }
 
 module.exports = {
@@ -68,6 +66,6 @@ module.exports = {
                 )
                 .setRequired(true)),
     async execute(bot, api, interaction) {
-        ffresults(bot, api, interaction, null, null, null)
+        ffresults(bot, api, interaction, null, null)
     },
 };

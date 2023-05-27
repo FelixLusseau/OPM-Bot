@@ -1,5 +1,4 @@
 const { SlashCommandBuilder } = require('discord.js');
-const Discord = require("discord.js");
 const { EmbedBuilder } = require('discord.js');
 const fs = require('fs');
 const schedule = require('../utils/schedule.js');
@@ -38,7 +37,7 @@ module.exports = {
         const hour = interaction.options.getString('hour');
         const resultsEmbed = new EmbedBuilder();
         let valid = false;
-        api.getClanByTag(clan)
+        api.getClanByTag(clan) // Get the clan info from the Supercell API
             .then((clan) => {
                 return clan
             })
@@ -47,25 +46,27 @@ module.exports = {
             })
         let APIClan = await api.getClanByTag(clan)
 
+        // Check if the hour given is valid
         if (isValidTimeFormat(hour)) {
             valid = true;
             try {
-                fs.writeFileSync('./reset-hours/' + APIClan.name, hour);
+                fs.writeFileSync('./reset-hours/' + APIClan.name, hour); // Write the hour in the file
             } catch (err) {
                 console.error(err);
             }
+            // Stop the previous cron job and start a new one with the new hour + save the new hour in the reportTimes dictionary
             reportCron[APIClan.name].stop
             reportTimes[APIClan.name] = hour;
             schedule.schedule(bot, APIClan.name, hour, clan, process.env.OPM_GUILD_ID)
-            // console.log(reportTimes)
         }
         else {
             valid = false;
         }
+
         try {
             resultsEmbed
                 .setColor(0x0099FF)
-                .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' /* , url: 'https://discord.js.org' */ })
+                .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' })
                 .setDescription((valid ? "`" + hour + "` is now the reset hour for **" + APIClan.name + "** !" : "**" + hour + "** is not a valid hour !"))
                 .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')
                 .setTimestamp()

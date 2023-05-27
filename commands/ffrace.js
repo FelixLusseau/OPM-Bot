@@ -1,5 +1,4 @@
 const { SlashCommandBuilder } = require('discord.js');
-const Discord = require("discord.js");
 const { EmbedBuilder } = require('discord.js');
 const functions = require('../utils/functions.js');
 
@@ -25,18 +24,19 @@ module.exports = {
         let Labels = [];
         let Datas = [];
         let Race = "";
-        api.getClanCurrentRiverRace(clan)
+        api.getClanCurrentRiverRace(clan) // Get info about the River Race
             .then((response) => {
-                //console.log(response.clans.periodLogs)
                 return response
             })
             .catch((err) => {
                 console.log("CR-API error : ", err)
             })
         let RiverRace = await api.getClanCurrentRiverRace(clan)
+
         let clans = RiverRace.clans
+        // Chart data processing
         for (let i = 0; i < clans.length; i++) {
-            if (RiverRace.periodType != "colosseum" && clans[i].fame >= 10000) {
+            if (RiverRace.periodType != "colosseum" && clans[i].fame >= 10000) { // If the clan has already reached 10k fame in normal days, skip it
                 continue
             }
             let labels = clans[i].name
@@ -47,8 +47,6 @@ module.exports = {
             else
                 data = clans[i].periodPoints
             Datas.push(data);
-            //console.log(clans[i].name)
-            //console.log(clans[i].periodPoints)
 
             /* api.getClanByTag(clans[i].tag)
             .then((clan) => {
@@ -59,13 +57,6 @@ module.exports = {
                 console.log("CR-API error : ", err)
             })
             let clan = await api.getClanByTag(clans[i].tag) */
-            //console.log(clan)
-            // console.log(clan.name)
-            // console.log(clan.tag)
-            // console.log(clan.badgeId)
-            // console.log(clan.members)
-            // console.log(clan.clanWarTrophies)
-            // console.log(clan.location.name)
 
             /* for (let i = 0; i < badgesData.length; i++) {
                 //console.log(badgesData[i].id)
@@ -74,54 +65,50 @@ module.exports = {
                     break
                 }
             } */
-            //console.log(RiverRace)
-            //console.log(clans[i])
-            //console.log(clans[i].participants.length)
         }
+        // Sort clans by fame or points depending on the period type
         if (RiverRace.periodType == "colosseum")
             clans.sort((a, b) => (a.fame < b.fame) ? 1 : -1)
         else
             clans.sort((a, b) => (a.periodPoints < b.periodPoints) ? 1 : -1)
-        //console.log(sortedClans)
+
         for (let i = 0; i < clans.length; i++) {
             let decksRemaining = 200
             let playersRemaining = 50
             for (let j = 0; i < clans[i].participants.length; j++) {
-                //console.log(clans[i].participants[j])
                 if (clans[i].participants[j] == undefined) // strange bug to correct
                     break
                 decksRemaining -= clans[i].participants[j].decksUsedToday
                 if (clans[i].participants[j].decksUsedToday != 0)
                     playersRemaining -= 1
             }
-            //console.log(playersRemaining)
-            //console.log(decksRemaining)
             let points = 0
             if (RiverRace.periodType == "colosseum")
                 points = clans[i].fame
             else
                 points = clans[i].periodPoints
             let ratio = 0
-            ratio = functions.ratio(RiverRace, decksRemaining, i)
+            ratio = functions.ratio(RiverRace, decksRemaining, i) // Calculate the ratio of the clan
             if (RiverRace.periodType != "colosseum" && clans[i].fame >= 10000) {
                 Race += "- __" + (clans[i].tag == clan ? "**" + clans[i].name + "**" : clans[i].name) + "__ : War finished \n\n"
                 continue
             }
-            Race += "- __" + (clans[i].tag == clan ? "**" + clans[i].name + "**" : clans[i].name)
+            // Make the string with the clan name, tag, points, ratio, decks remaining and players remaining
+            Race += "- __" + (clans[i].tag == clan ? "**" + clans[i].name + "**" : clans[i].name) // Bold the clan name if it's the clan the user asked for
                 + "__ :\n<:Retro:1010557231214886933> Tag : " + clans[i].tag
                 + "\n<:fame:876320149878235136> Pts : " + points
                 + "\n<:fameAvg:946276069634375801> Ratio : **" + ratio
                 + "**\n<:decksRemaining:946275903812546620> Decks : " + decksRemaining
                 + "\n<:remainingSlots:951032915221950494> Players : " + playersRemaining + "\n\n"
         }
-        // console.log(RiverRace.clan)
-        // console.log(Labels)
-        // console.log(Datas)
         let max = 0
+        // Set the max value of the chart depending on the period type
         if (RiverRace.periodType == "colosseum")
             max = 180000
         else
             max = 45000
+
+        // Chart construction
         const chart = {
             type: 'horizontalBar',
             data: {
@@ -172,12 +159,11 @@ module.exports = {
         };
         const encodedChart = encodeURIComponent(JSON.stringify(chart));
         const chartUrl = `https://quickchart.io/chart?c=${encodedChart}`;
-        //console.log(chart)
         try {
             raceEmbed
                 .setColor(0x0099FF)
                 .setTitle("__Current war day " + ((RiverRace.periodType == "colosseum") ? "(Colosseum)__ " : "__ ") + ":")
-                .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' /* , url: 'https://discord.js.org' */ })
+                .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' })
                 .setDescription(Race)
                 .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')
                 .setImage(chartUrl)

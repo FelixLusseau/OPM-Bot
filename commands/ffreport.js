@@ -1,5 +1,4 @@
 const { SlashCommandBuilder } = require('discord.js');
-const Discord = require("discord.js");
 const reports = require('../utils/reports.js');
 
 module.exports = {
@@ -20,8 +19,8 @@ module.exports = {
     async execute(bot, api, interaction) {
         await interaction.reply({ ephemeral: false, content: "War Report" });
         const clan = interaction.options.getString('clan');
-        const channel = interaction.channel;
-        const guild = interaction.guildId;
+        const channel = interaction.channel; // Get the channel where the command was executed from the interaction
+        const guild = interaction.guildId; // Get the guild where the command was executed from the interaction
         reports.report(bot, api, null, false, guild, channel, clan)
     },
 };

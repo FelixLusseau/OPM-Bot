@@ -1,11 +1,9 @@
 const { SlashCommandBuilder } = require('discord.js');
-const Discord = require("discord.js");
 const { EmbedBuilder } = require('discord.js');
 const functions = require('../utils/functions.js');
 
 async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan) {
-    // console.log(interaction)
-    // console.log(pingBool)
+    // Check if the command was run by an interaction or a scheduled message
     if (interaction != null) {
         await interaction.deferReply({ ephemeral: false });
         pingBool = interaction.options.getBoolean('ping');
@@ -13,18 +11,17 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
         guildId = interaction.guildId;
     }
     const guild = bot.guilds.cache.find((g) => g.id === guildId);
-
     if (!guild)
         return console.log(`Can't find any guild with the ID "${guildId}"`);
 
-    //console.log(guild.members)
     const attacksEmbed = new EmbedBuilder();
     let Players4 = "";
     let Players3 = "";
     let Players2 = "";
     let Players1 = "";
     let ping = "";
-    api.getClanCurrentRiverRace(clan)
+
+    api.getClanCurrentRiverRace(clan) // Retrieve the clan's information from the Supercell API
         .then((response) => {
             return response
         })
@@ -33,37 +30,34 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
         })
     let RiverRace = await api.getClanCurrentRiverRace(clan)
     let points = 0
-    if (RiverRace.periodType == "colosseum") { points = RiverRace.clan.fame.toString() }
+    if (RiverRace.periodType == "colosseum") { points = RiverRace.clan.fame.toString() } // Check if the war is the colosseum or not
     else { points = RiverRace.clan.periodPoints.toString() }
     let decksRemaining = 200
-    for (let i = 0; i < RiverRace.clan.participants.length; i++) {
+    for (let i = 0; i < RiverRace.clan.participants.length; i++) { // Calculate the number of decks remaining
         decksRemaining -= RiverRace.clan.participants[i].decksUsedToday
     }
-    //console.log(decksRemaining)
     let ratio = 0
-    ratio = functions.ratio(RiverRace, decksRemaining, -1)
+    ratio = functions.ratio(RiverRace, decksRemaining, -1) // Calculate the ratio
     let remainingPlayers = 50
-    api.getClanMembers(clan)
+    api.getClanMembers(clan) // Retrieve the clan's members from the Supercell API
         .then((members) => {
-            //console.log(members)
             return members
         })
         .catch((err) => {
             console.log("CR-API error : ", err)
         })
     let members = await api.getClanMembers(clan)
+
     for (let j = 0; j < RiverRace.clan.participants.length; j++) {
-        //console.log(RiverRace.clan.participants[j])
         let inclan = false
         for (let i = 0; i < members.length; i++) {
+            // If the player is in the clan and has used all his decks
             if (RiverRace.clan.participants[j].name == members[i].name && RiverRace.clan.participants[j].decksUsedToday == 4) {
                 remainingPlayers--
                 inclan = true
             }
-            //console.log(RiverRace.clan.participants.length)
+            // If the player is in the clan and has not used all his decks
             if (RiverRace.clan.participants[j].name == members[i].name && RiverRace.clan.participants[j].decksUsedToday != 4) {
-                //console.log(members[i].name)
-                //console.log(RiverRace.clan.participants[j].decksUsedToday)
                 let decksRemainingToday = 4 - RiverRace.clan.participants[j].decksUsedToday
                 switch (decksRemainingToday) {
                     case 4:
@@ -83,17 +77,14 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
                         break;
                 }
                 inclan = true
+                // If the ping option is enabled, find the Discord users with the same name as the players
                 if (pingBool) {
                     guild.members
                         .fetch()
                         .then((memberss) => {
-                            //console.log(members)
-                            //console.log(members[i].name)
                             memberss.forEach((member) => {
-                                //console.log(member.nickname)
                                 members[i].name = members[i].name.replace('\ufe0f', "")
                                 if (member.user.username == members[i].name || member.nickname == members[i].name) {
-                                    //console.log(member.user.username)
                                     ping += "<@" + member.user.id + "> "
                                 }
                             }
@@ -103,11 +94,11 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
                 break
             }
         }
+        // If the player is not in the clan and has used all his decks
         if (!inclan && RiverRace.clan.participants[j].decksUsedToday == 4) {
             remainingPlayers--
-            // console.log(RiverRace.clan.participants[j].name)
-            // console.log(inclan)
         }
+        // If the player is not in the clan and has used some of his decks
         if (!inclan && RiverRace.clan.participants[j].decksUsedToday != 0 && RiverRace.clan.participants[j].decksUsedToday != 4) {
             let decksRemainingToday = 4 - RiverRace.clan.participants[j].decksUsedToday
             switch (decksRemainingToday) {
@@ -122,17 +113,14 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
                     break;
             }
             remainingPlayers--
+            // If the ping option is enabled, find the Discord users with the same name as the players
             if (pingBool) {
                 guild.members
                     .fetch()
                     .then((memberss) => {
-                        //console.log(members)
-                        //console.log(members[i].name)
                         memberss.forEach((member) => {
-                            //console.log(member.nickname)
                             RiverRace.clan.participants[j].name = RiverRace.clan.participants[j].name.replace('\ufe0f', "")
                             if (member.user.username == RiverRace.clan.participants[j].name || member.nickname == RiverRace.clan.participants[j].name) {
-                                //console.log(member.user.username)
                                 ping += "<@" + member.user.id + "> "
                             }
                         }
@@ -141,15 +129,24 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
             }
         }
     }
-    //console.log(Players)
-    let attacks = ""
-    if (Players4 != "" || Players3 != "" || Players2 != "" || Players1 != "") {
-        //let RoyaleAPI = "\n" + "https://royaleapi.com/clan/YRLJGL9" + "\n"
-        attacks = '<:fame:876320149878235136> **Points** : ' + points + "\n" + '<:fameAvg:946276069634375801> **Ratio** : ' + ratio + "\n" + '<:remainingSlots:951032915221950494> **Players** : ' + remainingPlayers.toString() + "\n" + '<:decksRemaining:946275903812546620> **Attacks** : ' + decksRemaining + '\n'
+    let attacks = "" // String for the report
+    if (Players4 != "" || Players3 != "" || Players2 != "" || Players1 != "") { // Check it the strings are not empty
+        attacks = '<:fame:876320149878235136> **Points** : '
+            + points
+            + "\n"
+            + '<:fameAvg:946276069634375801> **Ratio** : '
+            + ratio
+            + "\n"
+            + '<:remainingSlots:951032915221950494> **Players** : '
+            + remainingPlayers.toString()
+            + "\n"
+            + '<:decksRemaining:946275903812546620> **Attacks** : '
+            + decksRemaining
+            + '\n'
         attacksEmbed
             .setColor(0x0099FF)
             .setTitle("__Remaining attacks " + ((RiverRace.periodType == "colosseum") ? "(Colosseum)__ " : "__ ") + ":")
-            .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' /* , url: 'https://discord.js.org' */ })
+            .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' })
             .setDescription(attacks)
             .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')
             .setTimestamp()
@@ -172,6 +169,7 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
         }
 
     }
+    // If the interaction is not null, edit the reply deferred before
     if (interaction != null) {
         interaction.editReply({ embeds: [attacksEmbed] });
         if (pingBool) {
@@ -180,14 +178,7 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
                 interaction.channel.send(ping);
         }
     }
-    // else {
-    //     channel.send({ embeds: [attacksEmbed] });
-    //     await guild.members.fetch();
-    //     if (ping != "") {
-    //         channel.send(ping);
-    //     }
-    // }
-    return attacks
+    return attacks // Return the string for the report
 };
 
 module.exports = {

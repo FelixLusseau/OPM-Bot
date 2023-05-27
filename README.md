@@ -11,7 +11,8 @@
 [![Maintenance](https://img.shields.io/badge/maintained%3F-yes-green.svg)](https://GitHub.com/FelixLusseau/OPM-Bot/graphs/commit-activity)
 
 <br>
-A Discord bot to manage the Clash Royale clans and clan wars of the One Punch Man Family.
+
+### A Discord bot to manage the Clash Royale clans and clan wars of the One Punch Man Family.
 
 <br>
 
@@ -31,3 +32,5 @@ Commands list :
  - `/ffsethours` : Sets the hours for the daily reports and resets
 
 Scheduled war report has been added to the bot ! It will be sent every day from friday to monday at the reset hour in the clan war channel.
+
+Responds a link to the RoyaleAPI player profile when a player tag is sent in the chat where the bot is present.

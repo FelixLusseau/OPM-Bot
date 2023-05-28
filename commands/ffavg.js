@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { EmbedBuilder, AttachmentBuilder } = require('discord.js');
 const functions = require('../utils/functions.js');
+const fs = require('fs');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -90,6 +91,12 @@ module.exports = {
         }
         await functions.excel(sortedAvgObject)
         const excel = new AttachmentBuilder('averages.xlsx');
-        interaction.editReply({ content: '__**Players\' averages**__ :', files: [excel] });
+        await interaction.editReply({ content: '__**Players\' averages**__ :', files: [excel] });
+        try {
+            fs.unlinkSync('./averages.xlsx')
+            // File removed
+        } catch (err) {
+            console.error(err)
+        }
     },
 };

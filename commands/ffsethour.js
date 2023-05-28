@@ -55,7 +55,7 @@ module.exports = {
                 console.error(err);
             }
             // Stop the previous cron job and start a new one with the new hour + save the new hour in the reportTimes dictionary
-            reportCron[APIClan.name].stop
+            reportCron[APIClan.name].stop();
             reportTimes[APIClan.name] = hour;
             schedule.schedule(bot, APIClan.name, hour, clan, process.env.OPM_GUILD_ID)
         }

@@ -158,7 +158,7 @@ async function excel(scores) {
         }
     });
 
-    const exportPath = path.resolve(__dirname, 'averages.xlsx');
+    const exportPath = path.resolve(__dirname, '../averages.xlsx');
 
     await workbook.xlsx.writeFile(exportPath)
         .then(() => {

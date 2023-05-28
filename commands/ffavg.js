@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
-const { EmbedBuilder } = require('discord.js');
+const { EmbedBuilder, AttachmentBuilder } = require('discord.js');
 const functions = require('../utils/functions.js');
 
 module.exports = {
@@ -84,24 +84,12 @@ module.exports = {
 
         let Averages = "";
         let counter = 0;
-        // Make the message
+        // Make the data for the Excel file
         for (const [key, value] of Object.entries(sortedAvgObject)) {
-            // if (value['fame'] > 0 && ((value['count'] > 2 && !limit) || limit)) {
-            //     counter++;
-            //     Averages += `- __${key}__ :\n`
-            //         + `    Avg : **${(value['fame'] / value['count']).toFixed(0)}**\n`
-            //         + `    Scores : ${value['string']}\n`
-            //         + `    Count = ${value['count']}`
-            //         + `\n\n`;
-            // }
             avgArray[key]['fame'] = value['fame'] / value['count'];
-            // if (counter > 10) { // Cut the message if it's too long
-            //     //interaction.channel.send(Averages);
-            //     Averages = "";
-            //     counter = 0;
-            // }
         }
-        functions.excel(sortedAvgObject)
-        interaction.editReply('__**Players\' averages**__ :');
+        await functions.excel(sortedAvgObject)
+        const excel = new AttachmentBuilder('averages.xlsx');
+        interaction.editReply({ content: '__**Players\' averages**__ :', files: [excel] });
     },
 };

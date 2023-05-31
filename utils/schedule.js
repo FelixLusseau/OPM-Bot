@@ -31,7 +31,7 @@ function schedule(bot, key, value, tag, guildID) {
         const channel = bot.channels.cache.get(chanID);
         reports.report(bot, api, null, null, guildID, channel, tag)
     });
-	console.log('Scheduled ' + key + ' for ' + value.substring(3, 5) + ' ' + value.substring(0, 2) + ' * * 5,6,7,1')
+    // console.log('Scheduled ' + key + ' for ' + value.substring(3, 5) + ' ' + value.substring(0, 2) + ' * * 5,6,7,1')
 }
 
 module.exports = {

@@ -50,15 +50,16 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
 
     for (let j = 0; j < RiverRace.clan.participants.length; j++) {
         let inclan = false
+        const player = RiverRace.clan.participants[j]
         for (let i = 0; i < members.length; i++) {
             // If the player is in the clan and has used all his decks
-            if (RiverRace.clan.participants[j].name == members[i].name && RiverRace.clan.participants[j].decksUsedToday == 4) {
+            if (player.name == members[i].name && player.decksUsedToday == 4) {
                 remainingPlayers--
                 inclan = true
             }
             // If the player is in the clan and has not used all his decks
-            if (RiverRace.clan.participants[j].name == members[i].name && RiverRace.clan.participants[j].decksUsedToday != 4) {
-                let decksRemainingToday = 4 - RiverRace.clan.participants[j].decksUsedToday
+            if (player.name == members[i].name && player.decksUsedToday != 4) {
+                let decksRemainingToday = 4 - player.decksUsedToday
                 switch (decksRemainingToday) {
                     case 4:
                         Players4 += members[i].name + "\n";
@@ -83,7 +84,7 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
                         .fetch()
                         .then((memberss) => {
                             memberss.forEach((member) => {
-                                members[i].name = members[i].name.replace('\ufe0f', "")
+                                members[i].name = members[i].name.replace('\ufe0f', "").replace(/<[^>]+>/g, '')
                                 if (member.user.username == members[i].name || member.nickname == members[i].name) {
                                     ping += "<@" + member.user.id + "> "
                                 }
@@ -95,21 +96,21 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
             }
         }
         // If the player is not in the clan and has used all his decks
-        if (!inclan && RiverRace.clan.participants[j].decksUsedToday == 4) {
+        if (!inclan && player.decksUsedToday == 4) {
             remainingPlayers--
         }
         // If the player is not in the clan and has used some of his decks
-        if (!inclan && RiverRace.clan.participants[j].decksUsedToday != 0 && RiverRace.clan.participants[j].decksUsedToday != 4) {
-            let decksRemainingToday = 4 - RiverRace.clan.participants[j].decksUsedToday
+        if (!inclan && player.decksUsedToday != 0 && player.decksUsedToday != 4) {
+            let decksRemainingToday = 4 - player.decksUsedToday
             switch (decksRemainingToday) {
                 case 3:
-                    Players3 += RiverRace.clan.participants[j].name + " **(out of the clan !!)**\n";
+                    Players3 += player.name + " **(out of the clan !!)**\n";
                     break;
                 case 2:
-                    Players2 += RiverRace.clan.participants[j].name + " **(out of the clan !!)**\n";
+                    Players2 += player.name + " **(out of the clan !!)**\n";
                     break;
                 case 1:
-                    Players1 += RiverRace.clan.participants[j].name + " **(out of the clan !!)**\n";
+                    Players1 += player.name + " **(out of the clan !!)**\n";
                     break;
             }
             remainingPlayers--
@@ -119,8 +120,8 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
                     .fetch()
                     .then((memberss) => {
                         memberss.forEach((member) => {
-                            RiverRace.clan.participants[j].name = RiverRace.clan.participants[j].name.replace('\ufe0f', "")
-                            if (member.user.username == RiverRace.clan.participants[j].name || member.nickname == RiverRace.clan.participants[j].name) {
+                            player.name = player.name.replace('\ufe0f', "").replace(/<[^>]+>/g, '')
+                            if (member.user.username == player.name || member.nickname == player.name) {
                                 ping += "<@" + member.user.id + "> "
                             }
                         }

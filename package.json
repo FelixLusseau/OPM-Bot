@@ -16,6 +16,7 @@
     "exceljs": "^4.3.0",
     "fs": "^0.0.1-security",
     "node-cron": "^3.0.2",
-    "node-fetch": "^2.6.9"
+    "node-fetch": "^2.6.9",
+    "sqlite3": "^5.1.6"
   }
 }

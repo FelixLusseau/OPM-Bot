@@ -17,25 +17,36 @@ module.exports = {
             }
         });
 
-        const queryPromise = new Promise((resolve, reject) => {
-            let OPM = "";
-            db.each(`SELECT * FROM Rotates WHERE Destination = "NF"`, (err, row) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    console.log(row.Player + "\t" + row.Datetime + " from " + row.Origin);
-                    OPM += row.Player + "\t" + row.Datetime + " from " + row.Origin + "\n";
-                }
-            }, (err, count) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(OPM);
-                }
-            });
-        });
+        const clans = ["OPM", "NF", "TDS", "100pct", "TPM"];
+        const clanResults = {};
 
-        const OPM = await queryPromise;
+        try {
+            for (const clan of clans) {
+                // console.log(clan);
+                clanResults[clan] = ""; // Initialize result for the current clan
+
+                await new Promise((resolve, reject) => {
+                    db.each(`SELECT * FROM Rotates WHERE Destination = "${clan}"`, (err, row) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            // console.log(row.Player + "\t" + row.Datetime + " from " + row.Origin);
+                            clanResults[clan] += "- " + row.Player + "\t" + row.Datetime + " from " + row.Origin + "\n";
+                        }
+                    }, (err, count) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve();
+                        }
+                    });
+                });
+            }
+        } catch (e) {
+            console.log(e);
+        }
+
+        // console.log(clanResults); // Access the results object outside the loop
 
         // Close the database
         db.close((err) => {
@@ -43,12 +54,19 @@ module.exports = {
                 console.error(err.message);
             }
         });
+
+        let result = "";
+        for (const clan of clans) {
+            if (clanResults[clan] != "")
+                result += "__" + clan + "__ :\n" + clanResults[clan] + "\n";
+        }
+
         try {
             rotatesEmbed
                 .setColor(0x0099FF)
                 .setTitle('__Rotates__ :')
                 .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' })
-                .setDescription(OPM)
+                .setDescription(result)
                 .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')
                 .setTimestamp()
                 .setFooter({ text: 'by OPM | Féfé ⚡', iconURL: 'https://avatars.githubusercontent.com/u/94113911?s=400&v=4' });

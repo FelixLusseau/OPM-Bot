@@ -4,7 +4,7 @@ const sqlite3 = require('sqlite3').verbose();
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('ffsetrotates')
+        .setName('ffsetrotate')
         .setDescription('Set a rotate between clans !')
         .addStringOption(option =>
             option.setName('player')

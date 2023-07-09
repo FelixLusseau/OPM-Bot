@@ -58,7 +58,7 @@ module.exports = {
                         } else {
                             // console.log(row.Player + "\t" + row.Datetime + " from " + row.Origin);
                             if ((from == null || from == row.Origin) && (player == null || player == row.Player))
-                                clanResults[clan] += "- " + row.Player + "\t" + row.Datetime + " from " + row.Origin + "\n";
+                                clanResults[clan] += "- " + row.Id + " : " + row.Player + "\t" + row.Datetime + " from " + row.Origin + "\n";
                         }
                     }, (err, count) => {
                         if (err) {

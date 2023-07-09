@@ -132,18 +132,33 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
     }
     let attacks = "" // String for the report
     if (Players4 != "" || Players3 != "" || Players2 != "" || Players1 != "") { // Check it the strings are not empty
-        attacks = '<:fame:876320149878235136> **Points** : '
-            + points
-            + "\n"
-            + '<:fameAvg:946276069634375801> **Ratio** : '
-            + ratio
-            + "\n"
-            + '<:remainingSlots:951032915221950494> **Players** : '
-            + remainingPlayers.toString()
-            + "\n"
-            + '<:decksRemaining:946275903812546620> **Attacks** : '
-            + decksRemaining
-            + '\n'
+        if (interaction) { // If the command is an interaction
+            attacks = '<:fame:876320149878235136> **Points** : '
+                + points
+                + "\n"
+                + '<:fameAvg:946276069634375801> **Ratio** : '
+                + ratio
+                + "\n"
+                + '<:remainingSlots:951032915221950494> **Players** : '
+                + remainingPlayers.toString()
+                + "\n"
+                + '<:decksRemaining:946275903812546620> **Attacks** : '
+                + decksRemaining
+                + '\n'
+        } else { // If the command is a message
+            attacks = '**Points** : '
+                + points
+                + "\n"
+                + '**Ratio** : '
+                + ratio
+                + "\n"
+                + '**Players** : '
+                + remainingPlayers.toString()
+                + "\n"
+                + '**Attacks** : '
+                + decksRemaining
+                + '\n'
+        }
         attacksEmbed
             .setColor(0x0099FF)
             .setTitle("__Remaining attacks " + ((RiverRace.periodType == "colosseum") ? "(Colosseum)__ " : "__ ") + ":")

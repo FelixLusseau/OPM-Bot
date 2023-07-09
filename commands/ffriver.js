@@ -46,20 +46,35 @@ module.exports = {
         for (let i = 0; i < RiverRace.clans.length; i++) {
             // If the clan has already reached 10k fame in normal days, show it as finished
             if (RiverRace.periodType != "colosseum" && RiverRace.clans[i].fame >= 10000) {
-                Race += "- __"
-                    + (RiverRace.clans[i].tag == clan ? "**" + RiverRace.clans[i].name + "**" : RiverRace.clans[i].name)
-                    + "__ : **War finished**\n<:Retro:1010557231214886933> Tag : "
-                    + RiverRace.clans[i].tag + "\n\n"
+                if (interaction != null)
+                    Race += "- __"
+                        + (RiverRace.clans[i].tag == clan ? "**" + RiverRace.clans[i].name + "**" : RiverRace.clans[i].name)
+                        + "__ : **War finished**\n<:Retro:1010557231214886933> Tag : "
+                        + RiverRace.clans[i].tag + "\n\n"
+                else
+                    Race += "- __"
+                        + (RiverRace.clans[i].tag == clan ? "**" + RiverRace.clans[i].name + "**" : RiverRace.clans[i].name)
+                        + "__ : **War finished**\n Tag : "
+                        + RiverRace.clans[i].tag + "\n\n"
                 continue
             }
             // Else show the current name, tag and fame
-            Race += "- __"
-                + (RiverRace.clans[i].tag == clan ? "**" + RiverRace.clans[i].name + "**" : RiverRace.clans[i].name)
-                + "__ :\n<:Retro:1010557231214886933> Tag : "
-                + RiverRace.clans[i].tag
-                + "\n<:fame:876320149878235136> Pts : **"
-                + RiverRace.clans[i].fame
-                + "**\n\n"
+            if (interaction != null)
+                Race += "- __"
+                    + (RiverRace.clans[i].tag == clan ? "**" + RiverRace.clans[i].name + "**" : RiverRace.clans[i].name)
+                    + "__ :\n<:Retro:1010557231214886933> Tag : "
+                    + RiverRace.clans[i].tag
+                    + "\n<:fame:876320149878235136> Pts : **"
+                    + RiverRace.clans[i].fame
+                    + "**\n\n"
+            else
+                Race += "- __"
+                    + (RiverRace.clans[i].tag == clan ? "**" + RiverRace.clans[i].name + "**" : RiverRace.clans[i].name)
+                    + "__ :\n Tag : "
+                    + RiverRace.clans[i].tag
+                    + "\n Pts : **"
+                    + RiverRace.clans[i].fame
+                    + "**\n\n"
         }
 
         // Define the max value of the chart depending on the periode type

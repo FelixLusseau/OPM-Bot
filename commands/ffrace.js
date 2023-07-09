@@ -88,12 +88,20 @@ async function ffrace(bot, api, interaction, guildId, channel, clan) {
             continue
         }
         // Make the string with the clan name, tag, points, ratio, decks remaining and players remaining
-        Race += "- __" + (clans[i].tag == clan ? "**" + clans[i].name + "**" : clans[i].name) // Bold the clan name if it's the clan the user asked for
-            + "__ :\n<:Retro:1010557231214886933> Tag : " + clans[i].tag
-            + "\n<:fame:876320149878235136> Pts : " + points
-            + "\n<:fameAvg:946276069634375801> Ratio : **" + ratio
-            + "**\n<:decksRemaining:946275903812546620> Decks : " + decksRemaining
-            + "\n<:remainingSlots:951032915221950494> Players : " + playersRemaining + "\n\n"
+        if (interaction != null)
+            Race += "- __" + (clans[i].tag == clan ? "**" + clans[i].name + "**" : clans[i].name) // Bold the clan name if it's the clan the user asked for
+                + "__ :\n<:Retro:1010557231214886933> Tag : " + clans[i].tag
+                + "\n<:fame:876320149878235136> Pts : " + points
+                + "\n<:fameAvg:946276069634375801> Ratio : **" + ratio
+                + "**\n<:decksRemaining:946275903812546620> Decks : " + decksRemaining
+                + "\n<:remainingSlots:951032915221950494> Players : " + playersRemaining + "\n\n"
+        else
+            Race += "- __" + (clans[i].tag == clan ? "**" + clans[i].name + "**" : clans[i].name) // Bold the clan name if it's the clan the user asked for
+                + "__ :\n Tag : " + clans[i].tag
+                + "\n Pts : " + points
+                + "\n Ratio : **" + ratio
+                + "**\n Decks : " + decksRemaining
+                + "\n Players : " + playersRemaining + "\n\n"
         if (clans[i].tag == clan)
             clanPos = i + 1
     }

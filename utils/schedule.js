@@ -1,7 +1,6 @@
 const cron = require('node-cron');
 const reports = require('./reports.js');
 const ffattacks = require('../commands/ffattacks.js');
-const ffraces = require('../commands/ffrace.js');
 const ffrace = require('../commands/ffrace.js');
 
 function schedule(bot, key, value, tag, guildID) {
@@ -37,7 +36,7 @@ function schedule(bot, key, value, tag, guildID) {
     cron.schedule('0 1 * * *', () => {
         const channel = bot.channels.cache.get(chanID);
         ffattacks.ffattacks(bot, api, null, true, guildID, channel, tag)
-        ffraces.ffrace(bot, api, null, guildID, channel, tag)
+        ffrace.ffrace(bot, api, null, guildID, channel, tag)
     });
     // console.log('Scheduled ' + key + ' for ' + value.substring(3, 5) + ' ' + value.substring(0, 2) + ' * * 5,6,7,1')
 }

@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const Discord = require("discord.js");
 const { EmbedBuilder } = require('discord.js');
+const functions = require('../utils/functions.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -16,10 +17,28 @@ module.exports = {
                     { name: '100pct', value: '#LLUC90PP' },
                     { name: 'TPM', value: '#G2CY2PPL' },
                 )
-                .setRequired(true)),
+                .setRequired(true))
+        .addStringOption(option =>
+            option.setName('custom_tag')
+                .setDescription('Tag of the foreign clan to check (nothing happens if wrong)')),
     async execute(bot, api, interaction) {
         await interaction.deferReply({ ephemeral: false });
-        const clan = interaction.options.getString('clan');
+        let clan = interaction.options.getString('clan');
+        if (interaction.options.getString('custom_tag') != null) { // For a custom tag clan
+            let custom_tag = interaction.options.getString('custom_tag');
+            const regex = /\#[a-zA-Z0-9]{8,9}\b/g
+            if (custom_tag.search(regex) >= 0) {
+                custom_tag = (custom_tag[0] == "#") ? custom_tag : "#" + custom_tag;
+                try {
+                    const statusCode = await functions.http_head(custom_tag.substring(1));
+                    // console.log('Status Code:', statusCode);
+                    if (statusCode == 200)
+                        clan = custom_tag;
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            }
+        }
         const riverEmbed = new EmbedBuilder();
         let Labels = [];
         let Datas = [];

@@ -1,25 +1,26 @@
 const fs = require('fs');
 const Excel = require('exceljs');
 const path = require('node:path');
+const https = require('node:https');
 
 // Function to calculate the ratio of fame over decks remaining
 function ratio(RiverRace, decksRemaining, i) {
     let clan
     if (i > -1) clan = RiverRace.clans[i]
     else clan = RiverRace.clan
-    const d = new Date();
-    const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    const day = weekday[d.getDay()]
-    const hour = (('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2))
-    // Read the war hour from the file
-    const warHour = fs.readFileSync('./reset-hours/' + RiverRace.clan.name, 'utf8', (err, data) => {
-        if (err) {
-            return;
-        }
-        return data;
-    });
     // Calculate the ratio depending on the day and hour during Colosseum
     if (RiverRace.periodType == "colosseum") {
+        const d = new Date();
+        const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const day = weekday[d.getDay()]
+        const hour = (('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2))
+        // Read the war hour from the file
+        const warHour = fs.readFileSync('./reset-hours/' + RiverRace.clan.name, 'utf8', (err, data) => {
+            if (err) {
+                return;
+            }
+            return data;
+        });
         if ((day == "Thursday" && hour > warHour) || (day == "Friday" && hour < warHour))
             ratio = (clan.fame / (200 - decksRemaining)).toFixed(2).toString()
         if ((day == "Friday" && hour > warHour) || (day == "Saturday" && hour < warHour))
@@ -169,8 +170,25 @@ async function excel(scores) {
         });
 }
 
+async function http_head(tag) {
+    const url = 'https://www.cwstats.com/clan/' + tag;
+    return new Promise((resolve, reject) => {
+        const req = https.request(url, { method: 'HEAD' }, (res) => {
+            resolve(res.statusCode);
+        });
+
+        req.on('error', (err) => {
+            console.error(err);
+            reject(err);
+        });
+
+        req.end();
+    });
+}
+
 module.exports = {
     ratio,
     fetchHist,
-    excel
+    excel,
+    http_head
 }

@@ -8,6 +8,22 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
         await interaction.deferReply({ ephemeral: false });
         pingBool = interaction.options.getBoolean('ping');
         clan = interaction.options.getString('clan');
+        if (interaction.options.getString('custom_tag') != null) { // For a custom tag clan
+            let custom_tag = interaction.options.getString('custom_tag');
+            const regex = /\#[a-zA-Z0-9]{8,9}\b/g
+            if (custom_tag.search(regex) >= 0) {
+                custom_tag = (custom_tag[0] == "#") ? custom_tag : "#" + custom_tag;
+                clan = (interaction.options.getString('custom_tag')[0] == "#") ? interaction.options.getString('custom_tag') : "#" + interaction.options.getString('custom_tag');
+                try {
+                    const statusCode = await functions.http_head(custom_tag.substring(1));
+                    // console.log('Status Code:', statusCode);
+                    if (statusCode == 200)
+                        clan = custom_tag;
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            }
+        }
         guildId = interaction.guildId;
     }
     const guild = bot.guilds.cache.find((g) => g.id === guildId);
@@ -215,7 +231,10 @@ module.exports = {
                 .setRequired(true))
         .addBooleanOption(option =>
             option.setName('ping')
-                .setDescription('Ping the players who don\'t have attacked left')),
+                .setDescription('Ping the players who don\'t have attacked left'))
+        .addStringOption(option =>
+            option.setName('custom_tag')
+                .setDescription('Tag of the foreign clan to check (nothing happens if wrong)')),
     async execute(bot, api, interaction) {
         ffattacks(bot, api, interaction, false, null, null, null)
     },

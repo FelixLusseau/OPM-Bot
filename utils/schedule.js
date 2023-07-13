@@ -34,7 +34,7 @@ function schedule(bot, key, value, tag, guildID) {
         const channel = bot.channels.cache.get(chanID);
         reports.report(bot, api, null, null, guildID, channel, tag)
     });
-    cron.schedule('31 23 * * *', () => {
+    cron.schedule('0 1 * * *', () => {
         const channel = bot.channels.cache.get(chanID);
         ffattacks.ffattacks(bot, api, null, true, guildID, channel, tag)
         ffraces.ffrace(bot, api, null, guildID, channel, tag)

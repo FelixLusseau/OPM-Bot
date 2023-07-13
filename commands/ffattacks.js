@@ -204,11 +204,11 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
     // If the interaction is not null, edit the reply deferred before
     if (interaction != null) {
         interaction.editReply({ embeds: [attacksEmbed] });
-        if (pingBool) {
-            await guild.members.fetch();
-            if (ping != "")
-                interaction.channel.send(ping);
-        }
+    }
+    if (pingBool) {
+        await guild.members.fetch();
+        if (ping != "")
+            interaction.channel.send(ping);
     }
     return attacks // Return the string for the report
 };

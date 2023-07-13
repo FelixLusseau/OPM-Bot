@@ -1,5 +1,8 @@
 const cron = require('node-cron');
 const reports = require('./reports.js');
+const ffattacks = require('../commands/ffattacks.js');
+const ffraces = require('../commands/ffrace.js');
+const ffrace = require('../commands/ffrace.js');
 
 function schedule(bot, key, value, tag, guildID) {
     let chanID = 0
@@ -24,12 +27,17 @@ function schedule(bot, key, value, tag, guildID) {
     }
     // Uncomment these lines to test the report in the dev channel
     // guildID = process.env.DEV_GUILD_ID
-    // chanID = process.env.DEV_CHANNEL_ID 
+    // chanID = process.env.DEV_CHANNEL_ID
 
     // Schedule the reports and save them in the global reportCron dictionary
     reportCron[key] = cron.schedule(value.substring(3, 5) + ' ' + value.substring(0, 2) + ' * * 5,6,7,1', () => {
         const channel = bot.channels.cache.get(chanID);
         reports.report(bot, api, null, null, guildID, channel, tag)
+    });
+    cron.schedule('31 23 * * *', () => {
+        const channel = bot.channels.cache.get(chanID);
+        ffattacks.ffattacks(bot, api, null, true, guildID, channel, tag)
+        ffraces.ffrace(bot, api, null, guildID, channel, tag)
     });
     // console.log('Scheduled ' + key + ' for ' + value.substring(3, 5) + ' ' + value.substring(0, 2) + ' * * 5,6,7,1')
 }

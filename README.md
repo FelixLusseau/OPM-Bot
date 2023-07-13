@@ -6,7 +6,6 @@
 ![version](https://img.shields.io/github/package-json/v/FelixLusseau/OPM-Bot)
 [![CodeQL](https://github.com/FelixLusseau/OPM-Bot/actions/workflows/codeql.yml/badge.svg)](https://github.com/FelixLusseau/OPM-Bot/actions/workflows/codeql.yml)
 
-![Linux](https://svgshare.com/i/Zhy.svg)
 [![GitHub latest commit](https://img.shields.io/github/last-commit/FelixLusseau/OPM-Bot)](https://gitHub.com/FelixLusseau/OPM-Bot/commit/)
 [![Maintenance](https://img.shields.io/badge/maintained%3F-yes-green.svg)](https://GitHub.com/FelixLusseau/OPM-Bot/graphs/commit-activity)
 

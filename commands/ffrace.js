@@ -195,6 +195,10 @@ async function ffrace(bot, api, interaction, guildId, channel, clan) {
     // If the interaction is not null, edit the reply deferred before
     if (interaction != null)
         interaction.editReply({ embeds: [raceEmbed] });
+    else if (channel != null) {
+        await guild.members.fetch();
+        channel.send({ embeds: [raceEmbed] })
+    }
 
     return clanPos
 }

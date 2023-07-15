@@ -12,11 +12,17 @@ module.exports = {
             + "- `/ffhelp` : Shows this help menu\n"
             + "- `/ffattacks` : Shows the remaining attacks of the day\n"
             + "- `/ffavg` : Shows the average war points of the players\n"
+            + "- `/ffgethours` : Shows the hours of the daily reports and resets\n"
+            + "- `/ffgetrotates` : Shows the rotations of the players between the clans\n"
             + "- `/ffmembers` : Shows the members of the clan\n"
             + "- `/ffopponents` : Shows information about the war opponents\n"
             + "- `/ffrace` : Shows the current war day status (or Colosseum)\n"
             + "- `/ffresults` : Shows the points of all the war participants\n"
             + "- `/ffriver` : Shows the current river race (or Colosseum)\n"
+            + "- `/ffreport` : Shows the war report"
+            + "- `/ffrmrotate` : Removes an entry from the rotations"
+            + "- `/ffsethours` : Sets the hours for the daily reports and resets"
+            + "- `/ffsetrotates` : Sets the rotations of the players between the clans"
             + "\u200B"
         try {
             helpEmbed

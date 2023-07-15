@@ -2,7 +2,7 @@ const { SlashCommandBuilder } = require('discord.js');
 const { EmbedBuilder } = require('discord.js');
 const functions = require('../utils/functions.js');
 
-async function ffrace(bot, api, interaction, guildId, channel, clan) {
+async function ffrace(bot, api, interaction, guildId, channel, clan, report) {
     // Check if the command was run by an interaction or a scheduled message
     if (interaction != null) {
         await interaction.deferReply({ ephemeral: false });
@@ -195,7 +195,7 @@ async function ffrace(bot, api, interaction, guildId, channel, clan) {
     // If the interaction is not null, edit the reply deferred before
     if (interaction != null)
         interaction.editReply({ embeds: [raceEmbed] });
-    else if (channel != null) {
+    else if (report == false) {
         await guild.members.fetch();
         channel.send({ embeds: [raceEmbed] })
     }
@@ -223,6 +223,6 @@ module.exports = {
             option.setName('custom_tag')
                 .setDescription('Tag of the foreign clan to check (nothing happens if wrong)')),
     async execute(bot, api, interaction) {
-        ffrace(bot, api, interaction, null, null, null)
+        ffrace(bot, api, interaction, null, null, null, false)
     }
 };

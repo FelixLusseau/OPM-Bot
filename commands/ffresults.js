@@ -30,6 +30,8 @@ async function ffresults(bot, api, interaction, guildId, clan) {
             // Make a list of the players who have attacked and their fame
             Players += "- " + RiverRace.clan.participants[j].name + " : **" + RiverRace.clan.participants[j].fame + " pts**\n"
     }
+
+    const rand = Math.random().toString(36).slice(2); // Generate a random string to avoid the image cache
     try {
         if (interaction) {
             resultsEmbed
@@ -39,7 +41,7 @@ async function ffresults(bot, api, interaction, guildId, clan) {
                 .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' })
                 .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')
                 .setTimestamp()
-                .setFooter({ text: 'by OPM | Féfé ⚡', iconURL: 'https://avatars.githubusercontent.com/u/94113911?s=400&v=4' });
+                .setFooter({ text: 'by OPM | Féfé ⚡', iconURL: 'https://avatars.githubusercontent.com/u/94113911?s=400&v=4?' + rand });
         }
     } catch (e) {
         console.log(e);

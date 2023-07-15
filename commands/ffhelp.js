@@ -24,6 +24,8 @@ module.exports = {
             + "- `/ffsethours` : Sets the hours for the daily reports and resets"
             + "- `/ffsetrotates` : Sets the rotations of the players between the clans"
             + "\u200B"
+
+        const rand = Math.random().toString(36).slice(2); // Generate a random string to avoid the image cache
         try {
             helpEmbed
                 .setColor(0x0099FF)
@@ -32,7 +34,7 @@ module.exports = {
                 .setDescription(Help)
                 .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')
                 .setTimestamp()
-                .setFooter({ text: 'by OPM | Féfé ⚡', iconURL: 'https://avatars.githubusercontent.com/u/94113911?s=400&v=4' });
+                .setFooter({ text: 'by OPM | Féfé ⚡', iconURL: 'https://avatars.githubusercontent.com/u/94113911?s=400&v=4?' + rand });
         } catch (e) {
             console.log(e);
         }

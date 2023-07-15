@@ -175,6 +175,7 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
                 + decksRemaining
                 + '\n'
         }
+        const rand = Math.random().toString(36).slice(2); // Generate a random string to avoid the image cache
         attacksEmbed
             .setColor(0x0099FF)
             .setTitle("__Remaining attacks " + ((RiverRace.periodType == "colosseum") ? "(Colosseum)__ " : "__ ") + ":")
@@ -182,7 +183,7 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
             .setDescription(attacks)
             .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')
             .setTimestamp()
-            .setFooter({ text: 'by OPM | Féfé ⚡', iconURL: 'https://avatars.githubusercontent.com/u/94113911?s=400&v=4' });
+            .setFooter({ text: 'by OPM | Féfé ⚡', iconURL: 'https://avatars.githubusercontent.com/u/94113911?s=400&v=4?' + rand });
         if (Players4 != "") {
             attacksEmbed.addFields({ name: '__4 attacks__ :', value: Players4 })
             attacks += '\n__**4 attacks**__ :\n' + Players4

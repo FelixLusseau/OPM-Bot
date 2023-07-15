@@ -23,28 +23,22 @@ module.exports = {
             }
         });
 
-        db.run(`SELECT * from Rotates WHERE Id=${id}`, function (err) {
-            if (err) {
-                result = "Rotate not found !";
-                return console.log(err.message);
-            }
-            // get the last insert id
-            // console.log(`A row has been inserted with rowid ${this.lastID}`);
-        });
-
-
         // Delete a rotate into the database
-        db.run(`DELETE from Rotates WHERE Id=${id}`, function (err) {
-            if (err) {
-                result = "Rotate not found !";
-                return console.log(err.message);
-            }
-            else
-                result = "Rotate removed !";
-            // get the last insert id
-            // console.log(`A row has been inserted with rowid ${this.lastID}`);
+        await new Promise((resolve, reject) => {
+            db.run(`DELETE from Rotates WHERE Id=${id}`, function (err) {
+                if (err) {
+                    result = "Rotate not found !";
+                    return reject(err.message);
+                } else {
+                    if (this.changes === 0) { // No row affected
+                        result = "Invalid id or rotate not found !";
+                    } else {
+                        result = "Rotate removed !";
+                    }
+                    resolve();
+                }
+            });
         });
-
 
         // Close the database
         db.close((err) => {
@@ -53,11 +47,10 @@ module.exports = {
             }
         });
 
-
         try {
             rotatesEmbed
                 .setColor(0x0099FF)
-                .setTitle('__Set rotate__ :')
+                .setTitle('__Remove rotate__ :')
                 .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' })
                 .setDescription(result)
                 .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')

@@ -9,6 +9,10 @@
 [![GitHub latest commit](https://img.shields.io/github/last-commit/FelixLusseau/OPM-Bot)](https://gitHub.com/FelixLusseau/OPM-Bot/commit/)
 [![Maintenance](https://img.shields.io/badge/maintained%3F-yes-green.svg)](https://GitHub.com/FelixLusseau/OPM-Bot/graphs/commit-activity)
 
+![Discord](https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white)
+![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
+![SQLite](https://img.shields.io/badge/sqlite-%2307405e.svg?style=for-the-badge&logo=sqlite&logoColor=white)
+
 <br>
 
 ### A Discord bot to manage the Clash Royale clans and clan wars of the One Punch Man Family.

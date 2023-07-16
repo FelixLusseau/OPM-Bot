@@ -9,6 +9,7 @@ async function report(bot, api, interaction, pingBool, guildId, channel, clan) {
     const results = await ffresults.ffresults(bot, api, interaction, guildId, clan)
     const race = await ffrace.ffrace(bot, api, interaction, guildId, channel, clan, true)
 
+    const rand = Math.random().toString(36).slice(2); // Generate a random string to avoid the image cache
     const reportEmbed = new EmbedBuilder();
     reportEmbed
         .setColor(0x0099FF)
@@ -24,7 +25,7 @@ async function report(bot, api, interaction, pingBool, guildId, channel, clan) {
         )
         .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')
         .setTimestamp()
-        .setFooter({ text: 'by OPM | Féfé ⚡', iconURL: 'https://avatars.githubusercontent.com/u/94113911?s=400&v=4' });
+        .setFooter({ text: 'by OPM | Féfé ⚡', iconURL: 'https://avatars.githubusercontent.com/u/94113911?s=400&v=4?' + rand });
     channel.send({ embeds: [reportEmbed] });
 }
 

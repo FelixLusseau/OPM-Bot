@@ -33,7 +33,13 @@ function schedule(bot, key, value, tag, guildID) {
         const channel = bot.channels.cache.get(chanID);
         reports.report(bot, api, null, null, guildID, channel, tag)
     });
+    // Schedule ffrace and ffattacks with ping at 01h00 and 23h00 on the war days
     cron.schedule('0 1 * * 5,6,7,1', () => {
+        const channel = bot.channels.cache.get(chanID);
+        ffrace.ffrace(bot, api, null, guildID, channel, tag, false)
+        ffattacks.ffattacks(bot, api, null, true, guildID, channel, tag)
+    });
+    cron.schedule('0 23 * * 4,5,6,7', () => {
         const channel = bot.channels.cache.get(chanID);
         ffrace.ffrace(bot, api, null, guildID, channel, tag, false)
         ffattacks.ffattacks(bot, api, null, true, guildID, channel, tag)

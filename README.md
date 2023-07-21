@@ -24,7 +24,7 @@
 - Commands list :
   - `/ffhelp` : Shows the help menu
   - `/ffattacks` : Shows the remaining attacks of the day and can ping remaining players
-  - `/ffavg` : Shows the average war points of the players sending an Excel spreadsheet
+  - `/ffavg` : Shows the average war points of the players sending an Excel spreadsheet and the associated png
   - `/ffgethours` : Shows the hours of the daily reports and resets
   - `/ffgetrotates` : Shows the rotations of the players between the clans
   - `/ffmembers` : Shows the members of the clan

@@ -91,9 +91,16 @@ module.exports = {
         }
         await functions.excel(sortedAvgObject)
         const excel = new AttachmentBuilder('averages.xlsx');
-        await interaction.editReply({ content: '__**Players\' averages**__ :', files: [excel] });
+        const png = new AttachmentBuilder('averages.png');
+        await interaction.editReply({ content: '__**Players\' averages**__ :', files: [excel, png] });
         try {
             fs.unlinkSync('./averages.xlsx')
+            // File removed
+        } catch (err) {
+            console.error(err)
+        }
+        try {
+            fs.unlinkSync('./averages.png')
             // File removed
         } catch (err) {
             console.error(err)

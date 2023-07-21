@@ -2,6 +2,7 @@ const fs = require('fs');
 const Excel = require('exceljs');
 const path = require('node:path');
 const https = require('node:https');
+const puppeteer = require('puppeteer');
 
 // Function to calculate the ratio of fame over decks remaining
 function ratio(RiverRace, decksRemaining, i) {
@@ -43,6 +44,65 @@ async function fetchHist(tag) {
     });
     const jsonData = await response.json();
     return jsonData;
+}
+
+function generateHtmlTableFromWorksheet(worksheet) {
+    let html = '<table>';
+
+    worksheet.eachRow((row, rowNumber) => {
+        html += '<tr>';
+        row.eachCell((cell) => {
+            const cellColor = cell.fill.fgColor.argb.substring(2);
+            // console.log(cellColor);
+            const cellValue = cell.text || '';
+            html += `<td style="background-color:#${cellColor};">${cellValue}</td>`;
+        });
+        html += '</tr>';
+    });
+
+    html += '</table>';
+
+    return html;
+}
+
+// Function to read the Excel file and convert the first sheet to a PNG image
+async function exportSheetToPNG(inputFilePath, pngPath) {
+    const workbook = new Excel.Workbook();
+    await workbook.xlsx.readFile(inputFilePath);
+    const worksheet = workbook.worksheets[0];
+
+    // Convert the worksheet to an HTML table
+    const table = generateHtmlTableFromWorksheet(worksheet);
+
+    const browser = await puppeteer.launch({ headless: 'new' });
+    const page = await browser.newPage();
+
+    // Navigate to a blank HTML page
+    await page.goto('about:blank');
+
+    // Inject the HTML content into the page
+    await page.evaluate((content) => {
+        document.body.innerHTML = content;
+    }, table);
+
+    // Get the dimensions of the rendered table
+    const { width, height } = await page.evaluate(() => {
+        const table = document.querySelector('table');
+        return {
+            width: table.offsetWidth,
+            height: table.offsetHeight + 15,
+        };
+    });
+
+    // Set the viewport size based on the width and height
+    await page.setViewport({ width, height });
+
+    // Capture a screenshot of the rendered content
+    await page.screenshot({ path: pngPath });
+
+    await browser.close();
+
+    // console.log('Image exported successfully.');
 }
 
 async function excel(scores) {
@@ -159,15 +219,20 @@ async function excel(scores) {
         }
     });
 
-    const exportPath = path.resolve(__dirname, '../averages.xlsx');
+    const xlsxPath = path.resolve(__dirname, '../averages.xlsx');
 
-    await workbook.xlsx.writeFile(exportPath)
+    await workbook.xlsx.writeFile(xlsxPath)
         .then(() => {
-            console.log('File saved successfully.');
+            // console.log('File saved successfully.');
         })
         .catch((error) => {
             console.error('An error occurred while saving the file:', error);
         });
+
+    const pngPath = 'averages.png'; // Replace with the desired output image path
+    await exportSheetToPNG(xlsxPath, pngPath).catch((error) => {
+        console.error('An error occurred:', error);
+    });
 }
 
 async function http_head(tag) {

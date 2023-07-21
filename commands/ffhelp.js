@@ -11,7 +11,7 @@ module.exports = {
         const Help = "\u200B\n__Commands list__ :\n\n"
             + "- `/ffhelp` : Shows this help menu\n"
             + "- `/ffattacks` : Shows the remaining attacks of the day\n"
-            + "- `/ffavg` : Shows the average war points of the players\n"
+            + "- `/ffavg` : Shows the average war points of the players sending an Excel spreadsheet and the associated png\n"
             + "- `/ffgethours` : Shows the hours of the daily reports and resets\n"
             + "- `/ffgetrotates` : Shows the rotations of the players between the clans\n"
             + "- `/ffmembers` : Shows the members of the clan\n"

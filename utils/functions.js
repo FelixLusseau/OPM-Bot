@@ -55,7 +55,7 @@ function generateHtmlTableFromWorksheet(worksheet) {
             const cellColor = cell.fill.fgColor.argb.substring(2);
             // console.log(cellColor);
             const cellValue = cell.text || '';
-            html += `<td style="background-color:#${cellColor};">${cellValue}</td>`;
+            html += `<td style="background-color:#${cellColor}; text-align: center">${cellValue}</td>`;
         });
         html += '</tr>';
     });

@@ -13,7 +13,7 @@ async function ffrace(bot, api, interaction, guildId, channel, clan, report) {
             if (custom_tag.search(regex) >= 0) {
                 custom_tag = (custom_tag[0] == "#") ? custom_tag : "#" + custom_tag;
                 try {
-                    const statusCode = await functions.http_head(custom_tag.substring(1));
+                    const statusCode = await functions.http_head("/clan/" + custom_tag.substring(1));
                     // console.log('Status Code:', statusCode);
                     if (statusCode == 200)
                         clan = custom_tag;

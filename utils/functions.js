@@ -53,7 +53,7 @@ function generateHtmlTableFromWorksheet(worksheet) {
         html += '<tr>';
         row.eachCell((cell) => {
             const cellColor = cell.fill.fgColor.argb.substring(2);
-            // console.log(cellColor);
+            // console.log('cc' + cell.text + ' ');
             const cellValue = cell.text || '';
             html += `<td style="background-color:#${cellColor}; text-align: center">${cellValue}</td>`;
         });
@@ -62,6 +62,7 @@ function generateHtmlTableFromWorksheet(worksheet) {
 
     html += '</table>';
 
+    // console.log(html);
     return html;
 }
 
@@ -236,7 +237,7 @@ async function excel(scores) {
 }
 
 async function http_head(tag) {
-    const url = 'https://www.cwstats.com/clan/' + tag;
+    const url = 'https://www.cwstats.com' + tag;
     return new Promise((resolve, reject) => {
         const req = https.request(url, { method: 'HEAD' }, (res) => {
             resolve(res.statusCode);
@@ -251,9 +252,70 @@ async function http_head(tag) {
     });
 }
 
+function base64ToArrayBuffer(base64) {
+    var binary_string = Buffer.from(base64, 'base64').toString('binary');
+    var len = binary_string.length;
+    var bytes = new Uint8Array(len);
+    for (var i = 0; i < len; i++) {
+        bytes[i] = binary_string.charCodeAt(i);
+    }
+    return bytes.buffer;
+}
+
+async function playerHistory(url) {
+    // console.log('Launching Puppeteer...');
+    // Launch the browser and open a new blank page
+    const browser = await puppeteer.launch({ headless: 'new' });
+    const page = await browser.newPage();
+
+    // Navigate the page to a URL
+    await page.goto(url);
+
+    // Set screen size
+    await page.setViewport({ width: 1080, height: 2048 });
+
+    // Accept cookies
+    await Promise.all([
+        page.click("button.css-47sehv"),
+    ]);
+
+    // Show the player history
+    await Promise.all([
+        page.click("button.ui.primary.button.cw2_history_button"),
+    ]);
+
+    // Wait for the chart to be rendered
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    // Get the base64-encoded image data
+    const imageData = await page.$eval("canvas#cw2-history-chart", el => el.toDataURL().substring(22));
+
+    // Convert the base64-encoded data to an ArrayBuffer
+    const buffer = base64ToArrayBuffer(imageData);
+
+    // Create a new Uint8Array from the ArrayBuffer
+    const uint8Array = new Uint8Array(buffer);
+
+    // Create a new file and write the data to it
+    fs.writeFileSync('playerHistoryCanvas.png', uint8Array);
+
+    // Scroll to the canvas element
+    await page.evaluate(() => {
+        const canvas = document.querySelector("canvas#cw2-history-chart");
+        canvas.scrollIntoView();
+    });
+
+    // Capture a screenshot of the rendered content
+    const pngPath = 'playerHistory.png';
+    await page.screenshot({ path: pngPath });
+
+    await browser.close();
+}
+
 module.exports = {
     ratio,
     fetchHist,
     excel,
-    http_head
+    http_head,
+    playerHistory
 }

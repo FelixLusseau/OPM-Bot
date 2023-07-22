@@ -1,5 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
-const { EmbedBuilder, AttachmentBuilder } = require('discord.js');
+const { SlashCommandBuilder, AttachmentBuilder } = require('discord.js');
 const functions = require('../utils/functions.js');
 const fs = require('fs');
 
@@ -83,8 +82,6 @@ module.exports = {
 
         const sortedAvgObject = Object.fromEntries(sortedAvgArray);
 
-        let Averages = "";
-        let counter = 0;
         // Make the data for the Excel file
         for (const [key, value] of Object.entries(sortedAvgObject)) {
             avgArray[key]['fame'] = value['fame'] / value['count'];
@@ -95,11 +92,6 @@ module.exports = {
         await interaction.editReply({ content: '__**Players\' averages**__ :', files: [excel, png] });
         try {
             fs.unlinkSync('./averages.xlsx')
-            // File removed
-        } catch (err) {
-            console.error(err)
-        }
-        try {
             fs.unlinkSync('./averages.png')
             // File removed
         } catch (err) {

@@ -15,7 +15,7 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
                 custom_tag = (custom_tag[0] == "#") ? custom_tag : "#" + custom_tag;
                 clan = (interaction.options.getString('custom_tag')[0] == "#") ? interaction.options.getString('custom_tag') : "#" + interaction.options.getString('custom_tag');
                 try {
-                    const statusCode = await functions.http_head(custom_tag.substring(1));
+                    const statusCode = await functions.http_head("/clan/" + custom_tag.substring(1));
                     // console.log('Status Code:', statusCode);
                     if (statusCode == 200)
                         clan = custom_tag;

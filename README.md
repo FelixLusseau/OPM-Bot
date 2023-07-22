@@ -41,5 +41,6 @@
 - Scheduled `/ffrace` and `/ffattacks` with ping has been added to the bot ! It will be sent every day from friday to monday at 01h00 and from Thurday to Sunday at 23h00 in the clan war channels.
 
 - Responds a link to the RoyaleAPI player profile when a player tag is sent in a room where the bot is present.
+  Sends a screenshot of the player war history and the graph associated.
 
 - Send an Excel spreadsheet with the war results and averages with colors.

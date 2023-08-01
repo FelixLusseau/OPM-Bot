@@ -285,7 +285,7 @@ async function playerHistory(url) {
     ]);
 
     // Wait for the chart to be rendered
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    await new Promise(resolve => setTimeout(resolve, 2000));
 
     // Get the base64-encoded image data
     const imageData = await page.$eval("canvas#cw2-history-chart", el => el.toDataURL().substring(22));

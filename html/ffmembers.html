@@ -19,10 +19,10 @@
 
         table {
             border-collapse: collapse;
-            width: 70%;
+            width: 50%;
             /* color: #d3473d; */
             font-family: monospace;
-            font-size: 25px;
+            font-size: 1.5em;
             text-align: center;
             margin: auto;
         }
@@ -46,11 +46,12 @@
 </head>
 
 <body>
-    <img src="../OPM-Stats.png" width=200 style="position: absolute; top: 0; left: 0;">
+    <img src="../OPM-Stats.png" width=200 style="position: absolute; top: 0; left: 15%;">
     <div style="position: relative;">
         <br>
         <h1>Members of <b>$clan</b></h1>
         <h2>xx members</h2>
+        <canvas id="gauge" height=100 style="display: block; margin: auto; margin-bottom: 1em;"></canvas>
         <table>
             <tr>
                 <th>Name</th>
@@ -60,28 +61,94 @@
                 <th>Trophies</th>
             </tr>
             <tr>
-                <td>name</td>
-                <td>tag</td>
-                <td>role</td>
-                <td>level</td>
-                <td>trophies</td>
-            </tr>
-            <tr>
                 <td>OPM I Féfé ⚡️</td>
                 <td>#PRP9PR2GQ</td>
                 <td>coLeader</td>
-                <td>lvl53</td>
-                <td>7533 tr</td>
+                <td>53</td>
+                <td>7533 🏆</td>
             </tr>
-            <tr>
-                <td>OPM I Féfé ⚡️</td>
-                <td>#PRP9PR2GQ</td>
-                <td>coLeader</td>
-                <td>lvl53</td>
-                <td>7533 tr</td>
-            </tr>
+            <tbody id="table-body"></tbody>
+            <script>
+                // Generate random data for the table rows
+                const names = ["John", "Jane", "Bob", "Alice", "Mike"];
+                const tags = ["#ABC123", "#DEF456", "#GHI789", "#JKL012", "#MNO345"];
+                const roles = ["Leader", "Co-leader", "Elder", "Member"];
+                const levels = [50, 51, 52, 53, 54];
+                const trophies = [5000, 6000, 7000, 8000, 9000];
+
+                for (let i = 0; i < 50; i++) {
+                    const name = names[Math.floor(Math.random() * names.length)];
+                    const tag = tags[Math.floor(Math.random() * tags.length)];
+                    const role = roles[Math.floor(Math.random() * roles.length)];
+                    const level = levels[Math.floor(Math.random() * levels.length)];
+                    const trophy = trophies[Math.floor(Math.random() * trophies.length)];
+
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${name}</td>
+                        <td>${tag}</td>
+                        <td>${role}</td>
+                        <td>${level}</td>
+                        <td>${trophy} 🏆</td>
+                    `;
+
+                    document.getElementById("table-body").appendChild(row);
+                }
+            </script>
         </table>
+        <p>By OPM I Féfé ⚡️</p>
     </div>
 </body>
+<script src="gauge.min.js"></script>
+<script>
+    var opts = {
+        angle: -0.2, // The span of the gauge arc
+        lineWidth: 0.2, // The line thickness
+        radiusScale: 1, // Relative radius
+        pointer: {
+            length: 0.6, // // Relative to gauge radius
+            strokeWidth: 0.035, // The thickness
+            color: '#000000' // Fill color
+        },
+        limitMax: true,     // If false, max value increases automatically if value > maxValue
+        limitMin: true,     // If true, the min value of the gauge will be fixed
+        colorStart: '#6F6EA0',   // Colors
+        colorStop: '#C0C0DB',    // just experiment with them
+        strokeColor: '#EEEEEE',  // to see which ones work best for you
+        generateGradient: false,
+        highDpiSupport: true,     // High resolution support
+        renderTicks: {
+            divisions: 5,
+            divWidth: 1.1,
+            divLength: 0.7,
+            divColor: '#333333',
+            subDivisions: 3,
+            subLength: 0.5,
+            subWidth: 0.6,
+            subColor: '#666666'
+        },
+        staticZones: [
+            { strokeStyle: "#F03E3E", min: 0, max: 30 }, // Red from 100 to 130
+            { strokeStyle: "#FF8000", min: 30, max: 45 }, // Orange
+            // { strokeStyle: "#FFDD00", min: 40, max: 45 }, // Yellow
+            { strokeStyle: "#30B32D", min: 45, max: 50 }, // Green
+        ],
+        staticLabels: {
+            font: "10px sans-serif",  // Specifies font
+            labels: [0, 10, 20, 30, 40, 45, 50],  // Print labels at these values
+            color: "#000000",  // Optional: Label text color
+            fractionDigits: 0  // Optional: Numerical precision. 0=round off.
+        },
+        // percentColors: [[0.0, "#a9d70b"], [0.50, "#f9c802"], [1.0, "#ff0000"]]
+    };
+    var target = document.getElementById('gauge'); // your canvas element
+    var gauge = new Gauge(target).setOptions(opts); // create sexy gauge!
+    gauge.maxValue = 50; // set max gauge value
+    gauge.minValue = 0
+    gauge.setMinValue(0);  // Prefer setter over gauge.minValue = 0
+    gauge.animationSpeed = 32; // set animation speed (32 is default value)
+    gauge.set(38); // set actual value
+
+</script>
 
 </html>

@@ -54,6 +54,10 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
     }
     let ratio = 0
     ratio = functions.ratio(RiverRace, decksRemaining, -1) // Calculate the ratio
+
+    if (pingBool && interaction == null && points == 0) // When war is finished when the scheduled message is sent
+        return channel.send("The clan has finished the war !")
+
     let remainingPlayers = 50
     api.getClanMembers(clan) // Retrieve the clan's members from the Supercell API
         .then((members) => {

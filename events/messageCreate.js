@@ -20,7 +20,6 @@ module.exports = {
                     const playerHistory = new AttachmentBuilder('playerHistory.png');
                     const playerHistoryCanvas = new AttachmentBuilder('playerHistoryCanvas.png');
                     await message.channel.send({ content: url, files: [playerHistory, playerHistoryCanvas] });
-
                 }
                 else
                     message.channel.send("Invalid tag");

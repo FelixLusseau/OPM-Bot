@@ -271,9 +271,6 @@ async function playerHistory(url) {
     // Navigate the page to a URL
     await page.goto(url);
 
-    // Set screen size
-    await page.setViewport({ width: 1080, height: 2048 });
-
     // Accept cookies
     await Promise.all([
         page.click("button.css-47sehv"),
@@ -286,6 +283,16 @@ async function playerHistory(url) {
 
     // Wait for the chart to be rendered
     await new Promise(resolve => setTimeout(resolve, 2000));
+
+    const elem = await page.$('#page_content');
+    const boundingBox = await elem.boundingBox();
+    console.log('boundingBox', boundingBox)
+
+    // Set the viewport size based on the width and height
+    await page.setViewport({ width: 1080, height: parseInt(boundingBox.height) - 3300 });
+
+    // // Set screen size
+    // await page.setViewport({ width: 1080, height: 2048 });
 
     // Get the base64-encoded image data
     const imageData = await page.$eval("canvas#cw2-history-chart", el => el.toDataURL().substring(22));

@@ -3,6 +3,7 @@ const Excel = require('exceljs');
 const path = require('node:path');
 const https = require('node:https');
 const puppeteer = require('puppeteer');
+const { AttachmentBuilder } = require('discord.js');
 
 // Function to calculate the ratio of fame over decks remaining
 function ratio(RiverRace, decksRemaining, i) {
@@ -319,10 +320,40 @@ async function playerHistory(url) {
     await browser.close();
 }
 
+async function renderCommand(interaction, command) {
+    const browser = await puppeteer.launch({ headless: 'new' });
+    const page = await browser.newPage();
+
+    // Navigate to a blank HTML page
+    await page.goto(`file:${path.join(__dirname, '../html/layout-tmp.html')}`);
+
+    // Get the bounding box of the body
+    const elem = await page.$('body');
+    const boundingBox = await elem.boundingBox();
+    // console.log('boundingBox', boundingBox)
+
+    // Set the viewport size based on the width and height of the body
+    await page.setViewport({ width: 1920, height: parseInt(boundingBox.height) + 20 });
+
+    // Capture a screenshot of the rendered content
+    await page.screenshot({ path: command + ".png" });
+
+    await browser.close();
+
+    // Send the image to the channel
+    const attachment = new AttachmentBuilder(command + ".png");
+    await interaction.editReply({ files: [attachment] });
+
+    // Delete the temporary files
+    fs.unlinkSync('./html/layout-tmp.html');
+    fs.unlinkSync('./' + command + '.png');
+}
+
 module.exports = {
     ratio,
     fetchHist,
     excel,
     http_head,
-    playerHistory
+    playerHistory,
+    renderCommand
 }

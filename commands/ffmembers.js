@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, AttachmentBuilder } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
 const Discord = require("discord.js");
 const { EmbedBuilder } = require('discord.js');
 const fs = require('fs');
@@ -30,7 +30,7 @@ module.exports = {
     async execute(bot, api, interaction) {
         await interaction.deferReply({ ephemeral: false });
         let clan = interaction.options.getString('clan');
-        let text = interaction.options.getBoolean('text_version');
+        let text = interaction.options.getBoolean('text_version'); // For text version too
         if (interaction.options.getString('custom_tag') != null) { // For a custom tag clan
             let custom_tag = interaction.options.getString('custom_tag');
             const regex = /\#[a-zA-Z0-9]{8,9}\b/g
@@ -86,32 +86,7 @@ module.exports = {
 
         });
 
-        const browser = await puppeteer.launch({ headless: 'new' });
-        const page = await browser.newPage();
-
-        // Navigate to a blank HTML page
-        await page.goto(`file:${path.join(__dirname, '../html/layout-tmp.html')}`);
-
-        // Get the bounding box of the body
-        const elem = await page.$('body');
-        const boundingBox = await elem.boundingBox();
-        // console.log('boundingBox', boundingBox)
-
-        // Set the viewport size based on the width and height of the body
-        await page.setViewport({ width: 1920, height: parseInt(boundingBox.height) + 20 });
-
-        // Capture a screenshot of the rendered content
-        await page.screenshot({ path: "ffmember.png" });
-
-        await browser.close();
-
-        // Send the image to the channel
-        const attachment = new AttachmentBuilder("ffmember.png");
-        await interaction.editReply({ files: [attachment] });
-
-        // Delete the temporary files
-        fs.unlinkSync('./html/layout-tmp.html');
-        fs.unlinkSync('./ffmember.png');
+        await functions.renderCommand(interaction, 'ffmembers')
 
         if (text != null) {
             const rand = Math.random().toString(36).slice(2); // Generate a random string to avoid the image cache

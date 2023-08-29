@@ -23,10 +23,14 @@ module.exports = {
                 .setRequired(true))
         .addStringOption(option =>
             option.setName('custom_tag')
-                .setDescription('Tag of the foreign clan to check (nothing happens if wrong)')),
+                .setDescription('Tag of the foreign clan to check (nothing happens if wrong)'))
+        .addBooleanOption(option =>
+            option.setName('text_version')
+                .setDescription('Show the text version of the command too')),
     async execute(bot, api, interaction) {
         await interaction.deferReply({ ephemeral: false });
         let clan = interaction.options.getString('clan');
+        let text = interaction.options.getBoolean('text_version');
         if (interaction.options.getString('custom_tag') != null) { // For a custom tag clan
             let custom_tag = interaction.options.getString('custom_tag');
             const regex = /\#[a-zA-Z0-9]{8,9}\b/g
@@ -52,10 +56,10 @@ module.exports = {
             })
         let response = await api.getClanMembers(clan)
         let Members = "";
-        //Members += "**" + response.length + " members**\n\n"
+        let Members_text = "**" + response.length + " members**\n\n"
         // Make the string with the members' names, tags, roles, levels and trophies
         for (let i = 0; i < response.length; i++) {
-            //Members += "- **" + response[i].name + "** \n(" + response[i].tag + ", " + response[i].role + ", lvl" + response[i].expLevel + ", " + response[i].trophies + " tr)" + "\n\n"
+            Members_text += "- **" + response[i].name + "** \n(" + response[i].tag + ", " + response[i].role + ", lvl" + response[i].expLevel + ", " + response[i].trophies + " tr)" + "\n\n"
             Members += "<tr>\n<td>" + response[i].name + "</td>\n<td>" + response[i].tag + "</td>\n<td>" + response[i].role + "</td>\n<td>" + response[i].expLevel + "</td>\n<td>" + response[i].trophies + " 🏆</td>\n</tr>\n"
         }
         // console.log(Members)
@@ -108,5 +112,23 @@ module.exports = {
         // Delete the temporary files
         fs.unlinkSync('./html/layout-tmp.html');
         fs.unlinkSync('./ffmember.png');
+
+        if (text != null) {
+            const rand = Math.random().toString(36).slice(2); // Generate a random string to avoid the image cache
+            try {
+                membersEmbed
+                    .setColor(0x0099FF)
+                    .setTitle('__Current clan members__ :')
+                    .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' })
+                    .setDescription(Members_text)
+                    .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')
+                    .setTimestamp()
+                    .setFooter({ text: 'by OPM | Féfé ⚡', iconURL: 'https://avatars.githubusercontent.com/u/94113911?s=400&v=4?' + rand });
+            } catch (e) {
+                console.log(e);
+            }
+
+            interaction.editReply({ embeds: [membersEmbed] });
+        }
     },
 };

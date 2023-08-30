@@ -320,7 +320,7 @@ async function playerHistory(url) {
     await browser.close();
 }
 
-async function renderCommand(interaction, command) {
+async function renderCommand(interaction, command, wait) {
     const browser = await puppeteer.launch({ headless: 'new' });
     const page = await browser.newPage();
 
@@ -334,6 +334,9 @@ async function renderCommand(interaction, command) {
 
     // Set the viewport size based on the width and height of the body
     await page.setViewport({ width: 1920, height: parseInt(boundingBox.height) + 20 });
+
+    // Wait for the chart to be rendered
+    await new Promise(resolve => setTimeout(resolve, wait));
 
     // Capture a screenshot of the rendered content
     await page.screenshot({ path: command + ".png" });

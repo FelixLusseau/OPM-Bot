@@ -86,7 +86,7 @@ module.exports = {
 
         });
 
-        await functions.renderCommand(interaction, 'ffmembers')
+        await functions.renderCommand(interaction, 'ffmembers', 0)
 
         if (text != null) {
             const rand = Math.random().toString(36).slice(2); // Generate a random string to avoid the image cache

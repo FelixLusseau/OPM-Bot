@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('discord.js');
-const { EmbedBuilder } = require('discord.js');
 const fs = require('fs');
+const functions = require('../utils/functions.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -8,7 +8,6 @@ module.exports = {
         .setDescription('Get the hours for the reset and report !'),
     async execute(bot, api, interaction) {
         await interaction.deferReply({ ephemeral: false });
-        const resultsEmbed = new EmbedBuilder();
         let clans = [];
         fs.readdirSync('./reset-hours/').forEach(file => { // Browse the reset-hours folder and add the files to the clans array
             clans.push(file);
@@ -17,23 +16,29 @@ module.exports = {
         // Make the brief
         clans.forEach(clan => {
             let hour = fs.readFileSync('./reset-hours/' + clan, 'utf8');
-            hours += "- **" + clan + "** : `" + hour + "`\n";
+            hours += "<tr style='line-height: 10em;'>\n<td><span style='font-size: 3em;'>" + clan + "</span></td>\n<td style='font-size: 5em; background-image: linear-gradient(to left, violet, indigo, blue, green, orange, red);   -webkit-background-clip: text; color: transparent;'>" + hour + "</td>\n</tr>";
         });
 
-        const rand = Math.random().toString(36).slice(2); // Generate a random string to avoid the image cache
-        try {
-            resultsEmbed
-                .setColor(0x0099FF)
-                .setTitle('__Reset hours__')
-                .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' })
-                .setDescription(hours)
-                .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')
-                .setTimestamp()
-                .setFooter({ text: 'by OPM | Féfé ⚡', iconURL: 'https://avatars.githubusercontent.com/u/94113911?s=400&v=4?' + rand });
-        } catch (e) {
-            console.log(e);
-        }
+        fs.readFile('./html/layout.html', 'utf8', function (err, data) {
+            if (err) {
+                return console.log(err);
+            }
+            fs.readFile('./html/ffgethours.html', 'utf8', function (err, data2) {
+                if (err) {
+                    return console.log(err);
+                }
 
-        interaction.editReply({ embeds: [resultsEmbed] });
+                let result = data2.replace(/{{ Hours }}/g, hours);
+
+                let html = data.replace(/{{ body }}/g, result);
+
+                fs.writeFile('./html/layout-tmp.html', html, 'utf8', function (err) {
+                    if (err) return console.log(err);
+                });
+            });
+
+        });
+
+        await functions.renderCommand(interaction, 'ffgethours', 0)
     },
 };

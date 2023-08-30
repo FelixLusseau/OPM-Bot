@@ -352,11 +352,67 @@ async function renderCommand(interaction, command, wait) {
     fs.unlinkSync('./' + command + '.png');
 }
 
+function barChart(type, Labels, Datas, max) {
+    let scales = {}
+    if (type == 'bar')
+        scales = {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true,
+                    max: max,
+                },
+            }],
+        };
+    else if (type == 'horizontalBar')
+        scales = {
+            xAxes: [{
+                ticks: {
+                    beginAtZero: true,
+                    max: max,
+                },
+            }],
+        };
+    const chart = {
+        type: type,
+        data: {
+            labels: Labels,
+            datasets: [
+                {
+                    label: 'Medals',
+                    data: Datas,
+                    backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(255, 159, 64, 0.2)', 'rgba(255, 205, 86, 0.2)', 'rgba(75, 192, 192, 0.2)', 'rgba(54, 162, 235, 0.2)'],
+                    borderColor: ['rgb(255, 99, 132)', 'rgb(255, 159, 64)', 'rgb(255, 205, 86)', 'rgb(75, 192, 192)', 'rgb(54, 162, 235)'],
+                    borderWidth: 1,
+                },
+            ],
+        },
+        options: {
+            'scales': scales,
+            plugins:
+                [
+                    {
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                            formatter: Math.round,
+                            font: {
+                                weight: 'bold',
+                                size: 16
+                            }
+                        }
+                    },
+                ]
+        },
+    };
+    return chart;
+}
+
 module.exports = {
     ratio,
     fetchHist,
     excel,
     http_head,
     playerHistory,
-    renderCommand
+    renderCommand,
+    barChart
 }

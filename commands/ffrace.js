@@ -128,54 +128,7 @@ async function ffrace(bot, api, interaction, guildId, channel, clan, report) {
         max = 45000
 
     // Chart construction
-    const chart = {
-        type: 'horizontalBar',
-        data: {
-            labels: Labels,
-            datasets: [
-                {
-                    label: 'Medals',
-                    data: Datas,
-                    backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(255, 159, 64, 0.2)', 'rgba(255, 205, 86, 0.2)', 'rgba(75, 192, 192, 0.2)', 'rgba(54, 162, 235, 0.2)'],//'rgba(54,255,51,0.2)',
-                    borderColor: ['rgb(255, 99, 132)', 'rgb(255, 159, 64)', 'rgb(255, 205, 86)', 'rgb(75, 192, 192)', 'rgb(54, 162, 235)'], //'#33FF3F',
-                    borderWidth: 1,
-                },
-            ],
-        },
-        options: {
-            'scales':
-            {
-                'xAxes': [
-                    {
-                        'ticks':
-                        {
-                            'beginAtZero': true,
-                            'max': max,
-                        }
-                    }
-                ]
-            },
-            plugins: {
-                customCanvasBackgroundColor: {
-                    color: '#FFFFFF',
-                }
-            }
-        },
-        plugins:
-            [
-                {
-                    id: 'customCanvasBackgroundColor',
-                    beforeDraw: (chart, args, options) => {
-                        const { ctx } = chart;
-                        ctx.save();
-                        ctx.globalCompositeOperation = 'destination-over';
-                        ctx.fillStyle = options.color || '#99ffff';
-                        ctx.fillRect(0, 0, chart.width, chart.height);
-                        ctx.restore();
-                    },
-                },
-            ]
-    };
+    const chart = functions.barChart('horizontalBar', Labels, Datas, max);
     const encodedChart = encodeURIComponent(JSON.stringify(chart));
     const chartUrl = `https://quickchart.io/chart?c=${encodedChart}`;
 

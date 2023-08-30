@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require('discord.js');
 const Discord = require("discord.js");
 const { EmbedBuilder } = require('discord.js');
 const functions = require('../utils/functions.js');
+const fs = require('fs');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -20,10 +21,14 @@ module.exports = {
                 .setRequired(true))
         .addStringOption(option =>
             option.setName('custom_tag')
-                .setDescription('Tag of the foreign clan to check (nothing happens if wrong)')),
+                .setDescription('Tag of the foreign clan to check (nothing happens if wrong)'))
+        .addBooleanOption(option =>
+            option.setName('text_version')
+                .setDescription('Show the text version of the command too')),
     async execute(bot, api, interaction) {
         await interaction.deferReply({ ephemeral: false });
         let clan = interaction.options.getString('clan');
+        let text = interaction.options.getBoolean('text_version'); // For text version too
         if (interaction.options.getString('custom_tag') != null) { // For a custom tag clan
             let custom_tag = interaction.options.getString('custom_tag');
             const regex = /\#[a-zA-Z0-9]{8,9}\b/g
@@ -102,72 +107,51 @@ module.exports = {
         else max = 10000
 
         // Chart creation
-        const chart = {
-            type: 'bar',
-            data: {
-                labels: Labels,
-                datasets: [
-                    {
-                        label: 'Medals',
-                        data: Datas,
-                        backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(255, 159, 64, 0.2)', 'rgba(255, 205, 86, 0.2)', 'rgba(75, 192, 192, 0.2)', 'rgba(54, 162, 235, 0.2)'],//'rgba(54,255,51,0.2)',
-                        borderColor: ['rgb(255, 99, 132)', 'rgb(255, 159, 64)', 'rgb(255, 205, 86)', 'rgb(75, 192, 192)', 'rgb(54, 162, 235)'], //'#33FF3F',
-                        borderWidth: 1,
-                    },
-                ],
-            },
-            options: {
-                'scales':
-                {
-                    'yAxes': [
-                        {
-                            'ticks':
-                            {
-                                'beginAtZero': true,
-                                'max': max,
-                            }
-                        }
-                    ]
-                },
-                plugins: {
-                    customCanvasBackgroundColor: {
-                        color: '#FFFFFF',
-                    }
-                }
-            },
-            plugins:
-                [
-                    {
-                        id: 'customCanvasBackgroundColor',
-                        beforeDraw: (chart, args, options) => {
-                            const { ctx } = chart;
-                            ctx.save();
-                            ctx.globalCompositeOperation = 'destination-over';
-                            ctx.fillStyle = options.color || '#99ffff';
-                            ctx.fillRect(0, 0, chart.width, chart.height);
-                            ctx.restore();
-                        },
-                    },
-                ]
-        };
+        const chart = functions.barChart('bar', Labels, Datas, max);
         const encodedChart = encodeURIComponent(JSON.stringify(chart));
         const chartUrl = `https://quickchart.io/chart?c=${encodedChart}`;
+        // console.log(chartUrl);
 
-        const rand = Math.random().toString(36).slice(2); // Generate a random string to avoid the image cache
-        try {
-            riverEmbed
-                .setColor(0x0099FF)
-                .setTitle((RiverRace.periodType == "colosseum") ? "__Colosseum__ :" : "__Current river race__ :")
-                .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' })
-                .setDescription(Race)
-                .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')
-                .setImage(chartUrl)
-                .setTimestamp()
-                .setFooter({ text: 'by OPM | Féfé ⚡', iconURL: 'https://avatars.githubusercontent.com/u/94113911?s=400&v=4?' + rand });
-        } catch (e) {
-            console.log(e);
+        fs.readFile('./html/layout.html', 'utf8', function (err, data) {
+            if (err) {
+                return console.log(err);
+            }
+            fs.readFile('./html/ffriver.html', 'utf8', function (err, data2) {
+                if (err) {
+                    return console.log(err);
+                }
+
+                let result = data2.replace(/{{ Chart }}/g, chartUrl);
+                result = result.replace(/{{ clan }}/g, (clansDict[clan] != undefined) ? clansDict[clan] : clan);
+
+                let html = data.replace(/{{ body }}/g, result);
+
+                fs.writeFile('./html/layout-tmp.html', html, 'utf8', function (err) {
+                    if (err) return console.log(err);
+                });
+            });
+
+        });
+
+        await functions.renderCommand(interaction, 'ffriver', 0)
+
+        if (text != null) {
+            const rand = Math.random().toString(36).slice(2); // Generate a random string to avoid the image cache
+            try {
+                riverEmbed
+                    .setColor(0x0099FF)
+                    .setTitle((RiverRace.periodType == "colosseum") ? "__Colosseum__ :" : "__Current river race__ :")
+                    .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' })
+                    .setDescription(Race)
+                    .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')
+                    .setImage(chartUrl)
+                    .setTimestamp()
+                    .setFooter({ text: 'by OPM | Féfé ⚡', iconURL: 'https://avatars.githubusercontent.com/u/94113911?s=400&v=4?' + rand });
+            } catch (e) {
+                console.log(e);
+            }
+
+            interaction.editReply({ embeds: [riverEmbed] });
         }
-
-        interaction.editReply({ embeds: [riverEmbed] });
     },
 };

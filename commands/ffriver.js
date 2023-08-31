@@ -112,6 +112,7 @@ module.exports = {
         const chartUrl = `https://quickchart.io/chart?c=${encodedChart}`;
         // console.log(chartUrl);
 
+        const tmpFile = (Math.random() + 1).toString(36).substring(7) + '.html';
         fs.readFile('./html/layout.html', 'utf8', function (err, data) {
             if (err) {
                 return console.log(err);
@@ -126,14 +127,14 @@ module.exports = {
 
                 let html = data.replace(/{{ body }}/g, result);
 
-                fs.writeFile('./html/layout-tmp.html', html, 'utf8', function (err) {
+                fs.writeFile('./' + tmpFile, html, 'utf8', function (err) {
                     if (err) return console.log(err);
                 });
             });
 
         });
 
-        await functions.renderCommand(interaction, 'ffriver', 0)
+        await functions.renderCommand(interaction, tmpFile, 0, 0)
 
         if (text != null) {
             const rand = Math.random().toString(36).slice(2); // Generate a random string to avoid the image cache

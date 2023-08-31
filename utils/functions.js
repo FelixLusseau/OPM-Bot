@@ -320,12 +320,12 @@ async function playerHistory(url) {
     await browser.close();
 }
 
-async function renderCommand(interaction, command, wait) {
+async function renderCommand(interaction, tmpFile, wait, screenReduce) {
     const browser = await puppeteer.launch({ headless: 'new' });
     const page = await browser.newPage();
 
     // Navigate to a blank HTML page
-    await page.goto(`file:${path.join(__dirname, '../html/layout-tmp.html')}`);
+    await page.goto(`file:${path.join(__dirname, '../' + tmpFile)}`);
 
     // Get the bounding box of the body
     const elem = await page.$('body');
@@ -333,23 +333,23 @@ async function renderCommand(interaction, command, wait) {
     // console.log('boundingBox', boundingBox)
 
     // Set the viewport size based on the width and height of the body
-    await page.setViewport({ width: 1920, height: parseInt(boundingBox.height) + 20 });
+    await page.setViewport({ width: 1920, height: parseInt(boundingBox.height) + 20 - screenReduce });
 
     // Wait for the chart to be rendered
     await new Promise(resolve => setTimeout(resolve, wait));
 
     // Capture a screenshot of the rendered content
-    await page.screenshot({ path: command + ".png" });
+    await page.screenshot({ path: tmpFile + ".png" });
 
     await browser.close();
 
     // Send the image to the channel
-    const attachment = new AttachmentBuilder(command + ".png");
+    const attachment = new AttachmentBuilder(tmpFile + ".png");
     await interaction.editReply({ files: [attachment] });
 
     // Delete the temporary files
-    fs.unlinkSync('./html/layout-tmp.html');
-    fs.unlinkSync('./' + command + '.png');
+    fs.unlinkSync('./' + tmpFile);
+    fs.unlinkSync('./' + tmpFile + '.png');
 }
 
 function barChart(type, Labels, Datas, max) {
@@ -401,6 +401,11 @@ function barChart(type, Labels, Datas, max) {
                             }
                         }
                     },
+                    // {
+                    //     legend: {
+                    //         display: false,
+                    //     }
+                    // }
                 ]
         },
     };

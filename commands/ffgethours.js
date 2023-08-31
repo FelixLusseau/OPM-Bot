@@ -19,6 +19,7 @@ module.exports = {
             hours += "<tr style='line-height: 10em;'>\n<td><span style='font-size: 3em;'>" + clan + "</span></td>\n<td style='font-size: 5em; background-image: linear-gradient(to left, violet, indigo, blue, green, orange, red);   -webkit-background-clip: text; color: transparent;'>" + hour + "</td>\n</tr>";
         });
 
+        const tmpFile = (Math.random() + 1).toString(36).substring(7) + '.html';
         fs.readFile('./html/layout.html', 'utf8', function (err, data) {
             if (err) {
                 return console.log(err);
@@ -32,13 +33,13 @@ module.exports = {
 
                 let html = data.replace(/{{ body }}/g, result);
 
-                fs.writeFile('./html/layout-tmp.html', html, 'utf8', function (err) {
+                fs.writeFile('./' + tmpFile, html, 'utf8', function (err) {
                     if (err) return console.log(err);
                 });
             });
 
         });
 
-        await functions.renderCommand(interaction, 'ffgethours', 0)
+        await functions.renderCommand(interaction, tmpFile, 0, 150)
     },
 };

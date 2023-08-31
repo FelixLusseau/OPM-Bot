@@ -46,3 +46,4 @@
 - Send an Excel spreadsheet with the war results and averages with colors.
 
 - 31/08/2023 : New display is beginning its deployment !
+Old version is still available with the option `text_version: True`.

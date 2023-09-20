@@ -1,5 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
-const { EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const functions = require('../utils/functions.js');
 
 async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan) {
@@ -37,14 +36,16 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
     let Players1 = "";
     let ping = "";
 
-    api.getClanCurrentRiverRace(clan) // Retrieve the clan's information from the Supercell API
-        .then((response) => {
-            return response
-        })
-        .catch((err) => {
-            console.log("CR-API error : ", err)
-        })
-    let RiverRace = await api.getClanCurrentRiverRace(clan)
+    let RiverRace = null
+    try {
+        RiverRace = await api.getClanCurrentRiverRace(clan)
+    } catch (error) {
+        const myError = '[' + error.response.headers.date + ']: Error:' + error.response.status + ' ' + error.response.statusText
+        console.error(myError);
+        console.log("CR-API error : ", error)
+        functions.errorEmbed(bot, interaction, channel)
+        return
+    }
     let points = 0
     if (RiverRace.periodType == "colosseum") { points = RiverRace.clan.fame.toString() } // Check if the war is the colosseum or not
     else { points = RiverRace.clan.periodPoints.toString() }

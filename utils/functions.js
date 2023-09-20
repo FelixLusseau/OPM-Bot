@@ -3,7 +3,24 @@ const Excel = require('exceljs');
 const path = require('node:path');
 const https = require('node:https');
 const puppeteer = require('puppeteer');
-const { AttachmentBuilder } = require('discord.js');
+const { AttachmentBuilder, EmbedBuilder } = require('discord.js');
+
+// Function to send an error embed
+function errorEmbed(bot, interaction, channel) {
+    const errorEmbed = new EmbedBuilder()
+    errorEmbed
+        .setColor(0x0099FF)
+        .setTitle("CR-API error")
+        .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' })
+        .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')
+        .setTimestamp()
+        .setImage('https://media.tenor.com/xEfTylb0-A4AAAAM/sad.gif')
+        .setFooter({ text: 'by OPM | Féfé ⚡', iconURL: 'https://avatars.githubusercontent.com/u/94113911?s=400&v=4' });
+    if (interaction != null)
+        interaction.editReply({ embeds: [errorEmbed] });
+    else
+        channel.send({ embeds: [errorEmbed] });
+}
 
 // Function to calculate the ratio of fame over decks remaining
 function ratio(RiverRace, decksRemaining, i) {
@@ -413,6 +430,7 @@ function barChart(type, Labels, Datas, max) {
 }
 
 module.exports = {
+    errorEmbed,
     ratio,
     fetchHist,
     excel,

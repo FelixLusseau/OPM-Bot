@@ -3,6 +3,7 @@ const Excel = require('exceljs');
 const path = require('node:path');
 const https = require('node:https');
 const puppeteer = require('puppeteer');
+const { AttachmentBuilder } = require('discord.js');
 
 // Function to calculate the ratio of fame over decks remaining
 function ratio(RiverRace, decksRemaining, i) {
@@ -271,9 +272,6 @@ async function playerHistory(url) {
     // Navigate the page to a URL
     await page.goto(url);
 
-    // Set screen size
-    await page.setViewport({ width: 1080, height: 2048 });
-
     // Accept cookies
     await Promise.all([
         page.click("button.css-47sehv"),
@@ -286,6 +284,16 @@ async function playerHistory(url) {
 
     // Wait for the chart to be rendered
     await new Promise(resolve => setTimeout(resolve, 2000));
+
+    const elem = await page.$('#page_content');
+    const boundingBox = await elem.boundingBox();
+    console.log('boundingBox', boundingBox)
+
+    // Set the viewport size based on the width and height
+    await page.setViewport({ width: 1080, height: parseInt(boundingBox.height) - 3300 });
+
+    // // Set screen size
+    // await page.setViewport({ width: 1080, height: 2048 });
 
     // Get the base64-encoded image data
     const imageData = await page.$eval("canvas#cw2-history-chart", el => el.toDataURL().substring(22));
@@ -312,10 +320,104 @@ async function playerHistory(url) {
     await browser.close();
 }
 
+async function renderCommand(interaction, tmpFile, wait, screenReduce) {
+    const browser = await puppeteer.launch({ headless: 'new' });
+    const page = await browser.newPage();
+
+    // Navigate to a blank HTML page
+    await page.goto(`file:${path.join(__dirname, '../' + tmpFile)}`);
+
+    // Get the bounding box of the body
+    const elem = await page.$('body');
+    const boundingBox = await elem.boundingBox();
+    // console.log('boundingBox', boundingBox)
+
+    // Set the viewport size based on the width and height of the body
+    await page.setViewport({ width: 1920, height: parseInt(boundingBox.height) + 20 - screenReduce });
+
+    // Wait for the chart to be rendered
+    await new Promise(resolve => setTimeout(resolve, wait));
+
+    // Capture a screenshot of the rendered content
+    await page.screenshot({ path: tmpFile + ".png" });
+
+    await browser.close();
+
+    // Send the image to the channel
+    const attachment = new AttachmentBuilder(tmpFile + ".png");
+    await interaction.editReply({ files: [attachment] });
+
+    // Delete the temporary files
+    fs.unlinkSync('./' + tmpFile);
+    fs.unlinkSync('./' + tmpFile + '.png');
+}
+
+function barChart(type, Labels, Datas, max) {
+    let scales = {}
+    if (type == 'bar')
+        scales = {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true,
+                    max: max,
+                },
+            }],
+        };
+    else if (type == 'horizontalBar')
+        scales = {
+            xAxes: [{
+                ticks: {
+                    beginAtZero: true,
+                    max: max,
+                },
+            }],
+        };
+    const chart = {
+        type: type,
+        data: {
+            labels: Labels,
+            datasets: [
+                {
+                    label: 'Medals',
+                    data: Datas,
+                    backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(255, 159, 64, 0.2)', 'rgba(255, 205, 86, 0.2)', 'rgba(75, 192, 192, 0.2)', 'rgba(54, 162, 235, 0.2)'],
+                    borderColor: ['rgb(255, 99, 132)', 'rgb(255, 159, 64)', 'rgb(255, 205, 86)', 'rgb(75, 192, 192)', 'rgb(54, 162, 235)'],
+                    borderWidth: 1,
+                },
+            ],
+        },
+        options: {
+            'scales': scales,
+            plugins:
+                [
+                    {
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                            formatter: Math.round,
+                            font: {
+                                weight: 'bold',
+                                size: 16
+                            }
+                        }
+                    },
+                    // {
+                    //     legend: {
+                    //         display: false,
+                    //     }
+                    // }
+                ]
+        },
+    };
+    return chart;
+}
+
 module.exports = {
     ratio,
     fetchHist,
     excel,
     http_head,
-    playerHistory
+    playerHistory,
+    renderCommand,
+    barChart
 }

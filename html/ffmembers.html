@@ -1,0 +1,69 @@
+<div style="position: relative; width: 70%; text-align: center; margin: auto;">
+    <br><br><br>
+    <h1>Members of <b>{{ clan }}</b></h1>
+    <h2>{{ nb }} members</h2>
+    <canvas id="gauge" height=150 style="display: block; margin: auto; margin-bottom: 1em;"></canvas>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Tag</th>
+            <th>Role</th>
+            <th>Level</th>
+            <th>Trophies</th>
+        </tr>
+        {{ Players }}
+    </table>
+    <p style="text-align: left; display: flex; align-items: center; font-size: 2em;">
+        <span style="padding: 10 px;">By <b>OPM I Féfé ⚡️</b></span>
+        <img src="https://avatars.githubusercontent.com/u/94113911?s=400&v=4" height="30 px">
+    </p>
+</div>
+<script src="gauge.min.js"></script>
+<script>
+    var opts = {
+        angle: -0.2, // The span of the gauge arc
+        lineWidth: 0.2, // The line thickness
+        radiusScale: 1, // Relative radius
+        pointer: {
+            length: 0.6, // // Relative to gauge radius
+            strokeWidth: 0.035, // The thickness
+            color: '#000000' // Fill color
+        },
+        limitMax: true,     // If false, max value increases automatically if value > maxValue
+        limitMin: true,     // If true, the min value of the gauge will be fixed
+        colorStart: '#6F6EA0',   // Colors
+        colorStop: '#C0C0DB',    // just experiment with them
+        strokeColor: '#EEEEEE',  // to see which ones work best for you
+        generateGradient: false,
+        highDpiSupport: true,     // High resolution support
+        renderTicks: {
+            divisions: 5,
+            divWidth: 1.1,
+            divLength: 0.7,
+            divColor: '#333333',
+            subDivisions: 3,
+            subLength: 0.5,
+            subWidth: 0.6,
+            subColor: '#666666'
+        },
+        staticZones: [
+            { strokeStyle: "#F03E3E", min: 0, max: 30 }, // Red from 100 to 130
+            { strokeStyle: "#FF8000", min: 30, max: 45 }, // Orange
+            // { strokeStyle: "#FFDD00", min: 40, max: 45 }, // Yellow
+            { strokeStyle: "#30B32D", min: 45, max: 50 }, // Green
+        ],
+        staticLabels: {
+            font: "10px sans-serif",  // Specifies font
+            labels: [0, 10, 20, 30, 40, 45, 50],  // Print labels at these values
+            color: "#000000",  // Optional: Label text color
+            fractionDigits: 0  // Optional: Numerical precision. 0=round off.
+        },
+    };
+    var target = document.getElementById('gauge'); // your canvas element
+    var gauge = new Gauge(target).setOptions(opts); // create sexy gauge!
+    gauge.maxValue = 50; // set max gauge value
+    gauge.minValue = 0
+    gauge.setMinValue(0);  // Prefer setter over gauge.minValue = 0
+    gauge.animationSpeed = 1; // set animation speed (32 is default value)
+    gauge.set({{ nb }}); // set actual value
+</script>

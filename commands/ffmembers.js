@@ -1,6 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
-const Discord = require("discord.js");
-const { EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
 const puppeteer = require('puppeteer');
@@ -46,15 +44,15 @@ module.exports = {
                 }
             }
         }
-        const membersEmbed = new EmbedBuilder();
-        api.getClanMembers(clan) // Get the clans' members from the Supercell API
-            .then((response) => {
-                return response
-            })
-            .catch((err) => {
-                console.log("CR-API error : ", err)
-            })
-        let response = await api.getClanMembers(clan)
+
+        let response = null
+        try {
+            response = await api.getClanMembers(clan)
+        } catch (error) {
+            functions.errorEmbed(bot, interaction, interaction.channel, error)
+            return
+        }
+
         let Members = "";
         let Members_text = "**" + response.length + " members**\n\n"
         // Make the string with the members' names, tags, roles, levels and trophies
@@ -90,6 +88,7 @@ module.exports = {
         await functions.renderCommand(interaction, tmpFile, 0, 100)
 
         if (text != null) {
+            const membersEmbed = new EmbedBuilder();
             const rand = Math.random().toString(36).slice(2); // Generate a random string to avoid the image cache
             try {
                 membersEmbed

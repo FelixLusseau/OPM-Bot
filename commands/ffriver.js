@@ -1,6 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
-const Discord = require("discord.js");
-const { EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const functions = require('../utils/functions.js');
 const fs = require('fs');
 
@@ -44,19 +42,17 @@ module.exports = {
                 }
             }
         }
-        const riverEmbed = new EmbedBuilder();
         let Labels = [];
         let Datas = [];
         let Race = "";
 
-        api.getClanCurrentRiverRace(clan) // Get info about the River Race
-            .then((response) => {
-                return response
-            })
-            .catch((err) => {
-                console.log("CR-API error : ", err)
-            })
-        let RiverRace = await api.getClanCurrentRiverRace(clan)
+        let RiverRace = null
+        try {
+            RiverRace = await api.getClanCurrentRiverRace(clan)// Get info about the River Race
+        } catch (error) {
+            functions.errorEmbed(bot, interaction, channel, error)
+            return
+        }
 
         // Chart data processing
         for (let i = 0; i < RiverRace.clans.length; i++) {
@@ -137,6 +133,7 @@ module.exports = {
         await functions.renderCommand(interaction, tmpFile, 0, 0)
 
         if (text != null) {
+            const riverEmbed = new EmbedBuilder();
             const rand = Math.random().toString(36).slice(2); // Generate a random string to avoid the image cache
             try {
                 riverEmbed

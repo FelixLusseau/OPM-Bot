@@ -1,6 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
-const Discord = require("discord.js");
-const { EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const functions = require('../utils/functions.js');
 const fs = require('fs');
 
@@ -26,32 +24,30 @@ module.exports = {
         await interaction.deferReply({ ephemeral: false });
         const clan = interaction.options.getString('clan');
         let text = interaction.options.getBoolean('text_version'); // For text version too
-        const opponentsEmbed = new EmbedBuilder();
         let Opponents = "";
         let scores = [];
         let charts = "";
-        api.getClanCurrentRiverRace(clan) // Get info about the River Race
-            .then((response) => {
-                return response
-            })
-            .catch((err) => {
-                console.log("CR-API error : ", err)
-            })
-        let RiverRace = await api.getClanCurrentRiverRace(clan)
+
+        let RiverRace = null
+        try {
+            RiverRace = await api.getClanCurrentRiverRace(clan)
+        } catch (error) {
+            functions.errorEmbed(bot, interaction, channel, error)
+            return
+        }
 
         let opponentsText = "<ul style='font-size: 2em; text-align: left;'>\n";
         let Labels = []
         let seasons = []
 
         for (let i = 0; i < RiverRace.clans.length; i++) {
-            api.getClanByTag(RiverRace.clans[i].tag) // Get the clans' info from the Supercell API
-                .then((clan) => {
-                    return clan
-                })
-                .catch((err) => {
-                    console.log("CR-API error : ", err)
-                })
-            let clan = await api.getClanByTag(RiverRace.clans[i].tag)
+            let clan = null
+            try {
+                clan = await api.getClanByTag(RiverRace.clans[i].tag)// Get the clans' info from the Supercell API
+            } catch (error) {
+                functions.errorEmbed(bot, interaction, channel, error)
+                return
+            }
             Labels.push(RiverRace.clans[i].name)
             // console.log("clan : " + RiverRace.clans[i].name)
 
@@ -146,6 +142,7 @@ module.exports = {
         await functions.renderCommand(interaction, tmpFile, 0, 300)
 
         if (text != null) {
+            const opponentsEmbed = new EmbedBuilder();
             const rand = Math.random().toString(36).slice(2); // Generate a random string to avoid the image cache
             try {
                 opponentsEmbed

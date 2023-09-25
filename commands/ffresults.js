@@ -1,5 +1,5 @@
-const { SlashCommandBuilder } = require('discord.js');
-const { EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const functions = require('../utils/functions.js');
 
 async function ffresults(bot, api, interaction, guildId, clan) {
     // Check if the command was run by an interaction or a scheduled message
@@ -14,14 +14,13 @@ async function ffresults(bot, api, interaction, guildId, clan) {
 
     const resultsEmbed = new EmbedBuilder();
     let Players = "";
-    api.getClanCurrentRiverRace(clan) // Get info about the River Race
-        .then((response) => {
-            return response
-        })
-        .catch((err) => {
-            console.log("CR-API error : ", err)
-        })
-    let RiverRace = await api.getClanCurrentRiverRace(clan)
+    let RiverRace = null
+    try {
+        RiverRace = await api.getClanCurrentRiverRace(clan)// Get info about the River Race
+    } catch (error) {
+        functions.errorEmbed(bot, interaction, channel, error)
+        return
+    }
 
     // Sort the players by fame
     RiverRace.clan.participants.sort((a, b) => (a.fame < b.fame) ? 1 : -1)

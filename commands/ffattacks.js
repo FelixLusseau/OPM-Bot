@@ -40,10 +40,7 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
     try {
         RiverRace = await api.getClanCurrentRiverRace(clan)
     } catch (error) {
-        const myError = '[' + error.response.headers.date + ']: Error:' + error.response.status + ' ' + error.response.statusText
-        console.error(myError);
-        console.log("CR-API error : ", error)
-        functions.errorEmbed(bot, interaction, channel)
+        functions.errorEmbed(bot, interaction, channel, error)
         return
     }
     let points = 0

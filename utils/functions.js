@@ -6,7 +6,10 @@ const puppeteer = require('puppeteer');
 const { AttachmentBuilder, EmbedBuilder } = require('discord.js');
 
 // Function to send an error embed
-function errorEmbed(bot, interaction, channel) {
+function errorEmbed(bot, interaction, channel, error) {
+    const myError = '[' + error.response.headers.date + ']: Error:' + error.response.status + ' ' + error.response.statusText
+    console.error(myError);
+    console.log("CR-API error : ", error)
     const errorEmbed = new EmbedBuilder()
     errorEmbed
         .setColor(0x0099FF)
@@ -55,13 +58,18 @@ function ratio(RiverRace, decksRemaining, i) {
 
 // Function to fetch the clan's war history directly from the Supercell API not using the @varandas/clash-royale-api package (not available in it)
 async function fetchHist(tag) {
-    const response = await fetch("https://api.clashroyale.com/v1/clans/%23" + tag + "/riverracelog", {
-        headers: {
-            authorization: `Bearer ${process.env.CR_TOKEN}`,
-        },
-    });
-    const jsonData = await response.json();
-    return jsonData;
+    try {
+        const response = await fetch("https://api.clashroyale.com/v1/clans/%23" + tag + "/riverracelog", {
+            headers: {
+                authorization: `Bearer ${process.env.CR_TOKEN}`,
+            },
+        });
+        const jsonData = await response.json();
+        return jsonData;
+    } catch (error) {
+        console.log("CR-API error : ", error)
+        return error;
+    }
 }
 
 function generateHtmlTableFromWorksheet(worksheet) {

@@ -36,10 +36,7 @@ async function ffrace(bot, api, interaction, guildId, channel, clan, report) {
     try {
         RiverRace = await api.getClanCurrentRiverRace(clan)
     } catch (error) {
-        const myError = '[' + error.response.headers.date + ']: Error:' + error.response.status + ' ' + error.response.statusText
-        console.error(myError);
-        console.log("CR-API error : ", error)
-        functions.errorEmbed(bot, interaction, channel)
+        functions.errorEmbed(bot, interaction, channel, error)
         return
     }
 

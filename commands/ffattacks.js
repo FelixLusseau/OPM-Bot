@@ -1,12 +1,15 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const functions = require('../utils/functions.js');
+const fs = require('fs');
 
 async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan) {
+    let text = null
     // Check if the command was run by an interaction or a scheduled message
     if (interaction != null) {
         await interaction.deferReply({ ephemeral: false });
         pingBool = interaction.options.getBoolean('ping');
         clan = interaction.options.getString('clan');
+        text = interaction.options.getBoolean('text_version'); // For text version too
         if (interaction.options.getString('custom_tag') != null) { // For a custom tag clan
             let custom_tag = interaction.options.getString('custom_tag');
             const regex = /\#[a-zA-Z0-9]{8,9}\b/g
@@ -29,11 +32,14 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
     if (!guild)
         return console.log(`Can't find any guild with the ID "${guildId}"`);
 
-    const attacksEmbed = new EmbedBuilder();
     let Players4 = "";
     let Players3 = "";
     let Players2 = "";
     let Players1 = "";
+    let Players4HTML = "<span style='font-size: 1.5em;'><u><b>4 attacks : </b></u></span>\n<ul>\n";
+    let Players3HTML = "<span style='font-size: 1.5em;'><u><b>3 attacks : </b></u></span>\n<ul>\n";
+    let Players2HTML = "<span style='font-size: 1.5em;'><u><b>2 attacks : </b></u></span>\n<ul>\n";
+    let Players1HTML = "<span style='font-size: 1.5em;'><u><b>1 attack : </b></u>\</span>n<ul>\n";
     let ping = "";
 
     let RiverRace = null
@@ -57,14 +63,13 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
         return channel.send("The clan has finished the war !")
 
     let remainingPlayers = 50
-    api.getClanMembers(clan) // Retrieve the clan's members from the Supercell API
-        .then((members) => {
-            return members
-        })
-        .catch((err) => {
-            console.log("CR-API error : ", err)
-        })
-    let members = await api.getClanMembers(clan)
+    let members = null
+    try {
+        members = await api.getClanMembers(clan)// Retrieve the clan's members from the Supercell API
+    } catch (error) {
+        functions.errorEmbed(bot, interaction, channel, error)
+        return
+    }
 
     for (let j = 0; j < RiverRace.clan.participants.length; j++) {
         let inclan = false
@@ -81,17 +86,21 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
                 switch (decksRemainingToday) {
                     case 4:
                         Players4 += members[i].name + "\n";
+                        Players4HTML += "<li style='margin-bottom: 20px;'>" + members[i].name + "</li>\n"
                         break;
                     case 3:
                         Players3 += members[i].name + "\n";
+                        Players3HTML += "<li style='margin-bottom: 20px;'>" + members[i].name + "</li>\n"
                         remainingPlayers--
                         break;
                     case 2:
                         Players2 += members[i].name + "\n";
+                        Players2HTML += "<li style='margin-bottom: 20px;'>" + members[i].name + "</li>\n"
                         remainingPlayers--
                         break;
                     case 1:
                         Players1 += members[i].name + "\n";
+                        Players1HTML += "<li style='margin-bottom: 20px;'>" + members[i].name + "</li>\n"
                         remainingPlayers--
                         break;
                 }
@@ -123,12 +132,15 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
             switch (decksRemainingToday) {
                 case 3:
                     Players3 += player.name + " **(out of the clan !!)**\n";
+                    Players3HTML += "<li style='margin-bottom: 20px;'>" + player.name + " <b>(out of the clan !!)</b></li>\n"
                     break;
                 case 2:
                     Players2 += player.name + " **(out of the clan !!)**\n";
+                    Players2HTML += "<li style='margin-bottom: 20px;'>" + player.name + " <b>(out of the clan !!)</b></li>\n"
                     break;
                 case 1:
                     Players1 += player.name + " **(out of the clan !!)**\n";
+                    Players1HTML += "<li style='margin-bottom: 20px;'>" + player.name + " <b>(out of the clan !!)</b></li>\n"
                     break;
             }
             remainingPlayers--
@@ -148,7 +160,69 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
             }
         }
     }
+
+    Players4HTML += "</ul>\n"
+    Players3HTML += "</ul>\n"
+    Players2HTML += "</ul>\n"
+    Players1HTML += "</ul>\n"
+
+    if (interaction != null) {
+        let numbersHTML = ""
+        let attacksHTML = ""
+        const regex = /<li/g
+        if (Players4HTML.search(regex) >= 0 || Players3HTML.search(regex) >= 0 || Players2HTML.search(regex) >= 0 || Players1HTML.search(regex) >= 0) // Check if the strings are not empty
+        {
+            numbersHTML = "<p><b>🏅 Points</b> : "
+                + points
+                + "</p>"
+                + "<p><b>📟 Ratio</b> : "
+                + ratio
+                + "</p>"
+                + "<p><b>🚸 Players</b> : "
+                + remainingPlayers.toString()
+                + "</p>"
+                + "<p><b>⚔️ Attacks</b> : "
+                + decksRemaining
+                + "</p>"
+
+            if (Players4HTML.search(regex) >= 0)
+                attacksHTML += Players4HTML + "<br>"
+            if (Players3HTML.search(regex) >= 0)
+                attacksHTML += Players3HTML + "<br>"
+            if (Players2HTML.search(regex) >= 0)
+                attacksHTML += Players2HTML + "<br>"
+            if (Players1HTML.search(regex) >= 0)
+                attacksHTML += Players1HTML + "<br>"
+        }
+
+        const tmpFile = (Math.random() + 1).toString(36).substring(7) + '.html';
+        fs.readFile('./html/layout.html', 'utf8', function (err, data) {
+            if (err) {
+                return console.log(err);
+            }
+            fs.readFile('./html/ffattacks.html', 'utf8', function (err, data2) {
+                if (err) {
+                    return console.log(err);
+                }
+
+                let result = data2.replace(/{{ Attacks }}/g, attacksHTML);
+                result = result.replace(/{{ clan }}/g, (clansDict[clan] != undefined) ? clansDict[clan] : clan);
+                result = result.replace(/{{ Numbers }}/g, numbersHTML);
+
+                let html = data.replace(/{{ body }}/g, result);
+
+                fs.writeFile('./' + tmpFile, html, 'utf8', function (err) {
+                    if (err) return console.log(err);
+                });
+            });
+
+        });
+
+        await functions.renderCommand(interaction, tmpFile, 0, 200)
+    }
+
     let attacks = "" // String for the report
+    const attacksEmbed = new EmbedBuilder();
     if (Players4 != "" || Players3 != "" || Players2 != "" || Players1 != "") { // Check it the strings are not empty
         if (interaction) { // If the command is an interaction
             attacks = '<:fame:876320149878235136> **Points** : '
@@ -177,6 +251,7 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
                 + decksRemaining
                 + '\n'
         }
+
         const rand = Math.random().toString(36).slice(2); // Generate a random string to avoid the image cache
         attacksEmbed
             .setColor(0x0099FF)
@@ -204,9 +279,17 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
         }
 
     }
-    // If the interaction is not null, edit the reply deferred before
+    if (text != null) { // If the text option is enabled
+        // If the interaction is not null, edit the reply deferred before
+        if (interaction != null) {
+            interaction.editReply({ embeds: [attacksEmbed] });
+        } else if (pingBool) {
+            await guild.members.fetch();
+            channel.send({ embeds: [attacksEmbed] })
+        }
+    }
+
     if (interaction != null) {
-        interaction.editReply({ embeds: [attacksEmbed] });
         if (pingBool) {
             await guild.members.fetch();
             if (ping != "")
@@ -214,7 +297,6 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
         }
     } else if (pingBool) {
         await guild.members.fetch();
-        channel.send({ embeds: [attacksEmbed] })
         if (ping != "")
             channel.send(ping);
     }
@@ -240,6 +322,9 @@ module.exports = {
         .addBooleanOption(option =>
             option.setName('ping')
                 .setDescription('Ping the players who don\'t have attacked left'))
+        .addBooleanOption(option =>
+            option.setName('text_version')
+                .setDescription('Show the text version of the command too'))
         .addStringOption(option =>
             option.setName('custom_tag')
                 .setDescription('Tag of the foreign clan to check (nothing happens if wrong)')),

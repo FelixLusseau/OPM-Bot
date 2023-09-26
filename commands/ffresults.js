@@ -51,34 +51,36 @@ async function ffresults(bot, api, interaction, guildId, clan) {
     }
     PlayersHTML += "</ul>\n"
 
-    const tmpFile = (Math.random() + 1).toString(36).substring(7) + '.html';
-    fs.readFile('./html/layout.html', 'utf8', function (err, data) {
-        if (err) {
-            return console.log(err);
-        }
-        fs.readFile('./html/ffresults.html', 'utf8', function (err, data2) {
+    if (interaction != null) {
+        const tmpFile = (Math.random() + 1).toString(36).substring(7) + '.html';
+        fs.readFile('./html/layout.html', 'utf8', function (err, data) {
             if (err) {
                 return console.log(err);
             }
+            fs.readFile('./html/ffresults.html', 'utf8', function (err, data2) {
+                if (err) {
+                    return console.log(err);
+                }
 
-            let result = data2.replace(/{{ Results }}/g, PlayersHTML);
-            result = result.replace(/{{ clan }}/g, (clansDict[clan] != undefined) ? clansDict[clan] : clan);
+                let result = data2.replace(/{{ Results }}/g, PlayersHTML);
+                result = result.replace(/{{ clan }}/g, (clansDict[clan] != undefined) ? clansDict[clan] : clan);
 
-            let html = data.replace(/{{ body }}/g, result);
+                let html = data.replace(/{{ body }}/g, result);
 
-            fs.writeFile('./' + tmpFile, html, 'utf8', function (err) {
-                if (err) return console.log(err);
+                fs.writeFile('./' + tmpFile, html, 'utf8', function (err) {
+                    if (err) return console.log(err);
+                });
             });
+
         });
 
-    });
-
-    const regex = /<li/g
-    if (PlayersHTML.search(regex) >= 0) {
-        await functions.renderCommand(interaction, tmpFile, 0, 1200)
-    }
-    else {
-        interaction.editReply({ content: "No players have attacked yet !" })
+        const regex = /<li/g
+        if (PlayersHTML.search(regex) >= 0) {
+            await functions.renderCommand(interaction, tmpFile, 0, 1200)
+        }
+        else {
+            interaction.editReply({ content: "No players have attacked yet !" })
+        }
     }
 
 

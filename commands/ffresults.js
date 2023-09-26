@@ -1,19 +1,37 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const functions = require('../utils/functions.js');
+const fs = require('fs');
 
 async function ffresults(bot, api, interaction, guildId, clan) {
+    let text = null
     // Check if the command was run by an interaction or a scheduled message
     if (interaction != null) {
         await interaction.deferReply({ ephemeral: false });
         clan = interaction.options.getString('clan');
+        text = interaction.options.getBoolean('text_version'); // For text version too
+        if (interaction.options.getString('custom_tag') != null) { // For a custom tag clan
+            let custom_tag = interaction.options.getString('custom_tag');
+            const regex = /\#[a-zA-Z0-9]{8,9}\b/g
+            if (custom_tag.search(regex) >= 0) {
+                custom_tag = (custom_tag[0] == "#") ? custom_tag : "#" + custom_tag;
+                try {
+                    const statusCode = await functions.http_head("/clan/" + custom_tag.substring(1));
+                    // console.log('Status Code:', statusCode);
+                    if (statusCode == 200)
+                        clan = custom_tag;
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            }
+        }
         guildId = interaction.guildId;
     }
     const guild = bot.guilds.cache.find((g) => g.id === guildId);
     if (!guild)
         return console.log(`Can't find any guild with the ID "${guildId}"`);
 
-    const resultsEmbed = new EmbedBuilder();
     let Players = "";
+    let PlayersHTML = "<ul style='font-size: 2.2em; text-align: left;'>\n";
     let RiverRace = null
     try {
         RiverRace = await api.getClanCurrentRiverRace(clan)// Get info about the River Race
@@ -25,28 +43,65 @@ async function ffresults(bot, api, interaction, guildId, clan) {
     // Sort the players by fame
     RiverRace.clan.participants.sort((a, b) => (a.fame < b.fame) ? 1 : -1)
     for (let j = 0; j < RiverRace.clan.participants.length; j++) {
-        if (RiverRace.clan.participants[j].decksUsed > 0 && RiverRace.clan.participants[j].fame > 0)
+        if (RiverRace.clan.participants[j].decksUsed > 0 && RiverRace.clan.participants[j].fame > 0) {
             // Make a list of the players who have attacked and their fame
             Players += "- " + RiverRace.clan.participants[j].name + " : **" + RiverRace.clan.participants[j].fame + " pts**\n"
-    }
-
-    const rand = Math.random().toString(36).slice(2); // Generate a random string to avoid the image cache
-    try {
-        if (interaction) {
-            resultsEmbed
-                .setColor(0x0099FF)
-                .setTitle('__Players\' war results__ :')
-                .setDescription((Players.length > 0) ? Players : "No players have attacked yet !")
-                .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' })
-                .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')
-                .setTimestamp()
-                .setFooter({ text: 'by OPM | Féfé ⚡', iconURL: 'https://avatars.githubusercontent.com/u/94113911?s=400&v=4?' + rand });
+            PlayersHTML += "<li style='margin-bottom: 20px;'>" + RiverRace.clan.participants[j].name + " : <b>" + RiverRace.clan.participants[j].fame + " 🏅</b></li>\n"
         }
-    } catch (e) {
-        console.log(e);
+    }
+    PlayersHTML += "</ul>\n"
+
+    const tmpFile = (Math.random() + 1).toString(36).substring(7) + '.html';
+    fs.readFile('./html/layout.html', 'utf8', function (err, data) {
+        if (err) {
+            return console.log(err);
+        }
+        fs.readFile('./html/ffresults.html', 'utf8', function (err, data2) {
+            if (err) {
+                return console.log(err);
+            }
+
+            let result = data2.replace(/{{ Results }}/g, PlayersHTML);
+            result = result.replace(/{{ clan }}/g, (clansDict[clan] != undefined) ? clansDict[clan] : clan);
+
+            let html = data.replace(/{{ body }}/g, result);
+
+            fs.writeFile('./' + tmpFile, html, 'utf8', function (err) {
+                if (err) return console.log(err);
+            });
+        });
+
+    });
+
+    const regex = /<li/g
+    if (PlayersHTML.search(regex) >= 0) {
+        await functions.renderCommand(interaction, tmpFile, 0, 1200)
+    }
+    else {
+        interaction.editReply({ content: "No players have attacked yet !" })
     }
 
-    if (interaction != null) { interaction.editReply({ embeds: [resultsEmbed] }); }
+
+    if (text != null) {
+        const resultsEmbed = new EmbedBuilder();
+        const rand = Math.random().toString(36).slice(2); // Generate a random string to avoid the image cache
+        try {
+            if (interaction) {
+                resultsEmbed
+                    .setColor(0x0099FF)
+                    .setTitle('__Players\' war results__ :')
+                    .setDescription((Players.length > 0) ? Players : "No players have attacked yet !")
+                    .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' })
+                    .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')
+                    .setTimestamp()
+                    .setFooter({ text: 'by OPM | Féfé ⚡', iconURL: 'https://avatars.githubusercontent.com/u/94113911?s=400&v=4?' + rand });
+            }
+        } catch (e) {
+            console.log(e);
+        }
+
+        if (interaction != null) { interaction.editReply({ embeds: [resultsEmbed] }); }
+    }
     return Players // Return the list of players and their fame for the report
 }
 
@@ -65,7 +120,13 @@ module.exports = {
                     { name: '100pct', value: '#LLUC90PP' },
                     { name: 'TPM', value: '#G2CY2PPL' },
                 )
-                .setRequired(true)),
+                .setRequired(true))
+        .addStringOption(option =>
+            option.setName('custom_tag')
+                .setDescription('Tag of the foreign clan to check (nothing happens if wrong)'))
+        .addBooleanOption(option =>
+            option.setName('text_version')
+                .setDescription('Show the text version of the command too')),
     async execute(bot, api, interaction) {
         ffresults(bot, api, interaction, null, null)
     },

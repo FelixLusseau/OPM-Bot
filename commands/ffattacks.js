@@ -279,7 +279,7 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
         }
 
     }
-    if (text != null) { // If the text option is enabled
+    if (text != null || (pingBool && interaction == null)) { // If the text option is enabled
         // If the interaction is not null, edit the reply deferred before
         if (interaction != null) {
             interaction.editReply({ embeds: [attacksEmbed] });

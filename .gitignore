@@ -7,3 +7,4 @@ reset-hours/
 *.xlsx
 db/
 playerHistory*
+*.html

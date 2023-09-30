@@ -16,7 +16,7 @@ module.exports = {
         // Make the brief
         clans.forEach(clan => {
             let hour = fs.readFileSync('./reset-hours/' + clan, 'utf8');
-            hours += "<tr style='line-height: 10em;'>\n<td><span style='font-size: 3em;'>" + clan + "</span></td>\n<td style='font-size: 5em; background-image: linear-gradient(to left, violet, indigo, blue, green, orange, red);   -webkit-background-clip: text; color: transparent;'>" + hour + "</td>\n</tr>";
+            hours += "<tr style='line-height: 10em;'>\n<td><span style='font-size: 3em;'>" + clan + "</span></td>\n<td style='font-size: 5em;'>" + hour + "</td>\n</tr>";
         });
 
         const tmpFile = (Math.random() + 1).toString(36).substring(7) + '.html';

@@ -73,22 +73,26 @@ async function fetchHist(tag) {
 }
 
 function generateHtmlTableFromWorksheet(worksheet) {
-    let html = '<table>';
+    let html = '<table>\n';
 
     worksheet.eachRow((row, rowNumber) => {
-        html += '<tr>';
-        row.eachCell((cell) => {
-            const cellColor = cell.fill.fgColor.argb.substring(2);
-            // console.log('cc' + cell.text + ' ');
-            const cellValue = cell.text || '';
-            html += `<td style="background-color:#${cellColor}; text-align: center">${cellValue}</td>`;
+        html += '<tr>\n';
+        row.eachCell({ includeEmpty: true }, (cell) => {
+            if (cell.type == 0) { // Empty cell -> add an empty cell in the HTML table
+                html += `<td> </td>\n`;
+            }
+            else {
+                const cellColor = cell.fill.fgColor.argb.substring(2);
+                const cellValue = cell.text || '';
+                html += `<td style="background-color:#${cellColor}; text-align: center">${cellValue}</td>\n`;
+            }
         });
-        html += '</tr>';
+        html += '</tr>\n';
     });
 
-    html += '</table>';
+    html += '</table>\n';
 
-    // console.log(html);
+    console.log(html);
     return html;
 }
 

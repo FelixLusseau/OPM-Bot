@@ -298,9 +298,13 @@ async function playerHistory(url) {
     await page.goto(url);
 
     // Accept cookies
-    await Promise.all([
-        page.click("button.css-47sehv"),
-    ]);
+    try {
+        await Promise.all([
+            page.click("button.css-47sehv"),
+        ]);
+    } catch (error) {
+        console.log('No cookies to accept');
+    }
 
     // Show the player history
     await Promise.all([
@@ -312,7 +316,7 @@ async function playerHistory(url) {
 
     const elem = await page.$('#page_content');
     const boundingBox = await elem.boundingBox();
-    console.log('boundingBox', boundingBox)
+    // console.log('boundingBox', boundingBox)
 
     // Set the viewport size based on the width and height
     await page.setViewport({ width: 1080, height: parseInt(boundingBox.height) - 3300 });

@@ -107,17 +107,21 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
                 inclan = true
                 // If the ping option is enabled, find the Discord users with the same name as the players
                 if (pingBool) {
-                    guild.members
-                        .fetch()
-                        .then((memberss) => {
-                            memberss.forEach((member) => {
-                                members[i].name = members[i].name.replace('\ufe0f', "").replace(/<[^>]+>/g, '')
-                                if (member.user.username == members[i].name || member.nickname == members[i].name) {
-                                    ping += "<@" + member.user.id + "> "
+                    try {
+                        guild.members
+                            .fetch()
+                            .then((memberss) => {
+                                memberss.forEach((member) => {
+                                    members[i].name = members[i].name.replace('\ufe0f', "").replace(/<[^>]+>/g, '')
+                                    if (member.user.username == members[i].name || member.nickname == members[i].name) {
+                                        ping += "<@" + member.user.id + "> "
+                                    }
                                 }
-                            }
-                            )
-                        });
+                                )
+                            });
+                    } catch (error) {
+                        console.error('Error:', error);
+                    }
                 }
                 break
             }
@@ -146,17 +150,21 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
             remainingPlayers--
             // If the ping option is enabled, find the Discord users with the same name as the players
             if (pingBool) {
-                guild.members
-                    .fetch()
-                    .then((memberss) => {
-                        memberss.forEach((member) => {
-                            player.name = player.name.replace('\ufe0f', "").replace(/<[^>]+>/g, '')
-                            if (member.user.username == player.name || member.nickname == player.name) {
-                                ping += "<@" + member.user.id + "> "
+                try {
+                    guild.members
+                        .fetch()
+                        .then((memberss) => {
+                            memberss.forEach((member) => {
+                                player.name = player.name.replace('\ufe0f', "").replace(/<[^>]+>/g, '')
+                                if (member.user.username == player.name || member.nickname == player.name) {
+                                    ping += "<@" + member.user.id + "> "
+                                }
                             }
-                        }
-                        )
-                    });
+                            )
+                        });
+                } catch (error) {
+                    console.error('Error:', error);
+                }
             }
         }
     }
@@ -218,7 +226,7 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
 
         });
 
-        await functions.renderCommand(interaction, tmpFile, 0, 200)
+        await functions.renderCommand(interaction, tmpFile, 0, 150)
     }
 
     let attacks = "" // String for the report
@@ -284,7 +292,11 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
         if (interaction != null) {
             interaction.editReply({ embeds: [attacksEmbed] });
         } else if (pingBool) {
-            await guild.members.fetch();
+            try {
+                await guild.members.fetch();
+            } catch (error) {
+                console.error('Error:', error);
+            }
             channel.send({ embeds: [attacksEmbed] })
         }
     }

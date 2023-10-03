@@ -92,7 +92,6 @@ function generateHtmlTableFromWorksheet(worksheet) {
 
     html += '</table>\n';
 
-    console.log(html);
     return html;
 }
 

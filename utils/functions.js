@@ -120,7 +120,7 @@ async function exportSheetToPNG(inputFilePath, pngPath) {
         const table = document.querySelector('table');
         return {
             width: table.offsetWidth,
-            height: table.offsetHeight + 15,
+            height: table.offsetHeight + 50,
         };
     });
 

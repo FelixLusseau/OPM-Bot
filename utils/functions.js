@@ -322,10 +322,10 @@ async function playerHistory(url) {
     // console.log('boundingBox', boundingBox)
 
     // Set the viewport size based on the width and height
-    await page.setViewport({ width: 1080, height: parseInt(boundingBox.height) - 3300 });
+    // await page.setViewport({ width: 1080, height: parseInt(boundingBox.height) - 3300 });
 
     // // Set screen size
-    // await page.setViewport({ width: 1080, height: 2048 });
+    await page.setViewport({ width: 1080, height: 2048 });
 
     // Get the base64-encoded image data
     const imageData = await page.$eval("canvas#cw2-history-chart", el => el.toDataURL().substring(22));

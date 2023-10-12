@@ -3,6 +3,7 @@
     <h1>Members of <b>{{ clan }}</b></h1>
     <h2>{{ nb }} members</h2>
     <canvas id="gauge" height=150 style="display: block; margin: auto; margin-bottom: 1em;"></canvas>
+    <br>
     <table>
         <tr>
             <th>Name</th>
@@ -13,12 +14,12 @@
         </tr>
         {{ Players }}
     </table>
-    <p style="text-align: left; display: flex; align-items: center; font-size: 2em;">
+    <p style="text-align: left; display: flex; align-items: center; font-size: 2.25em;">
         <span style="padding: 10 px;">By <b>OPM I Féfé ⚡️</b></span>
         <img src="https://avatars.githubusercontent.com/u/94113911?s=400&v=4" height="30 px">
     </p>
 </div>
-<script src="gauge.min.js"></script>
+<script src="html/gauge.min.js"></script>
 <script>
     var opts = {
         angle: -0.2, // The span of the gauge arc

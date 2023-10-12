@@ -2,16 +2,98 @@
     <br><br><br>
     <h1>Remaining attacks of <b>{{ clan }}</b></h1>
     <br><br><br><br>
-    <div style="font-size: 2.75em; text-align: left;">
+    <div style="font-size: 3em; text-align: left;">
         {{ Numbers }}
     </div>
     <br><br><br><br>
-    <div style="column-count: 3; font-size: 2.2em; text-align: left;">
+    <div style="column-count: 3; font-size: 2.75em; text-align: left;">
         {{ Attacks }}
     </div>
     <br><br><br>
-    <p style="text-align: left; display: flex; align-items: center; font-size: 2em;">
+    <p style="text-align: left; display: flex; align-items: center; font-size: 2.25em;">
         <span style="padding: 10 px;">By <b>OPM I Féfé ⚡️</b></span>
         <img src="https://avatars.githubusercontent.com/u/94113911?s=400&v=4" height="30 px">
     </p>
 </div>
+<script src="html/gauge.min.js"></script>
+<script>
+    var opts = {
+        angle: 0, // The span of the gauge arc
+        lineWidth: 0.4, // The line thickness
+        radiusScale: 1, // Relative radius
+        pointer: {
+            length: 0.6, // // Relative to gauge radius
+            strokeWidth: 0.035, // The thickness
+            color: '#FFF' // Fill color
+        },
+        limitMax: true,     // If false, max value increases automatically if value > maxValue
+        limitMin: true,     // If true, the min value of the gauge will be fixed
+        colorStart: '#6F6EA0',   // Colors
+        colorStop: '#C0C0DB',    // just experiment with them
+        strokeColor: '#EEEEEE',  // to see which ones work best for you
+        generateGradient: false,
+        highDpiSupport: true,     // High resolution support
+        renderTicks: {
+            divisions: 5,
+            divWidth: 1.1,
+            divLength: 0.7,
+            divColor: '#333333',
+            subDivisions: 3,
+            subLength: 0.5,
+            subWidth: 0.6,
+            subColor: '#666666'
+        },
+        staticZones: [
+            { strokeStyle: "#F03E3E", min: 100, max: 150 }, // Red from 100 to 150
+            { strokeStyle: "#FF8100", min: 150, max: 165 }, // Orange
+            { strokeStyle: "#FFDD00", min: 165, max: 175 }, // Yellow
+            { strokeStyle: "#30B32D", min: 175, max: 250 }, // Green
+        ],
+        staticLabels: {
+            font: "15px sans-serif",  // Specifies font
+            labels: [100, 140, 160, 180, 200, 250],  // Print labels at these values
+            color: "#FFF",  // Optional: Label text color
+            fractionDigits: 0  // Optional: Numerical precision. 0=round off.
+        },
+    };
+    var target = document.getElementById('ratio'); // your canvas element
+    var gauge = new Gauge(target).setOptions(opts); // create sexy gauge!
+    gauge.maxValue = 250; // set max gauge value
+    gauge.minValue = 100
+    gauge.setMinValue(100);  // Prefer setter over gauge.minValue = 0
+    gauge.animationSpeed = 1; // set animation speed (32 is default value)
+    gauge.set({{ ratio }}); // set actual value
+</script>
+<style>
+    #myProgress {
+        width: 50%;
+        background-color: #ddd;
+        border: solid 2px #000001;
+        display: inline-block;
+        height: 40px;
+    }
+
+    #myBarPlayers {
+        width: 900%;
+        height: 40px;
+        background-color: #000009;
+        text-align: center;
+        /* To center it horizontally (if you want) */
+        line-height: 40px;
+        /* To center it vertically */
+        color: white;
+        font-size: 60%;
+    }
+
+    #myBarAttacks {
+        width: 800%;
+        height: 40px;
+        background-color: #000008;
+        text-align: center;
+        /* To center it horizontally (if you want) */
+        line-height: 40px;
+        /* To center it vertically */
+        color: white;
+        font-size: 60%;
+    }
+</style>

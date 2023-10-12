@@ -175,23 +175,42 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
     Players1HTML += "</ul>\n"
 
     if (interaction != null) {
+        let remainingPlayersColor = "#30B32D"
+        if (remainingPlayers > 10)
+            remainingPlayersColor = "#F03E3E"
+        else if (remainingPlayers > 5)
+            remainingPlayersColor = "#FF8000"
+
+        let decksRemainingColor = "#30B32D"
+        if (decksRemaining > 40)
+            decksRemainingColor = "#F03E3E"
+        else if (decksRemaining > 20)
+            decksRemainingColor = "#FF8000"
+
         let numbersHTML = ""
         let attacksHTML = ""
         const regex = /<li/g
         if (Players4HTML.search(regex) >= 0 || Players3HTML.search(regex) >= 0 || Players2HTML.search(regex) >= 0 || Players1HTML.search(regex) >= 0) // Check if the strings are not empty
         {
-            numbersHTML = "<p><b>🏅 Points</b> : "
+            numbersHTML = "<p>\n<b>🏅 Points</b> : "
                 + points
-                + "</p>"
-                + "<p><b>📟 Ratio</b> : "
+                + "</p>\n"
+                + "<p>\n<b>📟 Ratio</b> : "
                 + ratio
-                + "</p>"
-                + "<p><b>🚸 Players</b> : "
+                + "</p>\n"
+                + "<canvas id='ratio' height=200 width=350 style='position: absolute; left: 15em; top: 6em;'></canvas>\n"
+                + "<div style='display: flex; justify-content: space-between; align-items: center; padding-right: 3em;'>"
+                + "<p>\n<b>🚸 Players</b> : "
                 + remainingPlayers.toString()
-                + "</p>"
-                + "<p><b>⚔️ Attacks</b> : "
+                + "</p>\n"
+                + "<div id='myProgress'>\n<div id='myBarPlayers'>\n" + remainingPlayers + "</div>\n</div>\n"
+                + "</div>\n"
+                + "<div style='display: flex; justify-content: space-between; align-items: center; padding-right: 3em;'>"
+                + "<p style='display: inline-block;'>\n<b>⚔️ Attacks</b> : "
                 + decksRemaining
-                + "</p>"
+                + "</p>\n"
+                + "<div id='myProgress'>\n<div id='myBarAttacks'>\n" + decksRemaining + "</div>\n</div>\n"
+                + "</div>\n"
 
             if (Players4HTML.search(regex) >= 0)
                 attacksHTML += Players4HTML + "<br>"
@@ -216,6 +235,11 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
                 let result = data2.replace(/{{ Attacks }}/g, attacksHTML);
                 result = result.replace(/{{ clan }}/g, (clansDict[clan] != undefined) ? clansDict[clan] : clan);
                 result = result.replace(/{{ Numbers }}/g, numbersHTML);
+                result = result.replace(/{{ ratio }}/g, ratio);
+                result = result.replace(/900/g, (100 - remainingPlayers * 2).toString());
+                result = result.replace(/#000009/g, remainingPlayersColor);
+                result = result.replace(/800/g, (100 - decksRemaining / 2).toString());
+                result = result.replace(/#000008/g, decksRemainingColor);
 
                 let html = data.replace(/{{ body }}/g, result);
 
@@ -226,7 +250,7 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
 
         });
 
-        await functions.renderCommand(interaction, tmpFile, 0, 150)
+        await functions.renderCommand(interaction, tmpFile, 10000, 250)
     }
 
     let attacks = "" // String for the report

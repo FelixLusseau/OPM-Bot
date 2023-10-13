@@ -236,9 +236,9 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
                 result = result.replace(/{{ clan }}/g, (clansDict[clan] != undefined) ? clansDict[clan] : clan);
                 result = result.replace(/{{ Numbers }}/g, numbersHTML);
                 result = result.replace(/{{ ratio }}/g, ratio);
-                result = result.replace(/900/g, (100 - remainingPlayers * 2).toString());
+                result = result.replace(/900%/g, (100 - remainingPlayers * 2).toString() + "%");
                 result = result.replace(/#000009/g, remainingPlayersColor);
-                result = result.replace(/800/g, (100 - decksRemaining / 2).toString());
+                result = result.replace(/800%/g, (100 - decksRemaining / 2).toString() + "%");
                 result = result.replace(/#000008/g, decksRemainingColor);
 
                 let html = data.replace(/{{ body }}/g, result);
@@ -250,7 +250,7 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
 
         });
 
-        await functions.renderCommand(interaction, tmpFile, 10000, 250)
+        await functions.renderCommand(interaction, tmpFile, 0, 250)
     }
 
     let attacks = "" // String for the report

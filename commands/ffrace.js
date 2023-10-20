@@ -97,24 +97,35 @@ async function ffrace(bot, api, interaction, guildId, channel, clan, report) {
             points = clans[i].periodPoints
         let ratio = 0
         ratio = functions.ratio(RiverRace, decksRemaining, i) // Calculate the ratio of the clan
+        const estimate = Math.floor(ratio) * 200 // Invert of ratio calculation where the points are the unknown value
+
         if (RiverRace.periodType != "colosseum" && clans[i].fame >= 10000) {
             Race += "- __" + (clans[i].tag == clan ? "**" + clans[i].name + "**" : clans[i].name) + "__ : War finished \n\n"
             continue
         }
         // Make the string with the clan name, tag, points, ratio, decks remaining and players remaining
-        if (interaction != null)
+        if (interaction != null) {
+            let ratioEmote = "<a:battery_charging:1107789260934885396>"
+            if (ratio < 175)
+                ratioEmote = "<:battery_yellow:1107789257512341604>"
+            if (ratio < 160)
+                ratioEmote = "<a:battery_low:1107789267696095232>"
+
             Race += "- __" + (clans[i].tag == clan ? "**" + clans[i].name + "**" : clans[i].name) // Bold the clan name if it's the clan the user asked for
-                + "__ :\n<:Retro:1010557231214886933> Tag : " + clans[i].tag
-                + "\n<:fame:876320149878235136> Pts : " + points
-                + "\n<:fameAvg:946276069634375801> Ratio : **" + ratio
-                + "**\n<:decksRemaining:946275903812546620> Decks : " + decksRemaining
-                + "\n<:remainingSlots:951032915221950494> Players : " + playersRemaining + "\n\n"
+                + "__ :\n<:Hastag:1110331584214741002> Tag : " + clans[i].tag
+                + "\n<a:Flchecolore:795356920110252083> Pts : " + points
+                + "\n" + ratioEmote + " Ratio : **" + ratio
+                + "**\n<a:Valider:795353928761737267> Estimate : **" + estimate
+                + "**\n<:Sword_Mini_PEKKA:1156914308706471996> Attacks : " + decksRemaining
+                + "\n<a:achevalier:706450748124299304> Players : " + playersRemaining + "\n\n"
+        }
         else
             Race += "- __" + (clans[i].tag == clan ? "**" + clans[i].name + "**" : clans[i].name) // Bold the clan name if it's the clan the user asked for
                 + "__ :\n Tag : " + clans[i].tag
                 + "\n Pts : " + points
                 + "\n Ratio : **" + ratio
-                + "**\n Decks : " + decksRemaining
+                + "**\n Estimate : **" + estimate
+                + "**\n Attacks : " + decksRemaining
                 + "\n Players : " + playersRemaining + "\n\n"
         if (clans[i].tag == clan)
             clanPos = i + 1
@@ -135,7 +146,7 @@ async function ffrace(bot, api, interaction, guildId, channel, clan, report) {
     try {
         raceEmbed
             .setColor(0x0099FF)
-            .setTitle("__Current war day " + ((RiverRace.periodType == "colosseum") ? "(Colosseum)__ " : "__ ") + ":")
+            .setTitle("__Current war day" + ((RiverRace.periodType == "colosseum") ? " (Colosseum)__ " : "__ ") + ":")
             .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' })
             .setDescription(Race)
             .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')

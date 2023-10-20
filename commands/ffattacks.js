@@ -58,6 +58,7 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
     }
     let ratio = 0
     ratio = functions.ratio(RiverRace, decksRemaining, -1) // Calculate the ratio
+    const estimate = Math.floor(ratio) * 200 // Invert of ratio calculation where the points are the unknown value
 
     if (pingBool && interaction == null && points == 0) // When war is finished when the scheduled message is sent
         return channel.send("The clan has finished the war !")
@@ -199,6 +200,9 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
                 + ratio
                 + "</p>\n"
                 + "<canvas id='ratio' height=200 width=350 style='position: absolute; left: 15em; top: 6em;'></canvas>\n"
+                + "<p>\n<b>📈 Estimate</b> : "
+                + estimate
+                + "</p>\n"
                 + "<div style='display: flex; justify-content: space-between; align-items: center; padding-right: 3em;'>"
                 + "<p>\n<b>🚸 Players</b> : "
                 + remainingPlayers.toString()
@@ -257,16 +261,25 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
     const attacksEmbed = new EmbedBuilder();
     if (Players4 != "" || Players3 != "" || Players2 != "" || Players1 != "") { // Check it the strings are not empty
         if (interaction) { // If the command is an interaction
-            attacks = '<:fame:876320149878235136> **Points** : '
+            let ratioEmote = "<a:battery_charging:1107789260934885396>"
+            if (ratio < 175)
+                ratioEmote = "<:battery_yellow:1107789257512341604>"
+            if (ratio < 160)
+                ratioEmote = "<a:battery_low:1107789267696095232>"
+
+            attacks = '<a:Flchecolore:795356920110252083> **Points** : '
                 + points
                 + "\n"
-                + '<:fameAvg:946276069634375801> **Ratio** : '
+                + ratioEmote + ' **Ratio** : '
                 + ratio
                 + "\n"
-                + '<:remainingSlots:951032915221950494> **Players** : '
+                + "<a:Valider:795353928761737267> **Estimate** : "
+                + estimate
+                + "\n"
+                + '<a:achevalier:706450748124299304> **Players** : '
                 + remainingPlayers.toString()
                 + "\n"
-                + '<:decksRemaining:946275903812546620> **Attacks** : '
+                + '<:Sword_Mini_PEKKA:1156914308706471996> **Attacks** : '
                 + decksRemaining
                 + '\n'
         } else { // If the command is a message
@@ -287,7 +300,7 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
         const rand = Math.random().toString(36).slice(2); // Generate a random string to avoid the image cache
         attacksEmbed
             .setColor(0x0099FF)
-            .setTitle("__Remaining attacks " + ((RiverRace.periodType == "colosseum") ? "(Colosseum)__ " : "__ ") + ":")
+            .setTitle("__Remaining attacks" + ((RiverRace.periodType == "colosseum") ? " (Colosseum)__ " : "__ ") + ":")
             .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' })
             .setDescription(attacks)
             .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')

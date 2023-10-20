@@ -61,6 +61,16 @@ function ratio(RiverRace, decksRemaining, i) {
     return ratio
 }
 
+// Function to choose the emote depending on the ratio
+function ratioEmote(ratio) {
+    let ratioEmote = "<a:battery_charging:1107789260934885396>"
+    if (ratio < 170)
+        ratioEmote = "<:battery_yellow:1107789257512341604>"
+    if (ratio < 160)
+        ratioEmote = "<a:battery_low:1107789267696095232>"
+    return ratioEmote
+}
+
 // Function to fetch the clan's war history directly from the Supercell API not using the @varandas/clash-royale-api package (not available in it)
 async function fetchHist(tag) {
     try {
@@ -452,6 +462,7 @@ function barChart(type, Labels, Datas, max) {
 module.exports = {
     errorEmbed,
     ratio,
+    ratioEmote,
     fetchHist,
     excel,
     http_head,

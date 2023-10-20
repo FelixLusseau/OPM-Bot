@@ -105,11 +105,7 @@ async function ffrace(bot, api, interaction, guildId, channel, clan, report) {
         }
         // Make the string with the clan name, tag, points, ratio, decks remaining and players remaining
         if (interaction != null) {
-            let ratioEmote = "<a:battery_charging:1107789260934885396>"
-            if (ratio < 175)
-                ratioEmote = "<:battery_yellow:1107789257512341604>"
-            if (ratio < 160)
-                ratioEmote = "<a:battery_low:1107789267696095232>"
+            let ratioEmote = functions.ratioEmote(ratio)
 
             Race += "- __" + (clans[i].tag == clan ? "**" + clans[i].name + "**" : clans[i].name) // Bold the clan name if it's the clan the user asked for
                 + "__ :\n<:Hastag:1110331584214741002> Tag : " + clans[i].tag

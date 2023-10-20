@@ -261,11 +261,7 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
     const attacksEmbed = new EmbedBuilder();
     if (Players4 != "" || Players3 != "" || Players2 != "" || Players1 != "") { // Check it the strings are not empty
         if (interaction) { // If the command is an interaction
-            let ratioEmote = "<a:battery_charging:1107789260934885396>"
-            if (ratio < 175)
-                ratioEmote = "<:battery_yellow:1107789257512341604>"
-            if (ratio < 160)
-                ratioEmote = "<a:battery_low:1107789267696095232>"
+            let ratioEmote = functions.ratioEmote(ratio)
 
             attacks = '<a:Flchecolore:795356920110252083> **Points** : '
                 + points

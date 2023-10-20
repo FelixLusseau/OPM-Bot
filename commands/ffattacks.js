@@ -289,6 +289,9 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
                 + '**Ratio** : '
                 + ratio
                 + "\n"
+                + '**Estimate** : '
+                + estimate
+                + "\n"
                 + '**Players** : '
                 + remainingPlayers.toString()
                 + "\n"

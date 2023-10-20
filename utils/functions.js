@@ -52,7 +52,12 @@ function ratio(RiverRace, decksRemaining, i) {
         if ((day == "Sunday" && hour > warHour) || (day == "Monday" && hour < warHour))
             ratio = (clan.fame / (800 - decksRemaining)).toFixed(2).toString()
     }
-    else { ratio = (clan.periodPoints / (200 - decksRemaining)).toFixed(2).toString() }
+    else {
+        if (decksRemaining == 200)
+            ratio = 0.00.toFixed(2).toString()
+        else
+            ratio = (clan.periodPoints / (200 - decksRemaining)).toFixed(2).toString()
+    }
     return ratio
 }
 

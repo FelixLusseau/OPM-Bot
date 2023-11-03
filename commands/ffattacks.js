@@ -106,23 +106,15 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
                         break;
                 }
                 inclan = true
-                // If the ping option is enabled, find the Discord users with the same name as the players
+                // If the ping option is enabled, find the cached Discord users with the same name as the players
                 if (pingBool) {
-                    try {
-                        guild.members
-                            .fetch()
-                            .then((memberss) => {
-                                memberss.forEach((member) => {
-                                    members[i].name = members[i].name.replace('\ufe0f', "").replace(/<[^>]+>/g, '')
-                                    if (member.user.username == members[i].name || member.nickname == members[i].name) {
-                                        ping += "<@" + member.user.id + "> "
-                                    }
-                                }
-                                )
-                            });
-                    } catch (error) {
-                        console.error('Error:', error);
+                    guildMembers.forEach((member) => {
+                        members[i].name = members[i].name.replace('\ufe0f', "").replace(/<[^>]+>/g, '')
+                        if (member.user.username == members[i].name || member.nickname == members[i].name) {
+                            ping += "<@" + member.user.id + "> "
+                        }
                     }
+                    )
                 }
                 break
             }
@@ -149,23 +141,15 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
                     break;
             }
             remainingPlayers--
-            // If the ping option is enabled, find the Discord users with the same name as the players
+            // If the ping option is enabled, find the cached Discord users with the same name as the players
             if (pingBool) {
-                try {
-                    guild.members
-                        .fetch()
-                        .then((memberss) => {
-                            memberss.forEach((member) => {
-                                player.name = player.name.replace('\ufe0f', "").replace(/<[^>]+>/g, '')
-                                if (member.user.username == player.name || member.nickname == player.name) {
-                                    ping += "<@" + member.user.id + "> "
-                                }
-                            }
-                            )
-                        });
-                } catch (error) {
-                    console.error('Error:', error);
+                guildMembers.forEach((member) => {
+                    player.name = player.name.replace('\ufe0f', "").replace(/<[^>]+>/g, '')
+                    if (member.user.username == player.name || member.nickname == player.name) {
+                        ping += "<@" + member.user.id + "> "
+                    }
                 }
+                )
             }
         }
     }

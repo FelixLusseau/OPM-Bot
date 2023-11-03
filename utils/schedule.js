@@ -3,6 +3,21 @@ const reports = require('./reports.js');
 const ffattacks = require('../commands/ffattacks.js');
 const ffrace = require('../commands/ffrace.js');
 
+// Function to get the guild members
+async function getGuildMembers(guild) {
+    try {
+        await guild.members
+            .fetch()
+            .then((memberss) => {
+                guildMembers = memberss
+            })
+    }
+    catch (error) {
+        console.error("Guild members fetch error :" + error)
+    }
+}
+
+// Function to schedule the reports and evening reminders
 function schedule(bot, key, value, tag, guildID) {
     let chanID = 0
     switch (key) {
@@ -45,8 +60,19 @@ function schedule(bot, key, value, tag, guildID) {
         ffattacks.ffattacks(bot, api, null, true, guildID, channel, tag)
     });
     // console.log('Scheduled ' + key + ' for ' + value.substring(3, 5) + ' ' + value.substring(0, 2) + ' * * 5,6,7,1')
+
+    const guild = bot.guilds.cache.find((g) => g.id === guildID);
+    if (!guild)
+        return console.log(`Can't find any guild with the ID "${guildID}"`);
+
+    global.guildMembers = {}
+    cron.schedule('55 22 * * 4,5,6,7', () => { // Refresh the guild members list at 22h55 on war days
+        getGuildMembers(guild)
+    })
+
 }
 
 module.exports = {
+    getGuildMembers,
     schedule
 }

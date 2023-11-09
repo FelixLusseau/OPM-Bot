@@ -104,25 +104,25 @@ async function ffrace(bot, api, interaction, guildId, channel, clan, report) {
             continue
         }
         // Make the string with the clan name, tag, points, ratio, decks remaining and players remaining
-        if (interaction != null) {
-            let ratioEmote = functions.ratioEmote(ratio)
+        // if (interaction != null) {
+        //     let ratioEmote = functions.ratioEmote(ratio)
 
-            Race += "- __" + (clans[i].tag == clan ? "**" + clans[i].name + "**" : clans[i].name) // Bold the clan name if it's the clan the user asked for
-                + "__ :\n<:Hastag:1110331584214741002> Tag : " + clans[i].tag
-                + "\n<a:Flchecolore:795356920110252083> Pts : " + points
-                + "\n" + ratioEmote + " Ratio : **" + ratio
-                + "**\n<a:Valider:795353928761737267> Estimate : **" + estimate
-                + "**\n<:Sword_Mini_PEKKA:1156914308706471996> Attacks : " + decksRemaining
-                + "\n<a:achevalier:706450748124299304> Players : " + playersRemaining + "\n\n"
-        }
-        else
-            Race += "- __" + (clans[i].tag == clan ? "**" + clans[i].name + "**" : clans[i].name) // Bold the clan name if it's the clan the user asked for
-                + "__ :\n Tag : " + clans[i].tag
-                + "\n Pts : " + points
-                + "\n Ratio : **" + ratio
-                + "**\n Estimate : **" + estimate
-                + "**\n Attacks : " + decksRemaining
-                + "\n Players : " + playersRemaining + "\n\n"
+        //     Race += "- __" + (clans[i].tag == clan ? "**" + clans[i].name + "**" : clans[i].name) // Bold the clan name if it's the clan the user asked for
+        //         + "__ :\n<:Hastag:1110331584214741002> Tag : " + clans[i].tag
+        //         + "\n<a:Flchecolore:795356920110252083> Pts : " + points
+        //         + "\n" + ratioEmote + " Ratio : **" + ratio
+        //         + "**\n<a:Valider:795353928761737267> Estimate : **" + estimate
+        //         + "**\n<:Sword_Mini_PEKKA:1156914308706471996> Attacks : " + decksRemaining
+        //         + "\n<a:achevalier:706450748124299304> Players : " + playersRemaining + "\n\n"
+        // }
+        // else
+        Race += "- __" + (clans[i].tag == clan ? "**" + clans[i].name + "**" : clans[i].name) // Bold the clan name if it's the clan the user asked for
+            + "__ :\n Tag : " + clans[i].tag
+            + "\n Pts : " + points
+            + "\n Ratio : **" + ratio
+            + "**\n Estimate : **" + estimate
+            + "**\n Attacks : " + decksRemaining
+            + "\n Players : " + playersRemaining + "\n\n"
         if (clans[i].tag == clan)
             clanPos = i + 1
     }

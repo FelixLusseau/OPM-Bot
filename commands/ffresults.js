@@ -76,7 +76,7 @@ async function ffresults(bot, api, interaction, guildId, clan) {
 
         const regex = /<li/g
         if (PlayersHTML.search(regex) >= 0) {
-            await functions.renderCommand(interaction, tmpFile, 0, 1200)
+            await functions.renderCommand(interaction, tmpFile, 0, 800)
         }
         else {
             interaction.editReply({ content: "No players have attacked yet !" })

@@ -2,13 +2,32 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const functions = require('../utils/functions.js');
 const fs = require('fs');
 
+function isInClan(members, player) {
+    for (let i = 0; i < members.length; i++) {
+        if (members[i].tag == player.tag)
+            return true
+    }
+    return false
+}
+
 async function ffresults(bot, api, interaction, guildId, clan) {
     let text = null
+    let include_zero_players = null
+    let members = null
     // Check if the command was run by an interaction or a scheduled message
     if (interaction != null) {
         await interaction.deferReply({ ephemeral: false });
         clan = interaction.options.getString('clan');
         text = interaction.options.getBoolean('text_version'); // For text version too
+        include_zero_players = interaction.options.getBoolean('include_zero_players');
+        if (include_zero_players) {
+            try {
+                members = await api.getClanMembers(clan)// Retrieve the clan's members from the Supercell API
+            } catch (error) {
+                functions.errorEmbed(bot, interaction, channel, error)
+                return
+            }
+        }
         if (interaction.options.getString('custom_tag') != null) { // For a custom tag clan
             let custom_tag = interaction.options.getString('custom_tag');
             const regex = /\#[a-zA-Z0-9]{8,9}\b/g
@@ -43,7 +62,7 @@ async function ffresults(bot, api, interaction, guildId, clan) {
     // Sort the players by fame
     RiverRace.clan.participants.sort((a, b) => (a.fame < b.fame) ? 1 : -1)
     for (let j = 0; j < RiverRace.clan.participants.length; j++) {
-        if (RiverRace.clan.participants[j].decksUsed > 0 && RiverRace.clan.participants[j].fame > 0) {
+        if ((RiverRace.clan.participants[j].decksUsed > 0 && RiverRace.clan.participants[j].fame > 0) || (include_zero_players && isInClan(members, RiverRace.clan.participants[j]))) {
             // Make a list of the players who have attacked and their fame
             Players += "- " + RiverRace.clan.participants[j].name + " : **" + RiverRace.clan.participants[j].fame + " pts**\n"
             PlayersHTML += "<li style='margin-bottom: 20px;'>" + RiverRace.clan.participants[j].name + " : <b>" + RiverRace.clan.participants[j].fame + " 🏅</b></li>\n"
@@ -123,6 +142,9 @@ module.exports = {
                     { name: 'TPM', value: '#G2CY2PPL' },
                 )
                 .setRequired(true))
+        .addBooleanOption(option =>
+            option.setName('include_zero_players')
+                .setDescription('Include the players with 0 pts'))
         .addStringOption(option =>
             option.setName('custom_tag')
                 .setDescription('Tag of the foreign clan to check (nothing happens if wrong)'))

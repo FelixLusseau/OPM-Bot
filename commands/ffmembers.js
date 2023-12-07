@@ -57,7 +57,7 @@ module.exports = {
         let Members_text = "**" + response.length + " members**\n\n"
         // Make the string with the members' names, tags, roles, levels and trophies
         for (let i = 0; i < response.length; i++) {
-            Members_text += "- **" + response[i].name + "** \n(" + response[i].tag + ", " + response[i].role + ", lvl" + response[i].expLevel + ", " + response[i].trophies + " tr)" + "\n\n"
+            Members_text += "- **" + response[i].name + "** \n(" + response[i].tag + ", " + response[i].role + ", lvl " + response[i].expLevel + ", " + response[i].trophies + " tr)" + "\n\n"
             Members += "<tr>\n<td>" + response[i].name + "</td>\n<td>" + response[i].tag + "</td>\n<td>" + response[i].role + "</td>\n<td>" + response[i].expLevel + "</td>\n<td>" + response[i].trophies + " 🏆</td>\n</tr>\n"
         }
         // console.log(Members)

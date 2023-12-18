@@ -110,7 +110,8 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
                 if (pingBool) {
                     guildMembers.forEach((member) => {
                         members[i].name = members[i].name.replace('\ufe0f', "").replace(/<[^>]+>/g, '')
-                        if (member.user.username == members[i].name || member.nickname == members[i].name) {
+                        // console.log(member)
+                        if (member.user.username == members[i].name || member.nickname == members[i].name || member.user.globalName == members[i].name) {
                             ping += "<@" + member.user.id + "> "
                         }
                     }
@@ -145,7 +146,7 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
             if (pingBool) {
                 guildMembers.forEach((member) => {
                     player.name = player.name.replace('\ufe0f', "").replace(/<[^>]+>/g, '')
-                    if (member.user.username == player.name || member.nickname == player.name) {
+                    if (member.user.username == player.name || member.nickname == player.name || member.user.globalName == player.name) {
                         ping += "<@" + member.user.id + "> "
                     }
                 }

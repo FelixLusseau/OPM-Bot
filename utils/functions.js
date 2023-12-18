@@ -63,11 +63,11 @@ function ratio(RiverRace, decksRemaining, i) {
 
 // Function to choose the emote depending on the ratio
 function ratioEmote(ratio) {
-    let ratioEmote = "<a:battery_charging:1107789260934885396>"
+    let ratioEmote = "<a:Green_battery:1186367109073227837>"
     if (ratio < 170)
-        ratioEmote = "<:battery_yellow:1107789257512341604>"
+        ratioEmote = "<:Battery_yellow:1186367121966506116>"
     if (ratio < 160)
-        ratioEmote = "<a:battery_low:1107789267696095232>"
+        ratioEmote = "<a:Battery_low:1186367126756393042>"
     return ratioEmote
 }
 

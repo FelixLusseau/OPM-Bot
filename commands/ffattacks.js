@@ -129,15 +129,15 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
             let decksRemainingToday = 4 - player.decksUsedToday
             switch (decksRemainingToday) {
                 case 3:
-                    Players3 += player.name + " **(out of the clan !!) " + ((interaction != null) ? "<a:Alerte:795358418508447805>" : " ") + "**\n";
+                    Players3 += player.name + " **(out of the clan !!) " + ((interaction != null) ? "<a:Alert:1186367132263522455>" : " ") + "**\n";
                     Players3HTML += "<li style='margin-bottom: 20px;'>" + player.name + " <b>(out of the clan !!)</b></li>\n"
                     break;
                 case 2:
-                    Players2 += player.name + " **(out of the clan !!) " + ((interaction != null) ? "<a:Alerte:795358418508447805>" : " ") + "**\n";
+                    Players2 += player.name + " **(out of the clan !!) " + ((interaction != null) ? "<a:Alert:1186367132263522455>" : " ") + "**\n";
                     Players2HTML += "<li style='margin-bottom: 20px;'>" + player.name + " <b>(out of the clan !!)</b></li>\n"
                     break;
                 case 1:
-                    Players1 += player.name + " **(out of the clan !!) " + ((interaction != null) ? "<a:Alerte:795358418508447805>" : " ") + "**\n";
+                    Players1 += player.name + " **(out of the clan !!) " + ((interaction != null) ? "<a:Alert:1186367132263522455>" : " ") + "**\n";
                     Players1HTML += "<li style='margin-bottom: 20px;'>" + player.name + " <b>(out of the clan !!)</b></li>\n"
                     break;
             }
@@ -248,19 +248,19 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
         if (interaction) { // If the command is an interaction
             let ratioEmote = functions.ratioEmote(ratio)
 
-            attacks = '<a:Flchecolore:795356920110252083> **Points** : '
+            attacks = '<a:Colored_arrow:1186367114190270516> **Points** : '
                 + points
                 + "\n"
                 + ratioEmote + ' **Ratio** : '
                 + ratio
                 + "\n"
-                + "<a:Valider:795353928761737267> **Estimate** : "
+                + "<a:Valider:1186367102936952952> **Estimate** : "
                 + estimate
                 + "\n"
-                + '<a:achevalier:706450748124299304> **Players** : '
+                + '<a:Chevalier:1186367120083263594> **Players** : '
                 + remainingPlayers.toString()
                 + "\n"
-                + '<:Sword_Mini_PEKKA:1156914308706471996> **Attacks** : '
+                + '<:Mini_Pekka:1186367104962809947> **Attacks** : '
                 + decksRemaining
                 + '\n'
         } else { // If the command is a message

@@ -14,6 +14,7 @@ module.exports = {
             + "- `/ffgetrotates` : Shows the rotations of the players between the clans\n"
             + "- `/ffmembers` : Shows the members of the clan\n"
             + "- `/ffopponents` : Shows information about the war opponents\n"
+            + "- `/ffplayer` : Shows the player's profile\n"
             + "- `/ffrace` : Shows the current war day status (or Colosseum)\n"
             + "- `/ffresults` : Shows the points of all the war participants\n"
             + "- `/ffriver` : Shows the current river race (or Colosseum)\n"

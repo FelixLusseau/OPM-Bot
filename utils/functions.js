@@ -7,13 +7,18 @@ const { AttachmentBuilder, EmbedBuilder } = require('discord.js');
 
 // Function to send an error embed
 function errorEmbed(bot, interaction, channel, error) {
-    const myError = '[' + error.response.headers.date + ']: Error:' + error.response.status + ' ' + error.response.statusText
+    let myError = ""
+    if (typeof (error) == "string")
+        myError = error
+    else
+        myError = '[' + error.response.headers.date + ']: Error: ' + error.response.status + ' ' + error.response.statusText
     console.error(myError);
     console.log("CR-API error : ", error)
     const errorEmbed = new EmbedBuilder()
     errorEmbed
         .setColor(0x0099FF)
         .setTitle("CR-API error")
+        .setDescription(myError)
         .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' })
         .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')
         .setTimestamp()

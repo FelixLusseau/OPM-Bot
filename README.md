@@ -29,6 +29,7 @@
   - `/ffgetrotates` : Shows the rotations of the players between the clans
   - `/ffmembers` : Shows the members of the clan
   - `/ffopponents` : Shows information about the war opponents and their Colosseum history the last 3 seasons
+  - `/ffplayer` : Shows the player's profile
   - `/ffrace` : Shows the current war day status (or Colosseum)
   - `/ffresults` : Shows the points of all the war participants
   - `/ffriver` : Shows the current river race (or Colosseum)

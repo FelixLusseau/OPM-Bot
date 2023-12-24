@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const functions = require('../utils/functions.js');
 
-async function ffrace(bot, api, interaction, guildId, channel, clan, report) {
+async function ffrace(bot, api, interaction, channel, clan, report) {
     // Check if the command was run by an interaction or a scheduled message
     if (interaction != null) {
         await interaction.deferReply({ ephemeral: false });
@@ -21,11 +21,7 @@ async function ffrace(bot, api, interaction, guildId, channel, clan, report) {
                 }
             }
         }
-        guildId = interaction.guildId;
     }
-    const guild = bot.guilds.cache.find((g) => g.id === guildId);
-    if (!guild)
-        return console.log(`Can't find any guild with the ID "${guildId}"`);
 
     const raceEmbed = new EmbedBuilder();
     let Labels = [];
@@ -157,7 +153,6 @@ async function ffrace(bot, api, interaction, guildId, channel, clan, report) {
     if (interaction != null)
         interaction.editReply({ embeds: [raceEmbed] });
     else if (report == false) {
-        await guild.members.fetch();
         channel.send({ embeds: [raceEmbed] })
     }
 
@@ -184,6 +179,6 @@ module.exports = {
             option.setName('custom_tag')
                 .setDescription('Tag of the foreign clan to check (nothing happens if wrong)')),
     async execute(bot, api, interaction) {
-        ffrace(bot, api, interaction, null, null, null, false)
+        ffrace(bot, api, interaction, null, null, false)
     }
 };

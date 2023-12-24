@@ -10,7 +10,7 @@ function isInClan(members, player) {
     return false
 }
 
-async function ffresults(bot, api, interaction, guildId, clan) {
+async function ffresults(bot, api, interaction, clan) {
     let text = null
     let include_zero_players = null
     let members = null
@@ -43,11 +43,7 @@ async function ffresults(bot, api, interaction, guildId, clan) {
                 }
             }
         }
-        guildId = interaction.guildId;
     }
-    const guild = bot.guilds.cache.find((g) => g.id === guildId);
-    if (!guild)
-        return console.log(`Can't find any guild with the ID "${guildId}"`);
 
     let Players = "";
     let PlayersHTML = "<ul style='font-size: 2.2em; text-align: left;'>\n";
@@ -152,6 +148,6 @@ module.exports = {
             option.setName('text_version')
                 .setDescription('Show the text version of the command too')),
     async execute(bot, api, interaction) {
-        ffresults(bot, api, interaction, null, null)
+        ffresults(bot, api, interaction, null)
     },
 };

@@ -2,7 +2,7 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const functions = require('../utils/functions.js');
 const fs = require('fs');
 
-async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan) {
+async function ffattacks(bot, api, interaction, pingBool, channel, clan) {
     let text = null
     // Check if the command was run by an interaction or a scheduled message
     if (interaction != null) {
@@ -26,11 +26,7 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
                 }
             }
         }
-        guildId = interaction.guildId;
     }
-    const guild = bot.guilds.cache.find((g) => g.id === guildId);
-    if (!guild)
-        return console.log(`Can't find any guild with the ID "${guildId}"`);
 
     let Players4 = "";
     let Players3 = "";
@@ -313,23 +309,16 @@ async function ffattacks(bot, api, interaction, pingBool, guildId, channel, clan
         if (interaction != null) {
             interaction.editReply({ embeds: [attacksEmbed] });
         } else if (pingBool) {
-            try {
-                await guild.members.fetch();
-            } catch (error) {
-                console.error('Error:', error);
-            }
             channel.send({ embeds: [attacksEmbed] })
         }
     }
 
     if (interaction != null) {
         if (pingBool) {
-            await guild.members.fetch();
             if (ping != "")
                 interaction.channel.send(ping);
         }
     } else if (pingBool) {
-        await guild.members.fetch();
         if (ping != "")
             channel.send(ping);
     }
@@ -362,6 +351,6 @@ module.exports = {
             option.setName('custom_tag')
                 .setDescription('Tag of the foreign clan to check (nothing happens if wrong)')),
     async execute(bot, api, interaction) {
-        ffattacks(bot, api, interaction, false, null, null, null)
+        ffattacks(bot, api, interaction, false, null, null)
     },
 };

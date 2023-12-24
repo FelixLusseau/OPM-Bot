@@ -3,11 +3,11 @@ const ffresults = require('../commands/ffresults');
 const ffrace = require('../commands/ffrace');
 const { EmbedBuilder } = require('discord.js');
 
-async function report(bot, api, interaction, pingBool, guildId, channel, clan) {
+async function report(bot, api, interaction, pingBool, channel, clan) {
     // Get the attacks and results from the ffattacks and ffresults functions
-    const attacks = await ffattacks.ffattacks(bot, api, interaction, pingBool, guildId, channel, clan)
-    const results = await ffresults.ffresults(bot, api, interaction, guildId, clan)
-    const race = await ffrace.ffrace(bot, api, interaction, guildId, channel, clan, true)
+    const attacks = await ffattacks.ffattacks(bot, api, interaction, pingBool, channel, clan)
+    const results = await ffresults.ffresults(bot, api, interaction, clan)
+    const race = await ffrace.ffrace(bot, api, interaction, channel, clan, true)
 
     const rand = Math.random().toString(36).slice(2); // Generate a random string to avoid the image cache
     const reportEmbed = new EmbedBuilder();

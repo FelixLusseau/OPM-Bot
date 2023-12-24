@@ -80,7 +80,11 @@ module.exports = {
                 console.error(err);
             }
             // Stop the previous cron job and start a new one with the new hour + save the new hour in the reportTimes dictionary
-            reportCron[APIClan.tag].stop();
+            try {
+                reportCron[APIClan.tag].stop();
+            } catch (e) {
+                interaction.editReply({ content: "No cron job to stop !" });
+            }
             reportTimes[APIClan.tag] = hour;
             // schedule.schedule(bot, APIClan.tag, hour, clan, process.env.OPM_GUILD_ID)
             schedule.schedule(bot, APIClan.tag, hour, clan, interaction.guildId, interaction.channel.id)

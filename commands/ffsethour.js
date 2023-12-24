@@ -1,6 +1,8 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const fs = require('fs');
 const schedule = require('../utils/schedule.js');
+const sqlite3 = require('sqlite3').verbose();
+const functions = require('../utils/functions.js');
 
 function isValidTimeFormat(input) {
     // Regular expression pattern to match "hh:mm" format
@@ -36,27 +38,53 @@ module.exports = {
         const hour = interaction.options.getString('hour');
         const resultsEmbed = new EmbedBuilder();
         let valid = false;
-        api.getClanByTag(clan) // Get the clan info from the Supercell API
-            .then((clan) => {
-                return clan
-            })
-            .catch((err) => {
-                console.log("CR-API error : ", err)
-            })
-        let APIClan = await api.getClanByTag(clan)
+
+        let APIClan = null
+        try {
+            APIClan = await api.getClanByTag(clan)
+        } catch (error) {
+            functions.errorEmbed(bot, interaction, channel, error)
+            return
+        }
 
         // Check if the hour given is valid
         if (isValidTimeFormat(hour)) {
             valid = true;
             try {
-                fs.writeFileSync('./reset-hours/' + APIClan.name, hour); // Write the hour in the file
+                // fs.writeFileSync('./reset-hours/' + APIClan.name, hour); // Write the hour in the file
+                // Open the database
+                let db = new sqlite3.Database('./db/OPM.sqlite3', sqlite3.OPEN_READWRITE, (err) => {
+                    if (err) {
+                        console.error(err.message);
+                    }
+                });
+
+                // Insert a new rotate into the database
+                db.run(`INSERT INTO Reports (Guild, Clan, Hour, Channel) VALUES ("${interaction.guildId}", "${clan}", "${hour}", "${interaction.channel.id}")`, function (err) {
+                    if (err) {
+                        return console.log(err.message);
+                    }
+                    // get the last insert id
+                    // console.log(`A row has been inserted with rowid ${this.lastID}`);
+                });
+
+
+                // Close the database
+                db.close((err) => {
+                    if (err) {
+                        console.error(err.message);
+                    }
+                });
+
             } catch (err) {
                 console.error(err);
             }
             // Stop the previous cron job and start a new one with the new hour + save the new hour in the reportTimes dictionary
-            reportCron[APIClan.name].stop();
-            reportTimes[APIClan.name] = hour;
-            schedule.schedule(bot, APIClan.name, hour, clan, process.env.OPM_GUILD_ID)
+            reportCron[APIClan.tag].stop();
+            reportTimes[APIClan.tag] = hour;
+            // schedule.schedule(bot, APIClan.tag, hour, clan, process.env.OPM_GUILD_ID)
+            schedule.schedule(bot, APIClan.tag, hour, clan, interaction.guildId, interaction.channel.id)
+
         }
         else {
             valid = false;

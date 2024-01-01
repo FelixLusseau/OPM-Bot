@@ -26,19 +26,7 @@ module.exports = {
         global.reportCron = {}
 
         schedule.loadSchedules(bot)
-        // fs.readdirSync('./reset-hours/').forEach(file => {
-        //     reportTimes[file] = fs.readFileSync('./reset-hours/' + file, 'utf8', (err, data) => {
-        //         if (err) {
-        //             return;
-        //         }
-        //         return data;
-        //     });
-        // });
         const guildID = process.env.OPM_GUILD_ID;
-        // global.reportCron = {}
-        // for (const [key, value] of Object.entries(reportTimes)) {
-        //     schedule.schedule(bot, key, value, clansDict[key], guildID)
-        // }
 
         // Get the guild members at the bot startup
         const guild = bot.guilds.cache.find((g) => g.id === guildID);

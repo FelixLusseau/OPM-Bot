@@ -1,8 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const fs = require('fs');
 const schedule = require('../utils/schedule.js');
 const sqlite3 = require('sqlite3').verbose();
-const functions = require('../utils/functions.js');
 
 function isValidTimeFormat(input) {
     // Regular expression pattern to match "hh:mm" format
@@ -39,19 +37,10 @@ module.exports = {
         const resultsEmbed = new EmbedBuilder();
         let valid = false;
 
-        let APIClan = null
-        try {
-            APIClan = await api.getClanByTag(clan)
-        } catch (error) {
-            functions.errorEmbed(bot, interaction, channel, error)
-            return
-        }
-
         // Check if the hour given is valid
         if (isValidTimeFormat(hour)) {
             valid = true;
             try {
-                // fs.writeFileSync('./reset-hours/' + APIClan.name, hour); // Write the hour in the file
                 // Open the database
                 let db = new sqlite3.Database('./db/OPM.sqlite3', sqlite3.OPEN_READWRITE, (err) => {
                     if (err) {
@@ -59,7 +48,15 @@ module.exports = {
                     }
                 });
 
-                // Insert a new rotate into the database
+                // Delete previous report entry from the database
+                let sql = `DELETE FROM Reports WHERE Guild=? AND Clan=?`;
+                db.run(sql, [interaction.guildId, clan], function (err) {
+                    if (err) {
+                        return console.error(err.message);
+                    }
+                    // console.log(`Row(s) deleted ${this.changes}`);
+                });
+                // Insert a new report entry into the database
                 db.run(`INSERT INTO Reports (Guild, Clan, Hour, Channel) VALUES ("${interaction.guildId}", "${clan}", "${hour}", "${interaction.channel.id}")`, function (err) {
                     if (err) {
                         return console.log(err.message);
@@ -81,13 +78,13 @@ module.exports = {
             }
             // Stop the previous cron job and start a new one with the new hour + save the new hour in the reportTimes dictionary
             try {
-                reportCron[APIClan.tag].stop();
+                reportCron[clan].stop();
             } catch (e) {
                 interaction.editReply({ content: "No cron job to stop !" });
             }
-            reportTimes[APIClan.tag] = hour;
-            // schedule.schedule(bot, APIClan.tag, hour, clan, process.env.OPM_GUILD_ID)
-            schedule.schedule(bot, APIClan.tag, hour, clan, interaction.guildId, interaction.channel.id)
+            reportTimes[clan] = hour;
+            // schedule.schedule(bot, clan, hour, clan, process.env.OPM_GUILD_ID)
+            schedule.schedule(bot, clan, hour, clan, interaction.guildId, interaction.channel.id)
 
         }
         else {
@@ -99,7 +96,7 @@ module.exports = {
             resultsEmbed
                 .setColor(0x0099FF)
                 .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' })
-                .setDescription((valid ? "`" + hour + "` is now the reset hour for **" + APIClan.name + "** !" : "**" + hour + "** is not a valid hour !"))
+                .setDescription((valid ? "`" + hour + "` is now the reset hour for **" + clansDict[clan] + "** !" : "**" + hour + "** is not a valid hour !"))
                 .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')
                 .setTimestamp()
                 .setFooter({ text: 'by OPM | Féfé ⚡', iconURL: 'https://avatars.githubusercontent.com/u/94113911?s=400&v=4?' + rand });

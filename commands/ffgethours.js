@@ -18,15 +18,7 @@ module.exports = {
                     console.error(err.message);
                 }
             });
-            // let clans = [];
-            // fs.readdirSync('./reset-hours/').forEach(file => { // Browse the reset-hours folder and add the files to the clans array
-            //     clans.push(file);
-            // });
-            // Make the brief
-            // clans.forEach(clan => {
-            //     let hour = fs.readFileSync('./reset-hours/' + clan, 'utf8');
-            //     hours += "<tr style='line-height: 10em;'>\n<td><span style='font-size: 3em;'>" + clan + "</span></td>\n<td style='font-size: 5em;'>" + hour + "</td>\n</tr>";
-            // });
+
             await new Promise((resolve, reject) => {
                 db.each(`SELECT * FROM Reports WHERE Guild = "${interaction.guildId}"`, (err, row) => {
                     if (err) {

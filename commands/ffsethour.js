@@ -13,7 +13,7 @@ function isValidTimeFormat(input) {
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('ffsethour')
-        .setDescription('Set the hour for the reset and report !')
+        .setDescription('Set the hour for the reset and report on this channel !')
         .addStringOption(option =>
             option.setName('clan')
                 .setDescription('The clan to check')

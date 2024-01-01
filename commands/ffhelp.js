@@ -21,7 +21,7 @@ module.exports = {
             + "- `/ffreport` : Shows the war report\n"
             + "- `/ffrmhours` : Removes the hours for the daily reports and resets\n"
             + "- `/ffrmrotate` : Removes an entry from the rotations\n"
-            + "- `/ffsethours` : Sets the hours for the daily reports and resets\n"
+            + "- `/ffsethours` : Sets the hours for the daily reports and resets on the calling channel\n"
             + "- `/ffsetrotates` : Sets the rotations of the players between the clans\n"
             + "\u200B"
 

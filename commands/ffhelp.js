@@ -19,6 +19,7 @@ module.exports = {
             + "- `/ffresults` : Shows the points of all the war participants\n"
             + "- `/ffriver` : Shows the current river race (or Colosseum)\n"
             + "- `/ffreport` : Shows the war report\n"
+            + "- `/ffrmhours` : Removes the hours for the daily reports and resets\n"
             + "- `/ffrmrotate` : Removes an entry from the rotations\n"
             + "- `/ffsethours` : Sets the hours for the daily reports and resets\n"
             + "- `/ffsetrotates` : Sets the rotations of the players between the clans\n"

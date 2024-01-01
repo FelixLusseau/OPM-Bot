@@ -34,6 +34,7 @@
   - `/ffresults` : Shows the points of all the war participants
   - `/ffriver` : Shows the current river race (or Colosseum)
   - `/ffreport` : Shows the war report
+  - `/ffrmhours` : Removes the hours for the daily reports and resets
   - `/ffrmrotate` : Removes an entry from the rotations
   - `/ffsethours` : Sets the hours for the daily reports and resets
   - `/ffsetrotates` : Sets the rotations of the players between the clans

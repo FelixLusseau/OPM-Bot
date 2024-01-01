@@ -36,7 +36,7 @@
   - `/ffreport` : Shows the war report
   - `/ffrmhours` : Removes the hours for the daily reports and resets
   - `/ffrmrotate` : Removes an entry from the rotations
-  - `/ffsethours` : Sets the hours for the daily reports and resets on the calling channel
+  - `/ffsethours` : Sets the hours for the daily reports and resets on the calling channel using SQLite3 database
   - `/ffsetrotates` : Sets the rotations of the players between the clans
 
 - Scheduled war report has been added to the bot ! It will be sent every day from friday to monday at the reset hour in the clan war channel.

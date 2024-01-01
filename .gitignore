@@ -3,8 +3,8 @@ node_modules
 draft.js
 *.log
 package-lock.json
-reset-hours/
 *.xlsx
 db
+*.sqlite3
 playerHistory*
 *.html

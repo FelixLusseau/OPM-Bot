@@ -5,6 +5,6 @@ draft.js
 package-lock.json
 reset-hours/
 *.xlsx
-db/
+db
 playerHistory*
 *.html

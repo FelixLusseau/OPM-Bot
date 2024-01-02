@@ -36,7 +36,7 @@ module.exports = {
             return
         }
 
-        let opponentsText = "<ul style='font-size: 2em; text-align: left;'>\n";
+        let opponentsText = "<ul style='font-size: 2.4em; text-align: left;'>\n";
         let Labels = []
         let seasons = []
 
@@ -55,13 +55,13 @@ module.exports = {
             const badgesData = require('../utils/badges.json');
             for (let i = 0; i < badgesData.length; i++) {
                 if (badgesData[i].id == clan.badgeId) {
-                    opponentsText += "<li style='margin-bottom: 20px;'><img src='https://royaleapi.github.io/cr-api-assets/badges/" + badgesData[i].name + ".png' height='50'>&nbsp;\n"
+                    opponentsText += "<li style='margin-bottom: 20px;'><img src='https://royaleapi.github.io/cr-api-assets/badges/" + badgesData[i].name + ".png' height='60'>&nbsp;\n"
                     break
                 }
             }
             // Make the string from the clans' names, tags, locations, trophies and numbers of members
             Opponents += "- __**" + RiverRace.clans[i].name + "**__ " + " :\n" + RiverRace.clans[i].tag + ", " + clan.location.name + ", " + clan.clanWarTrophies + " tr, " + clan.members + " members\n\n"
-            opponentsText += "<b><u><span style='font-size: 2.1em;'>" + RiverRace.clans[i].name + "</span></u></b> : <br>" + RiverRace.clans[i].tag + ", " + clan.location.name + ", " + clan.clanWarTrophies + " tr, " + clan.members + " members\n\n<br><br>"
+            opponentsText += "<b><span style='font-size: 2.5em;'>" + RiverRace.clans[i].name + "</span></b> : <br>" + RiverRace.clans[i].tag + ", " + clan.location.name + ", " + clan.clanWarTrophies + " tr, " + clan.members + " members\n\n<br><br>"
             let history = await functions.fetchHist(RiverRace.clans[i].tag.substring(1)); // Get the clans' history from RoyaleAPI
             let clanScores = []
             for (let h = 0; h < history.items.length; h++) {
@@ -111,7 +111,7 @@ module.exports = {
             const chart = functions.barChart('bar', Labels, Datas, max);
             const encodedChart = encodeURIComponent(JSON.stringify(chart));
             const chartUrl = `https://quickchart.io/chart?c=${encodedChart}`;
-            charts += "<tr style='background-color: white; border: 1px solid black'>\n<td>Season : " + seasons[i] + "</td>\n<td><img src='" + chartUrl + "'></td>\n</tr>\n"
+            charts += "<tr style='background-color: white; border: 1px solid black'>\n<td>Season : " + seasons[i] + "</td>\n<td><img style='height: 450px' src='" + chartUrl + "'></td>\n</tr>\n"
         }
         // Add a blank character to the end of the string to avoid a bug with the embed (force an empty line)
         Opponents += "\u200b"
@@ -139,7 +139,7 @@ module.exports = {
 
         });
 
-        await functions.renderCommand(interaction, tmpFile, 0, 300)
+        await functions.renderCommand(interaction, tmpFile, 0, 740)
 
         if (text != null) {
             const opponentsEmbed = new EmbedBuilder();

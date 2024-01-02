@@ -27,8 +27,8 @@ async function ffplayer(bot, api, interaction, channel, tag) {
 
     player_data += `<:Hashtag:1186369411439923220> Tag: **${player.tag}**\n`
         + `:mechanic: Role: **${player.role}**\n`
-        + `<a:Colored_arrow:1186367114190270516> Clan name: **${player.clan.name}**\n`
-        + `<:Hashtag:1186369411439923220> Clan tag: **${player.clan.tag}**\n\n`
+        + `<a:Colored_arrow:1186367114190270516> Clan name: **${player.clan?.name}**\n`
+        + `<:Hashtag:1186369411439923220> Clan tag: **${player.clan?.tag}**\n\n`
         + `:trophy: Trophies: **${player.trophies}**\n`
         + `:medal: Best trophies: ${player.bestTrophies}\n`
         + `<:Exp_level:1186623719897051176> Exp Level: **${player.expLevel}**\n`

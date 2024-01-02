@@ -4,6 +4,8 @@ const path = require('node:path');
 const https = require('node:https');
 const puppeteer = require('puppeteer');
 const { AttachmentBuilder, EmbedBuilder } = require('discord.js');
+const { promises } = require('dns');
+const { time } = require('console');
 
 // Function to send an error embed
 function errorEmbed(bot, interaction, channel, error) {
@@ -322,6 +324,9 @@ async function playerHistory(url) {
 
     // Accept cookies
     try {
+        await Promise.all([
+            page.waitForSelector("button.css-47sehv"),
+        ]);
         await Promise.all([
             page.click("button.css-47sehv"),
         ]);

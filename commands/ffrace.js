@@ -153,7 +153,11 @@ async function ffrace(bot, api, interaction, channel, clan, report) {
     if (interaction != null)
         interaction.editReply({ embeds: [raceEmbed] });
     else if (report == false) {
-        channel.send({ embeds: [raceEmbed] })
+        try {
+            channel.send({ embeds: [raceEmbed] });
+        } catch (error) {
+            console.error("FFRace error :" + error)
+        }
     }
 
     return clanPos

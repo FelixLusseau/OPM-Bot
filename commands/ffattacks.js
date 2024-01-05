@@ -309,7 +309,11 @@ async function ffattacks(bot, api, interaction, pingBool, channel, clan) {
         if (interaction != null) {
             interaction.editReply({ embeds: [attacksEmbed] });
         } else if (pingBool) {
-            channel.send({ embeds: [attacksEmbed] })
+            try {
+                channel.send({ embeds: [attacksEmbed] });
+            } catch (error) {
+                console.error("Ping error :" + error)
+            }
         }
     }
 
@@ -320,7 +324,11 @@ async function ffattacks(bot, api, interaction, pingBool, channel, clan) {
         }
     } else if (pingBool) {
         if (ping != "")
-            channel.send(ping);
+            try {
+                channel.send(ping);
+            } catch (error) {
+                console.error("Ping error :" + error)
+            }
     }
     return attacks // Return the string for the report
 };

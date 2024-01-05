@@ -26,7 +26,11 @@ async function report(bot, api, interaction, pingBool, channel, clan) {
         .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')
         .setTimestamp()
         .setFooter({ text: 'by OPM | Féfé ⚡', iconURL: 'https://avatars.githubusercontent.com/u/94113911?s=400&v=4?' + rand });
-    channel.send({ embeds: [reportEmbed] });
+    try {
+        channel.send({ embeds: [reportEmbed] });
+    } catch (error) {
+        console.error("Report error :" + error)
+    }
 }
 
 module.exports = {

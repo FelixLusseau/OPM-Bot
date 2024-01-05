@@ -5,72 +5,54 @@ const ffrace = require('../commands/ffrace.js');
 const sqlite3 = require('sqlite3').verbose();
 
 // Function to get the guild members
-async function getGuildMembers(guild) {
-    try {
-        await guild.members
-            .fetch()
-            .then((memberss) => {
-                guildMembers = memberss
-            })
+async function getGuildMembers(guildsDict) {
+    for (const [key, guild] of Object.entries(guildsDict)) {
+        try {
+            await guild.members
+                .fetch()
+                .then((memberss) => {
+                    guildMembers[key] = memberss
+                })
+        }
+        catch (error) {
+            console.error("Guild members fetch error :" + error)
+        }
     }
-    catch (error) {
-        console.error("Guild members fetch error :" + error)
-    }
+    // console.log(guildMembers)
+    // try {
+    //     await guild.members
+    //         .fetch()
+    //         .then((memberss) => {
+    //             guildMembers = memberss
+    //         })
+    // }
+    // catch (error) {
+    //     console.error("Guild members fetch error :" + error)
+    // }
 }
 
 // Function to schedule the reports and evening reminders
-function schedule(bot, key, value, tag, guildID, chanID) {
-    // let chanID = 0
-    // switch (key) {
-    //     case 'one punch man':
-    //         chanID = process.env.OPM_CHANNEL_ID;
-    //         break;
-    //     case 'Netherfriends':
-    //         chanID = process.env.NF_CHANNEL_ID;
-    //         break;
-    //     case 'The Deadly Sins':
-    //         chanID = process.env.TDS_CHANNEL_ID;
-    //         break;
-    //     case '100% Fr':
-    //         chanID = process.env.CPCT_CHANNEL_ID;
-    //         break;
-    //     case 'Two Punch Man':
-    //         chanID = process.env.TPM_CHANNEL_ID;
-    //         break;
-    //     default:
-    //         break;
-    // }
-    // Uncomment these lines to test the report in the dev channel
-    // guildID = process.env.DEV_GUILD_ID
-    // chanID = process.env.DEV_CHANNEL_ID
+function schedule(bot, value, tag, guildID, chanID) {
+    const channel = bot.channels.cache.get(chanID);
 
     // Schedule the reports and save them in the global reportCron dictionary
-    reportCron[key] = cron.schedule(value.substring(3, 5) + ' ' + value.substring(0, 2) + ' * * 5,6,7,1', () => {
-        const channel = bot.channels.cache.get(chanID);
-        reports.report(bot, api, null, null, channel, tag)
+    reportCron[tag + guildID] = cron.schedule(value.substring(3, 5) + ' ' + value.substring(0, 2) + ' * * 5,6,7,1', () => {
+        reports.report(bot, api, null, null, channel, tag, guildID)
     });
     // Schedule ffrace and ffattacks with ping at 01h00 and 23h00 on the war days
     cron.schedule('0 1 * * 5,6,7,1', () => {
-        const channel = bot.channels.cache.get(chanID);
         ffrace.ffrace(bot, api, null, channel, tag, false)
-        ffattacks.ffattacks(bot, api, null, true, channel, tag)
+        ffattacks.ffattacks(bot, api, null, true, channel, tag, guildID)
     });
     cron.schedule('0 23 * * 4,5,6,7', () => {
-        const channel = bot.channels.cache.get(chanID);
         ffrace.ffrace(bot, api, null, channel, tag, false)
-        ffattacks.ffattacks(bot, api, null, true, channel, tag)
+        ffattacks.ffattacks(bot, api, null, true, channel, tag, guildID)
     });
     // console.log('Scheduled ' + key + ' for ' + value.substring(3, 5) + ' ' + value.substring(0, 2) + ' * * 5,6,7,1')
 
-    const guild = bot.guilds.cache.find((g) => g.id === guildID);
-    if (!guild)
-        return console.log(`Can't find any guild with the ID "${guildID}"`);
-
-    global.guildMembers = {}
     cron.schedule('55 22 * * 4,5,6,7', () => { // Refresh the guild members list at 22h55 on war days
-        getGuildMembers(guild)
+        getGuildMembers(guildsDict)
     })
-
 }
 
 async function loadSchedules(bot) {
@@ -87,9 +69,8 @@ async function loadSchedules(bot) {
                     reject(err);
                 } else {
                     // console.log(row);
-                    reportTimes[row.Clan] = row.Hour;
                     // console.log(row.Clan, row.Hour, clansDict[row.Clan], row.Guild, row.Channel)
-                    schedule(bot, row.Clan, row.Hour, row.Clan, row.Guild, row.Channel)
+                    schedule(bot, row.Hour, row.Clan, row.Guild, row.Channel)
                 }
             }, (err, count) => {
                 if (err) {

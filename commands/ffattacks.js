@@ -2,7 +2,7 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const functions = require('../utils/functions.js');
 const fs = require('fs');
 
-async function ffattacks(bot, api, interaction, pingBool, channel, clan) {
+async function ffattacks(bot, api, interaction, pingBool, channel, clan, guildID) {
     let text = null
     // Check if the command was run by an interaction or a scheduled message
     if (interaction != null) {
@@ -10,6 +10,7 @@ async function ffattacks(bot, api, interaction, pingBool, channel, clan) {
         pingBool = interaction.options.getBoolean('ping');
         clan = interaction.options.getString('clan');
         text = interaction.options.getBoolean('text_version'); // For text version too
+        guildID = interaction.guildId
         if (interaction.options.getString('custom_tag') != null) { // For a custom tag clan
             let custom_tag = interaction.options.getString('custom_tag');
             const regex = /\#[a-zA-Z0-9]{8,9}\b/g
@@ -57,7 +58,14 @@ async function ffattacks(bot, api, interaction, pingBool, channel, clan) {
     const estimate = Math.floor(ratio) * ((RiverRace.periodType == "colosseum") ? 800 : 200)// Invert of ratio calculation where the points are the unknown value
 
     if (pingBool && interaction == null && points == 0) // When war is finished when the scheduled message is sent
-        return channel.send("The clan has finished the war !")
+    {
+        try {
+            channel.send("The clan has finished the war !")
+        } catch (error) {
+            console.error("Ping error :" + error)
+        }
+        return
+    }
 
     let remainingPlayers = 50
     let members = null
@@ -104,7 +112,7 @@ async function ffattacks(bot, api, interaction, pingBool, channel, clan) {
                 inclan = true
                 // If the ping option is enabled, find the cached Discord users with the same name as the players
                 if (pingBool) {
-                    guildMembers.forEach((member) => {
+                    guildMembers[guildID].forEach((member) => {
                         members[i].name = members[i].name.replace('\ufe0f', "").replace(/<[^>]+>/g, '')
                         // console.log(member)
                         if (member.user.username == members[i].name || member.nickname == members[i].name || member.user.globalName == members[i].name) {
@@ -140,7 +148,7 @@ async function ffattacks(bot, api, interaction, pingBool, channel, clan) {
             remainingPlayers--
             // If the ping option is enabled, find the cached Discord users with the same name as the players
             if (pingBool) {
-                guildMembers.forEach((member) => {
+                guildMembers[guildID].forEach((member) => {
                     player.name = player.name.replace('\ufe0f', "").replace(/<[^>]+>/g, '')
                     if (member.user.username == player.name || member.nickname == player.name || member.user.globalName == player.name) {
                         ping += "<@" + member.user.id + "> "
@@ -359,6 +367,6 @@ module.exports = {
             option.setName('custom_tag')
                 .setDescription('Tag of the foreign clan to check (nothing happens if wrong)')),
     async execute(bot, api, interaction) {
-        ffattacks(bot, api, interaction, false, null, null)
+        ffattacks(bot, api, interaction, false, null, null, null)
     },
 };

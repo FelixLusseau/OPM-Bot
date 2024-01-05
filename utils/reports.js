@@ -3,9 +3,9 @@ const ffresults = require('../commands/ffresults');
 const ffrace = require('../commands/ffrace');
 const { EmbedBuilder } = require('discord.js');
 
-async function report(bot, api, interaction, pingBool, channel, clan) {
+async function report(bot, api, interaction, pingBool, channel, clan, guildID) {
     // Get the attacks and results from the ffattacks and ffresults functions
-    const attacks = await ffattacks.ffattacks(bot, api, interaction, pingBool, channel, clan)
+    const attacks = await ffattacks.ffattacks(bot, api, interaction, pingBool, channel, clan, guildID)
     const results = await ffresults.ffresults(bot, api, interaction, clan)
     const race = await ffrace.ffrace(bot, api, interaction, channel, clan, true)
 

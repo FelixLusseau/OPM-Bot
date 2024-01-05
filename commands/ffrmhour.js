@@ -49,13 +49,12 @@ module.exports = {
         } catch (err) {
             console.error(err);
         }
-        // Stop the previous cron job and start a new one with the new hour + save the new hour in the reportTimes dictionary
+        // Stop the previous cron job and start a new one with the new hour
         try {
-            reportCron[clan].stop();
+            reportCron[clan + interaction.guildId].stop();
         } catch (e) {
             interaction.editReply({ content: "No cron job to stop !" });
         }
-        delete reportTimes[clan];
 
         const rand = Math.random().toString(36).slice(2); // Generate a random string to avoid the image cache
         try {

@@ -76,15 +76,15 @@ module.exports = {
             } catch (err) {
                 console.error(err);
             }
-            // Stop the previous cron job and start a new one with the new hour + save the new hour in the reportTimes dictionary
+            // Stop the previous cron job and start a new one with the new hour
             try {
-                reportCron[clan].stop();
+                // console.log(clan + interaction.guildId)
+                reportCron[clan + interaction.guildId].stop();
             } catch (e) {
                 interaction.editReply({ content: "No cron job to stop !" });
             }
-            reportTimes[clan] = hour;
             // schedule.schedule(bot, clan, hour, clan, process.env.OPM_GUILD_ID)
-            schedule.schedule(bot, clan, hour, clan, interaction.guildId, interaction.channel.id)
+            schedule.schedule(bot, hour, clan, interaction.guildId, interaction.channel.id)
 
         }
         else {

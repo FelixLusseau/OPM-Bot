@@ -40,6 +40,7 @@ module.exports = {
             }
         }
         const channel = interaction.channel; // Get the channel where the command was executed from the interaction
-        reports.report(bot, api, null, false, channel, clan)
+        const guildID = interaction.guildId; // Get the guild ID where the command was executed from the interaction
+        reports.report(bot, api, null, false, channel, clan, guildID)
     },
 };

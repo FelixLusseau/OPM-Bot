@@ -89,7 +89,7 @@ async function loadSchedules(bot) {
                     // console.log(row);
                     reportTimes[row.Clan] = row.Hour;
                     // console.log(row.Clan, row.Hour, clansDict[row.Clan], row.Guild, row.Channel)
-                    schedule(bot, row.Clan, row.Hour, clansDict[row.Clan], row.Guild, row.Channel)
+                    schedule(bot, row.Clan, row.Hour, row.Clan, row.Guild, row.Channel)
                 }
             }, (err, count) => {
                 if (err) {

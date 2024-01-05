@@ -37,12 +37,12 @@ module.exports = {
             } catch (err) {
                 console.error(err)
             }
-        }
-        try {
-            placeholder.delete(); // Delete the placeholder message
-        }
-        catch (error) {
-            console.error(error);
+            try {
+                placeholder.delete(); // Delete the placeholder message
+            }
+            catch (error) {
+                console.error(error);
+            }
         }
     }
 };

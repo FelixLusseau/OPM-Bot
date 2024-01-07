@@ -58,7 +58,7 @@ async function ffplayer(bot, api, interaction, channel, tag) {
 
     const rand = Math.random().toString(36).slice(2); // Generate a random string to avoid the image cache
     playerEmbed
-        .setColor(0x0099FF)
+        .setColor(0x7C0404)
         .setTitle(player.name)
         .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' })
         .setDescription(player_data)

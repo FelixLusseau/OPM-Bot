@@ -269,7 +269,7 @@ async function ffattacks(bot, api, interaction, pingBool, channel, clan, guildID
 
         const rand = Math.random().toString(36).slice(2); // Generate a random string to avoid the image cache
         attacksEmbed
-            .setColor(0x0099FF)
+            .setColor(0x7C0404)
             .setTitle("__Remaining attacks" + ((RiverRace.periodType == "colosseum") ? " (Colosseum)__ " : "__ ") + ":")
             .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' })
             .setDescription(attacks)

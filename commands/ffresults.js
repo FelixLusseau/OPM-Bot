@@ -105,7 +105,7 @@ async function ffresults(bot, api, interaction, clan) {
         try {
             if (interaction) {
                 resultsEmbed
-                    .setColor(0x0099FF)
+                    .setColor(0x7C0404)
                     .setTitle('__Players\' war results__ :')
                     .setDescription((Players.length > 0) ? Players : "No players have attacked yet !")
                     .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' })

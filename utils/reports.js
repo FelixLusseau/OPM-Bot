@@ -12,7 +12,7 @@ async function report(bot, api, interaction, pingBool, channel, clan, guildID) {
     const rand = Math.random().toString(36).slice(2); // Generate a random string to avoid the image cache
     const reportEmbed = new EmbedBuilder();
     reportEmbed
-        .setColor(0x0099FF)
+        .setColor(0x7C0404)
         .setTitle('**__Daily War Report__ :**')
         .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' })
         .setDescription(

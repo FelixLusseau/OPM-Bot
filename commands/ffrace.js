@@ -127,7 +127,7 @@ async function ffrace(bot, api, interaction, channel, clan, report) {
     const rand = Math.random().toString(36).slice(2); // Generate a random string to avoid the image cache
     try {
         raceEmbed
-            .setColor(0x0099FF)
+            .setColor(0x7c0404)
             .setTitle("__Current war day" + ((RiverRace.periodType == "colosseum") ? " (Colosseum)__ " : "__ ") + ":")
             .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' })
             .setDescription(Race)

@@ -18,7 +18,7 @@ function errorEmbed(bot, interaction, channel, error) {
     console.log("CR-API error : ", error)
     const errorEmbed = new EmbedBuilder()
     errorEmbed
-        .setColor(0x0099FF)
+        .setColor(0x7C0404)
         .setTitle("CR-API error")
         .setDescription(myError)
         .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' })

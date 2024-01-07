@@ -249,41 +249,23 @@ async function ffattacks(bot, api, interaction, pingBool, channel, clan, guildID
     let attacks = "" // String for the report
     const attacksEmbed = new EmbedBuilder();
     if (Players4 != "" || Players3 != "" || Players2 != "" || Players1 != "") { // Check it the strings are not empty
-        if (interaction) { // If the command is an interaction
-            let ratioEmote = functions.ratioEmote(ratio)
+        let ratioEmote = functions.ratioEmote(ratio)
 
-            attacks = '<a:Colored_arrow:1186367114190270516> **Points** : '
-                + points
-                + "\n"
-                + ratioEmote + ' **Ratio** : '
-                + ratio
-                + "\n"
-                + "<a:Valider:1186367102936952952> **Estimate** : "
-                + estimate
-                + "\n"
-                + '<a:Chevalier:1186367120083263594> **Players** : '
-                + remainingPlayers.toString()
-                + "\n"
-                + '<:Mini_Pekka:1186367104962809947> **Attacks** : '
-                + decksRemaining
-                + '\n'
-        } else { // If the command is a message
-            attacks = '**Points** : '
-                + points
-                + "\n"
-                + '**Ratio** : '
-                + ratio
-                + "\n"
-                + '**Estimate** : '
-                + estimate
-                + "\n"
-                + '**Players** : '
-                + remainingPlayers.toString()
-                + "\n"
-                + '**Attacks** : '
-                + decksRemaining
-                + '\n'
-        }
+        attacks = '<a:Colored_arrow:1186367114190270516> **Points** : '
+            + points
+            + "\n"
+            + ratioEmote + ' **Ratio** : '
+            + ratio
+            + "\n"
+            + "<a:Valider:1186367102936952952> **Estimate** : "
+            + estimate
+            + "\n"
+            + '<a:Chevalier:1186367120083263594> **Players** : '
+            + remainingPlayers.toString()
+            + "\n"
+            + '<:Mini_Pekka:1186367104962809947> **Attacks** : '
+            + decksRemaining
+            + '\n'
 
         const rand = Math.random().toString(36).slice(2); // Generate a random string to avoid the image cache
         attacksEmbed

@@ -100,25 +100,15 @@ async function ffrace(bot, api, interaction, channel, clan, report) {
             continue
         }
         // Make the string with the clan name, tag, points, ratio, decks remaining and players remaining
-        if (interaction != null) {
-            let ratioEmote = functions.ratioEmote(ratio)
+        let ratioEmote = functions.ratioEmote(ratio)
 
-            Race += "- __" + (clans[i].tag == clan ? "**" + clans[i].name + "**" : clans[i].name) // Bold the clan name if it's the clan the user asked for
-                + "__ :\n<:Hashtag:1186369411439923220> Tag : " + clans[i].tag
-                + "\n<a:Colored_arrow:1186367114190270516> Pts : " + points
-                + "\n" + ratioEmote + " Ratio : **" + ratio
-                + "**\n<a:Valider:1186367102936952952> Estimate : **" + estimate
-                + "**\n<:Mini_Pekka:1186367104962809947> Attacks : " + decksRemaining
-                + "\n<a:Chevalier:1186367120083263594> Players : " + playersRemaining + "\n\n"
-        }
-        else
-            Race += "- __" + (clans[i].tag == clan ? "**" + clans[i].name + "**" : clans[i].name) // Bold the clan name if it's the clan the user asked for
-                + "__ :\n Tag : " + clans[i].tag
-                + "\n Pts : " + points
-                + "\n Ratio : **" + ratio
-                + "**\n Estimate : **" + estimate
-                + "**\n Attacks : " + decksRemaining
-                + "\n Players : " + playersRemaining + "\n\n"
+        Race += "- __" + (clans[i].tag == clan ? "**" + clans[i].name + "**" : clans[i].name) // Bold the clan name if it's the clan the user asked for
+            + "__ :\n<:Hashtag:1186369411439923220> Tag : " + clans[i].tag
+            + "\n<a:Colored_arrow:1186367114190270516> Pts : " + points
+            + "\n" + ratioEmote + " Ratio : **" + ratio
+            + "**\n<a:Valider:1186367102936952952> Estimate : **" + estimate
+            + "**\n<:Mini_Pekka:1186367104962809947> Attacks : " + decksRemaining
+            + "\n<a:Chevalier:1186367120083263594> Players : " + playersRemaining + "\n\n"
         if (clans[i].tag == clan)
             clanPos = i + 1
     }

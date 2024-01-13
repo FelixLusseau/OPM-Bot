@@ -28,12 +28,17 @@ module.exports = {
         .addStringOption(option =>
             option.setName('hour')
                 .setDescription('The hour to set at hh:mm format')
-                .setRequired(true)
-        ),
+                .setRequired(true))
+        .addChannelOption(option =>
+            option.setName('channel')
+                .setDescription('The channel to send the report')
+                .setRequired(true))
+    ,
     async execute(bot, api, interaction) {
         await interaction.deferReply({ ephemeral: false });
         const clan = interaction.options.getString('clan');
         const hour = interaction.options.getString('hour');
+        const channel = interaction.options.getChannel('channel')
         const resultsEmbed = new EmbedBuilder();
         let valid = false;
 
@@ -57,7 +62,7 @@ module.exports = {
                     // console.log(`Row(s) deleted ${this.changes}`);
                 });
                 // Insert a new report entry into the database
-                db.run(`INSERT INTO Reports (Guild, Clan, Hour, Channel) VALUES ("${interaction.guildId}", "${clan}", "${hour}", "${interaction.channel.id}")`, function (err) {
+                db.run(`INSERT INTO Reports (Guild, Clan, Hour, Channel) VALUES ("${interaction.guildId}", "${clan}", "${hour}", "${channel.id}")`, function (err) {
                     if (err) {
                         return console.log(err.message);
                     }
@@ -84,7 +89,7 @@ module.exports = {
                 interaction.editReply({ content: "No cron job to stop !" });
             }
             // schedule.schedule(bot, clan, hour, clan, process.env.OPM_GUILD_ID)
-            schedule.schedule(bot, hour, clan, interaction.guildId, interaction.channel.id)
+            schedule.schedule(bot, hour, clan, interaction.guildId, channel.id)
 
         }
         else {
@@ -96,7 +101,7 @@ module.exports = {
             resultsEmbed
                 .setColor(0x7C0404)
                 .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' })
-                .setDescription((valid ? "`" + hour + "` is now the reset hour for **" + clansDict[clan] + "** !" : "**" + hour + "** is not a valid hour !"))
+                .setDescription((valid ? "`" + hour + "` is now the reset hour for **" + clansDict[clan] + "** !" : "**" + hour + "** is not a valid hour !") + "\nThe reports will be sent in the channel : **" + channel.name + "**")
                 .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')
                 .setTimestamp()
                 .setFooter({ text: 'by OPM | Féfé ⚡', iconURL: 'https://avatars.githubusercontent.com/u/94113911?s=400&v=4?' + rand });

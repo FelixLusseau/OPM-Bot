@@ -19,21 +19,8 @@ module.exports = {
         let clan = interaction.options.getString('clan');
         if (functions.isRegisteredClan(bot, interaction, interaction.channel, clan) == false) // Check if the clan is registered
             return
-        if (interaction.options.getString('custom_tag') != null) { // For a custom tag clan
-            let custom_tag = interaction.options.getString('custom_tag');
-            const regex = /\#[a-zA-Z0-9]{8,9}\b/g
-            if (custom_tag.search(regex) >= 0) {
-                custom_tag = (custom_tag[0] == "#") ? custom_tag : "#" + custom_tag;
-                clan = (interaction.options.getString('custom_tag')[0] == "#") ? interaction.options.getString('custom_tag') : "#" + interaction.options.getString('custom_tag');
-                try {
-                    const statusCode = await functions.http_head("/clan/" + custom_tag.substring(1));
-                    // console.log('Status Code:', statusCode);
-                    if (statusCode == 200)
-                        clan = custom_tag;
-                } catch (error) {
-                    console.error('Error:', error);
-                }
-            }
+        if (interaction.options.getString('custom_tag') && functions.isValidTag(interaction.options.getString('custom_tag'))) { // For a custom tag clan
+            clan = interaction.options.getString('custom_tag');
         }
         const channel = interaction.channel; // Get the channel where the command was executed from the interaction
         const guildID = interaction.guildId; // Get the guild ID where the command was executed from the interaction

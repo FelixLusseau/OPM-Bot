@@ -25,20 +25,8 @@ module.exports = {
         if (functions.isRegisteredClan(bot, interaction, interaction.channel, clan) == false) // Check if the clan is registered
             return
         let text = interaction.options.getBoolean('text_version'); // For text version too
-        if (interaction.options.getString('custom_tag') != null) { // For a custom tag clan
-            let custom_tag = interaction.options.getString('custom_tag');
-            const regex = /\#[a-zA-Z0-9]{8,9}\b/g
-            if (custom_tag.search(regex) >= 0) {
-                custom_tag = (custom_tag[0] == "#") ? custom_tag : "#" + custom_tag;
-                try {
-                    const statusCode = await functions.http_head("/clan/" + custom_tag.substring(1));
-                    // console.log('Status Code:', statusCode);
-                    if (statusCode == 200)
-                        clan = custom_tag;
-                } catch (error) {
-                    console.error('Error:', error);
-                }
-            }
+        if (interaction.options.getString('custom_tag') && functions.isValidTag(interaction.options.getString('custom_tag'))) { // For a custom tag clan
+            clan = interaction.options.getString('custom_tag');
         }
 
         let response = null

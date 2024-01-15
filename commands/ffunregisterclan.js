@@ -4,20 +4,22 @@ const functions = require('../utils/functions.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('ffrmhour')
-        .setDescription('Remove the hour for the reset and report !')
+        .setName('ffunregisterclan')
+        .setDescription('Unregister a clan for this server (used in commands) !')
         .addStringOption(option =>
-            option.setName('clan')
-                .setDescription('The clan to check')
+            option.setName('abbr')
+                .setDescription('The clan abbreviation to remove')
                 .setAutocomplete(true)
                 .setRequired(true)),
     async execute(bot, api, interaction) {
         await interaction.deferReply({ ephemeral: false });
-        const clan = interaction.options.getString('clan');
-        if (functions.isRegisteredClan(bot, interaction, interaction.channel, clan) == false) // Check if the clan is registered
+        const tag = interaction.options.getString('abbr');
+        if (functions.isRegisteredClan(bot, interaction, interaction.channel, tag) == false) // Check if the clan is registered
             return
-        const resultsEmbed = new EmbedBuilder();
+        const unregisterEmbed = new EmbedBuilder();
+        const abbr = clansDict[tag]
 
+        // Unregister the clan from the database
         try {
             // Open the database
             let db = new sqlite3.Database('./db/OPM.sqlite3', sqlite3.OPEN_READWRITE, (err) => {
@@ -26,15 +28,16 @@ module.exports = {
                 }
             });
 
-            // Delete a report entry from the database
-            let sql = `DELETE FROM Reports WHERE Guild=? AND Clan=?`;
-            db.run(sql, [interaction.guildId, clan], function (err) {
+            // Delete previous report entry from the database
+            let sql = `DELETE FROM Clans WHERE Guild=? AND Tag=?`;
+            db.run(sql, [interaction.guildId, tag], function (err) {
                 if (err) {
                     return console.error(err.message);
                 }
                 // console.log(`Row(s) deleted ${this.changes}`);
+                // Reload the registered clans cache
+                functions.loadRegisteredClans()
             });
-
 
             // Close the database
             db.close((err) => {
@@ -46,19 +49,13 @@ module.exports = {
         } catch (err) {
             console.error(err);
         }
-        // Stop the previous cron job and start a new one with the new hour
-        try {
-            reportCron[clan + interaction.guildId].stop();
-        } catch (e) {
-            interaction.editReply({ content: "No cron job to stop !" });
-        }
 
         const rand = Math.random().toString(36).slice(2); // Generate a random string to avoid the image cache
         try {
-            resultsEmbed
+            unregisterEmbed
                 .setColor(0x7C0404)
                 .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' })
-                .setDescription("Report deleted for **" + clansDict[clan] + "** !")
+                .setDescription(("**" + abbr + "** is no longer registered on this server !"))
                 .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')
                 .setTimestamp()
                 .setFooter({ text: 'by OPM | Féfé ⚡', iconURL: 'https://avatars.githubusercontent.com/u/94113911?s=400&v=4?' + rand });
@@ -66,6 +63,6 @@ module.exports = {
             console.log(e);
         }
 
-        interaction.editReply({ embeds: [resultsEmbed] });
+        interaction.editReply({ embeds: [unregisterEmbed] });
     },
 };

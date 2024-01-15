@@ -6,6 +6,72 @@ const puppeteer = require('puppeteer');
 const { AttachmentBuilder, EmbedBuilder } = require('discord.js');
 const { promises } = require('dns');
 const { time } = require('console');
+const sqlite3 = require('sqlite3').verbose();
+
+// Load registered clans from the database
+async function loadRegisteredClans() {
+    clansDict = {}
+    // Open the database
+    try {
+        let db = new sqlite3.Database('./db/OPM.sqlite3', sqlite3.OPEN_READONLY, (err) => {
+            if (err) {
+                console.error(err.message);
+            }
+        });
+
+        db.all('SELECT Guild, Name, Abbr, Tag FROM Clans', [], (err, rows) => {
+            if (err) {
+                throw err;
+            }
+            registeredClans = rows.map(row => {
+                clansDict[row.Name] = row.Tag
+                clansDict[row.Tag] = row.Name
+                return { guild: row.Guild, abbr: row.Abbr, tag: row.Tag };
+            });
+
+            console.log("\nRegistered clans :")
+            console.log(registeredClans);
+
+            // console.log("\nClans dict :")
+            // console.log(clansDict);
+        });
+
+        // Close the database
+        db.close((err) => {
+            if (err) {
+                console.error(err.message);
+            }
+        });
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+// Function to check if the tag is valid
+async function isValidTag(tag) {
+    const regex = /\#[a-zA-Z0-9]{8,9}\b/g
+    if (tag.search(regex) >= 0) {
+        tag = (tag[0] == "#") ? tag : "#" + tag;
+        try {
+            const statusCode = await http_head("/clan/" + tag.substring(1));
+            // console.log('Status Code:', statusCode);
+            if (statusCode == 200)
+                clan = tag;
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+}
+
+// Function to check if the clan is registered
+function isRegisteredClan(bot, interaction, channel, tag) {
+    if (clansDict[tag] == undefined) // Check if the clan is registered
+    {
+        errorEmbed(bot, interaction, channel, "The clan is not registered !")
+        return false
+    }
+    return true
+}
 
 // Function to send an error embed
 function errorEmbed(bot, interaction, channel, error) {
@@ -470,6 +536,9 @@ function barChart(type, Labels, Datas, max) {
 }
 
 module.exports = {
+    loadRegisteredClans,
+    isValidTag,
+    isRegisteredClan,
     errorEmbed,
     ratio,
     ratioEmote,

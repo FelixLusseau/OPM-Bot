@@ -9,13 +9,7 @@ module.exports = {
         .addStringOption(option =>
             option.setName('clan')
                 .setDescription('Clan to check')
-                .addChoices(
-                    { name: 'OPM', value: '#YRLJGL9' },
-                    { name: 'NF', value: '#L2L8V08' },
-                    { name: 'TDS', value: '#LVQ8P8YG' },
-                    { name: '100pct', value: '#LLUC90PP' },
-                    { name: 'TPM', value: '#G2CY2PPL' },
-                )
+                .setAutocomplete(true)
                 .setRequired(true))
         .addBooleanOption(option =>
             option.setName('text_version')
@@ -23,6 +17,8 @@ module.exports = {
     async execute(bot, api, interaction) {
         await interaction.deferReply({ ephemeral: false });
         const clan = interaction.options.getString('clan');
+        if (functions.isRegisteredClan(bot, interaction, interaction.channel, clan) == false) // Check if the clan is registered
+            return
         let text = interaction.options.getBoolean('text_version'); // For text version too
         let Opponents = "";
         let scores = [];

@@ -18,6 +18,8 @@ async function ffresults(bot, api, interaction, clan) {
     if (interaction != null) {
         await interaction.deferReply({ ephemeral: false });
         clan = interaction.options.getString('clan');
+        if (functions.isRegisteredClan(bot, interaction, interaction.channel, clan) == false) // Check if the clan is registered
+            return
         text = interaction.options.getBoolean('text_version'); // For text version too
         include_zero_players = interaction.options.getBoolean('include_zero_players');
         if (include_zero_players) {
@@ -130,13 +132,7 @@ module.exports = {
         .addStringOption(option =>
             option.setName('clan')
                 .setDescription('The clan to check')
-                .addChoices(
-                    { name: 'OPM', value: '#YRLJGL9' },
-                    { name: 'NF', value: '#L2L8V08' },
-                    { name: 'TDS', value: '#LVQ8P8YG' },
-                    { name: '100pct', value: '#LLUC90PP' },
-                    { name: 'TPM', value: '#G2CY2PPL' },
-                )
+                .setAutocomplete(true)
                 .setRequired(true))
         .addBooleanOption(option =>
             option.setName('include_zero_players')

@@ -1,46 +1,40 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const schedule = require('../utils/schedule.js');
 const sqlite3 = require('sqlite3').verbose();
 const functions = require('../utils/functions.js');
 
-function isValidTimeFormat(input) {
-    // Regular expression pattern to match "hh:mm" format
-    const regex = /^([01]\d|2[0-3]):([0-5]\d)$/;
-
-    // Check if the input matches the pattern
-    return regex.test(input);
-}
-
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('ffsethour')
-        .setDescription('Set the hour for the reset and report on the defined channel !')
+        .setName('ffregisterclan')
+        .setDescription('Register a clan for this server (used in commands) !')
         .addStringOption(option =>
-            option.setName('clan')
-                .setDescription('The clan to check')
-                .setAutocomplete(true)
+            option.setName('abbr')
+                .setDescription('The clan abbreviation to add')
                 .setRequired(true))
         .addStringOption(option =>
-            option.setName('hour')
-                .setDescription('The hour to set at hh:mm format')
-                .setRequired(true))
-        .addChannelOption(option =>
-            option.setName('channel')
-                .setDescription('The channel to send the report')
+            option.setName('tag')
+                .setDescription('The tag with # of the clan')
                 .setRequired(true)),
     async execute(bot, api, interaction) {
         await interaction.deferReply({ ephemeral: false });
-        const clan = interaction.options.getString('clan');
-        if (functions.isRegisteredClan(bot, interaction, interaction.channel, clan) == false) // Check if the clan is registered
-            return
-        const hour = interaction.options.getString('hour');
-        const channel = interaction.options.getChannel('channel')
-        const resultsEmbed = new EmbedBuilder();
-        let valid = false;
+        const abbr = interaction.options.getString('abbr');
+        const tag = interaction.options.getString('tag');
+        const registerEmbed = new EmbedBuilder();
+        let clan = null
 
+        valid = false
         // Check if the hour given is valid
-        if (isValidTimeFormat(hour)) {
+        if (functions.isValidTag(tag)) {
             valid = true;
+
+            // Get the real name of the clan
+            try {
+                clan = await api.getClanByTag(tag)// Get the clans' info from the Supercell API
+            } catch (error) {
+                functions.errorEmbed(bot, interaction, channel, error)
+                return
+            }
+
+            // Register the clan into the database
             try {
                 // Open the database
                 let db = new sqlite3.Database('./db/OPM.sqlite3', sqlite3.OPEN_READWRITE, (err) => {
@@ -50,22 +44,23 @@ module.exports = {
                 });
 
                 // Delete previous report entry from the database
-                let sql = `DELETE FROM Reports WHERE Guild=? AND Clan=?`;
-                db.run(sql, [interaction.guildId, clan], function (err) {
+                let sql = `DELETE FROM Clans WHERE Guild=? AND Tag=?`;
+                db.run(sql, [interaction.guildId, tag], function (err) {
                     if (err) {
                         return console.error(err.message);
                     }
                     // console.log(`Row(s) deleted ${this.changes}`);
                 });
                 // Insert a new report entry into the database
-                db.run(`INSERT INTO Reports (Guild, Clan, Hour, Channel) VALUES ("${interaction.guildId}", "${clan}", "${hour}", "${channel.id}")`, function (err) {
+                db.run(`INSERT INTO Clans (Guild, Name, Abbr, Tag) VALUES ("${interaction.guildId}", "${clan.name}", "${abbr}", "${tag}")`, function (err) {
                     if (err) {
                         return console.log(err.message);
                     }
                     // get the last insert id
                     // console.log(`A row has been inserted with rowid ${this.lastID}`);
+                    // Reload the registered clans cache
+                    functions.loadRegisteredClans()
                 });
-
 
                 // Close the database
                 db.close((err) => {
@@ -73,20 +68,9 @@ module.exports = {
                         console.error(err.message);
                     }
                 });
-
             } catch (err) {
                 console.error(err);
             }
-            // Stop the previous cron job and start a new one with the new hour
-            try {
-                // console.log(clan + interaction.guildId)
-                reportCron[clan + interaction.guildId].stop();
-            } catch (e) {
-                interaction.editReply({ content: "No cron job to stop !" });
-            }
-            // schedule.schedule(bot, clan, hour, clan, process.env.OPM_GUILD_ID)
-            schedule.schedule(bot, hour, clan, interaction.guildId, channel.id)
-
         }
         else {
             valid = false;
@@ -94,10 +78,10 @@ module.exports = {
 
         const rand = Math.random().toString(36).slice(2); // Generate a random string to avoid the image cache
         try {
-            resultsEmbed
+            registerEmbed
                 .setColor(0x7C0404)
                 .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' })
-                .setDescription((valid ? "`" + hour + "` is now the reset hour for **" + clansDict[clan] + "** !" : "**" + hour + "** is not a valid hour !") + "\nThe reports will be sent in the channel : **" + channel.name + "**")
+                .setDescription((valid ? tag + " (" + clan.name + ") registered as **" + abbr + "** on this server !" : "**" + tag + "** is not a valid tag !"))
                 .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')
                 .setTimestamp()
                 .setFooter({ text: 'by OPM | Féfé ⚡', iconURL: 'https://avatars.githubusercontent.com/u/94113911?s=400&v=4?' + rand });
@@ -105,6 +89,6 @@ module.exports = {
             console.log(e);
         }
 
-        interaction.editReply({ embeds: [resultsEmbed] });
+        interaction.editReply({ embeds: [registerEmbed] });
     },
 };

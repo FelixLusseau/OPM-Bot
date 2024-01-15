@@ -9,6 +9,8 @@ async function ffattacks(bot, api, interaction, pingBool, channel, clan, guildID
         await interaction.deferReply({ ephemeral: false });
         pingBool = interaction.options.getBoolean('ping');
         clan = interaction.options.getString('clan');
+        if (functions.isRegisteredClan(bot, interaction, interaction.channel, clan) == false) // Check if the clan is registered
+            return
         text = interaction.options.getBoolean('text_version'); // For text version too
         guildID = interaction.guildId
         if (interaction.options.getString('custom_tag') != null) { // For a custom tag clan
@@ -331,13 +333,14 @@ module.exports = {
         .addStringOption(option =>
             option.setName('clan')
                 .setDescription('Clan to check')
-                .addChoices(
-                    { name: 'OPM', value: '#YRLJGL9' },
-                    { name: 'NF', value: '#L2L8V08' },
-                    { name: 'TDS', value: '#LVQ8P8YG' },
-                    { name: '100pct', value: '#LLUC90PP' },
-                    { name: 'TPM', value: '#G2CY2PPL' },
-                )
+                // .addChoices(
+                //     { name: 'OPM', value: '#YRLJGL9' },
+                //     { name: 'NF', value: '#L2L8V08' },
+                //     { name: 'TDS', value: '#LVQ8P8YG' },
+                //     { name: '100pct', value: '#LLUC90PP' },
+                //     { name: 'TPM', value: '#G2CY2PPL' },
+                // )
+                .setAutocomplete(true)
                 .setRequired(true))
         .addBooleanOption(option =>
             option.setName('ping')

@@ -17,14 +17,14 @@ module.exports = {
 
         schedule.loadSchedules(bot)
 
-        console.log("\nAccessible Channels :")
-        bot.channels.cache.filter(channel => channel.type === 0).forEach(channel => {
-            console.log("- " + channel.id, channel.name, "(" + channel.guild.name + ")");
-        });
+        // console.log("\nAccessible Channels :")
+        // bot.channels.cache.filter(channel => channel.type === 0).forEach(channel => {
+        //     console.log("- " + channel.id, channel.name, "(" + channel.guild.name + ")");
+        // });
 
         console.log("\nCurrent Guilds :")
         bot.guilds.cache.forEach(guild => {
-            console.log("- " + guild.id, guild.name);
+            console.log("- " + guild.id + " : " + guild.name);
         });
 
         // Get the guild members at the bot startup

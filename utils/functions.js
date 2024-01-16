@@ -76,16 +76,20 @@ function isRegisteredClan(bot, interaction, channel, tag) {
 // Function to send an error embed
 function errorEmbed(bot, interaction, channel, error) {
     let myError = ""
-    if (typeof (error) == "string")
+    let title = ""
+    if (typeof (error) == "string") {
         myError = error
-    else
+        title = "Error"
+    }
+    else {
         myError = '[' + error.response.headers.date + ']: Error: ' + error.response.status + ' ' + error.response.statusText
-    console.error(myError);
-    console.log("CR-API error : ", error)
+        title = "CR-API error"
+    }
+    console.log(title + " : " + myError)
     const errorEmbed = new EmbedBuilder()
     errorEmbed
         .setColor(0x7C0404)
-        .setTitle("CR-API error")
+        .setTitle(title)
         .setDescription(myError)
         .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' })
         .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')

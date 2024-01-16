@@ -34,10 +34,12 @@
   - `/ffresults` : Shows the points of all the war participants
   - `/ffriver` : Shows the current river race (or Colosseum)
   - `/ffreport` : Shows the war report
+  - `/ffregister` : Registers the clan for the server's commands
   - `/ffrmhours` : Removes the hours for the daily reports and resets
   - `/ffrmrotate` : Removes an entry from the rotations
   - `/ffsethours` : Sets the hours for the daily reports and resets on the calling channel using SQLite3 database
   - `/ffsetrotates` : Sets the rotations of the players between the clans
+  - `/ffunregister` : Unregisters the clan from the server's commands
 
 - Scheduled war report has been added to the bot ! It will be sent every day from friday to monday at the reset hour in the clan war channel.
 - Scheduled `/ffrace` and `/ffattacks` with ping has been added to the bot ! It will be sent every day from friday to monday at 01h00 and from Thurday to Sunday at 23h00 in the clan war channels.
@@ -49,3 +51,5 @@
 
 - 31/08/2023 : New display is beginning its deployment !
 Old version is still available with the option `text_version: True`.
+
+- 15/01/2024 : The bot is now able to be used on multiple servers at the same time !

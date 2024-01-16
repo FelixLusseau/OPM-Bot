@@ -26,7 +26,7 @@ async function loadRegisteredClans() {
             registeredClans = rows.map(row => {
                 clansDict[row.Name] = row.Tag
                 clansDict[row.Tag] = row.Name
-                return { guild: row.Guild, abbr: row.Abbr, tag: row.Tag };
+                return { guild: row.Guild, name: row.Name, abbr: row.Abbr, tag: row.Tag };
             });
 
             console.log("\nRegistered clans :")

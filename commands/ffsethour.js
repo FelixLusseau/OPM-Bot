@@ -38,6 +38,14 @@ module.exports = {
         const resultsEmbed = new EmbedBuilder();
         let valid = false;
 
+        try { // Check if the channel is accessible by the bot to send messages without interaction commands
+            await channel.sendTyping()
+        }
+        catch (error) {
+            functions.errorEmbed(bot, interaction, interaction.channel, "The channel **" + channel.name + "** is not accessible by the bot !")
+            return
+        }
+
         // Check if the hour given is valid
         if (isValidTimeFormat(hour)) {
             valid = true;

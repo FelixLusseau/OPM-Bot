@@ -13,6 +13,7 @@ module.exports = {
         const regex = /\#[a-zA-Z0-9]{8,9}\b/g
         if (message.content.search(regex) >= 0) {
             placeholder = await message.channel.send("Tag received !\nSearching... <a:Mag:1186624382982963290>") // Send a placeholder message to show that the bot is working
+            await message.channel.sendTyping();
             const tag = message.content.match(regex)[0].substring(1);
             try {
                 const statusCode = await functions.http_head("/player/" + tag);

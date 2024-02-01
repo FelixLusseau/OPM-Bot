@@ -82,7 +82,7 @@ async function ffrace(bot, api, interaction, channel, clan, report) {
         else
             points = clans[i].periodPoints
         let ratio = 0
-        ratio = functions.ratio(RiverRace, decksRemaining, i) // Calculate the ratio of the clan
+        ratio = await functions.ratio(RiverRace, decksRemaining, i) // Calculate the ratio of the clan
         const estimate = Math.floor(ratio) * ((RiverRace.periodType == "colosseum") ? 800 : 200)// Invert of ratio calculation where the points are the unknown value
 
         if (RiverRace.periodType != "colosseum" && clans[i].fame >= 10000) {

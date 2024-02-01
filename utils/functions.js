@@ -103,7 +103,7 @@ function errorEmbed(bot, interaction, channel, error) {
 }
 
 // Function to calculate the ratio of fame over decks remaining
-function ratio(RiverRace, decksRemaining, i) {
+async function ratio(RiverRace, decksRemaining, i) {
     let clan
     if (i > -1) clan = RiverRace.clans[i]
     else clan = RiverRace.clan
@@ -123,12 +123,20 @@ function ratio(RiverRace, decksRemaining, i) {
                 }
             });
 
-            db.each(`SELECT * FROM Reports WHERE Clan = "${RiverRace.clan.tag}"`, (err, row) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    warHour = row.Hour
-                }
+            await new Promise((resolve, reject) => {
+                db.each(`SELECT * FROM Reports WHERE Clan = "${RiverRace.clan.tag}"`, (err, row) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        warHour = row.Hour
+                    }
+                }, (err, count) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve();
+                    }
+                });
             });
 
             // Close the database

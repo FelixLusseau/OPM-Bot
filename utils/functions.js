@@ -11,8 +11,8 @@ const sqlite3 = require('sqlite3').verbose();
 // Load registered clans from the database
 async function loadRegisteredClans() {
     clansDict = {}
-    // Open the database
     try {
+        // Open the database
         let db = new sqlite3.Database('./db/OPM.sqlite3', sqlite3.OPEN_READONLY, (err) => {
             if (err) {
                 console.error(err.message);
@@ -113,13 +113,33 @@ function ratio(RiverRace, decksRemaining, i) {
         const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
         const day = weekday[d.getDay()]
         const hour = (('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2))
-        // Read the war hour from the file
-        const warHour = fs.readFileSync('./reset-hours/' + RiverRace.clan.name, 'utf8', (err, data) => {
-            if (err) {
-                return;
-            }
-            return data;
-        });
+        // Read the war hour from the db
+        let warHour = ""
+        try {
+            // Open the database
+            let db = new sqlite3.Database('./db/OPM.sqlite3', sqlite3.OPEN_READONLY, (err) => {
+                if (err) {
+                    console.error(err.message);
+                }
+            });
+
+            db.each(`SELECT * FROM Reports WHERE Clan = "${RiverRace.clan.tag}"`, (err, row) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    warHour = row.Hour
+                }
+            });
+
+            // Close the database
+            db.close((err) => {
+                if (err) {
+                    console.error(err.message);
+                }
+            });
+        } catch (err) {
+            console.error(err);
+        }
         if ((day == "Thursday" && hour > warHour) || (day == "Friday" && hour < warHour))
             ratio = (clan.fame / (200 - decksRemaining)).toFixed(2).toString()
         if ((day == "Friday" && hour > warHour) || (day == "Saturday" && hour < warHour))

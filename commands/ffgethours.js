@@ -11,8 +11,8 @@ module.exports = {
         await interaction.deferReply({ ephemeral: false });
         let hours = "";
 
-        // Open the database
         try {
+            // Open the database
             let db = new sqlite3.Database('./db/OPM.sqlite3', sqlite3.OPEN_READONLY, (err) => {
                 if (err) {
                     console.error(err.message);

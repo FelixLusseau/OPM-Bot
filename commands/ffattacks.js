@@ -122,15 +122,15 @@ async function ffattacks(bot, api, interaction, pingBool, channel, clan, guildID
             let decksRemainingToday = 4 - player.decksUsedToday
             switch (decksRemainingToday) {
                 case 3:
-                    Players3 += player.name + " **(out of the clan !!) " + ((interaction != null) ? "<a:Alert:1186367132263522455>" : " ") + "**\n";
+                    Players3 += player.name + " **(out of the clan !!) " + "<a:Alert:1186367132263522455>" + "**\n";
                     Players3HTML += "<li style='margin-bottom: 20px;'>" + player.name + " <b>(out of the clan !!)</b></li>\n"
                     break;
                 case 2:
-                    Players2 += player.name + " **(out of the clan !!) " + ((interaction != null) ? "<a:Alert:1186367132263522455>" : " ") + "**\n";
+                    Players2 += player.name + " **(out of the clan !!) " + "<a:Alert:1186367132263522455>" + "**\n";
                     Players2HTML += "<li style='margin-bottom: 20px;'>" + player.name + " <b>(out of the clan !!)</b></li>\n"
                     break;
                 case 1:
-                    Players1 += player.name + " **(out of the clan !!) " + ((interaction != null) ? "<a:Alert:1186367132263522455>" : " ") + "**\n";
+                    Players1 += player.name + " **(out of the clan !!) " + "<a:Alert:1186367132263522455>" + "**\n";
                     Players1HTML += "<li style='margin-bottom: 20px;'>" + player.name + " <b>(out of the clan !!)</b></li>\n"
                     break;
             }

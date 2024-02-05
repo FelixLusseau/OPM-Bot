@@ -107,7 +107,7 @@ module.exports = {
             const chart = functions.barChart('bar', Labels, Datas, max);
             const encodedChart = encodeURIComponent(JSON.stringify(chart));
             const chartUrl = `https://quickchart.io/chart?c=${encodedChart}`;
-            charts += "<tr style='background-color: white; border: 1px solid black'>\n<td>Season : " + seasons[i] + "</td>\n<td><img style='height: 450px' src='" + chartUrl + "'></td>\n</tr>\n"
+            charts += "<tr style='background-color: white; border: 1px solid black'>\n<td>Season : " + seasons[i] + "</td>\n<td><img style='height: 450px' src=\"" + chartUrl + "\"></td>\n</tr>\n"
         }
         // Add a blank character to the end of the string to avoid a bug with the embed (force an empty line)
         Opponents += "\u200b"

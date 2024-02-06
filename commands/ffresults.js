@@ -71,6 +71,7 @@ async function ffresults(bot, api, interaction, clan) {
                 result = result.replace(/{{ clan }}/g, (clansDict[clan] != undefined) ? clansDict[clan] : clan);
 
                 let html = data.replace(/{{ body }}/g, result);
+                html = html.replace(/{{Background}}/g, 'Background_normal')
 
                 fs.writeFile('./' + tmpFile, html, 'utf8', function (err) {
                     if (err) return console.log(err);
@@ -81,7 +82,7 @@ async function ffresults(bot, api, interaction, clan) {
 
         const regex = /<li/g
         if (PlayersHTML.search(regex) >= 0) {
-            await functions.renderCommand(interaction, tmpFile, 0, 800)
+            await functions.renderCommand(interaction, tmpFile, 0)
         }
         else {
             interaction.editReply({ content: "No players have attacked yet !" })

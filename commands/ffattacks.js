@@ -224,6 +224,7 @@ async function ffattacks(bot, api, interaction, pingBool, channel, clan, guildID
                 result = result.replace(/#000008/g, decksRemainingColor);
 
                 let html = data.replace(/{{ body }}/g, result);
+                html = html.replace(/{{Background}}/g, 'Background_normal')
 
                 fs.writeFile('./' + tmpFile, html, 'utf8', function (err) {
                     if (err) return console.log(err);
@@ -232,7 +233,7 @@ async function ffattacks(bot, api, interaction, pingBool, channel, clan, guildID
 
         });
 
-        await functions.renderCommand(interaction, tmpFile, 0, 250)
+        await functions.renderCommand(interaction, tmpFile, 0)
     }
 
     let attacks = "" // String for the report

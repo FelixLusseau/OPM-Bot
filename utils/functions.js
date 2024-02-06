@@ -417,37 +417,38 @@ async function playerHistory(url) {
     const browser = await puppeteer.launch({ headless: 'new' });
     const page = await browser.newPage();
 
+    // Block requests to specific domains
+    const blockedDomains = ['a.pub.network', 'c.pub.network', 'd.pub.network'];
+
+    await page.setRequestInterception(true);
+    page.on('request', (request) => {
+        const url = new URL(request.url());
+        if (blockedDomains.includes(url.hostname)) {
+            request.abort();
+        } else {
+            request.continue();
+        }
+    });
+
     // Navigate the page to a URL
     await page.goto(url);
 
-    // Accept cookies
-    try {
-        await Promise.all([
-            page.waitForSelector("button.css-47sehv"),
-        ]);
-        await Promise.all([
-            page.click("button.css-47sehv"),
-        ]);
-    } catch (error) {
-        console.log('No cookies to accept');
-    }
+    // Save the page source
+    // let source = await page.content();
+    // fs.writeFileSync('source.html', source);
 
+    // await page.screenshot({ path: "temp.png" })
+    await new Promise(resolve => setTimeout(resolve, 1000));
     // Show the player history
     await Promise.all([
+        page.waitForSelector("button.ui.primary.button.cw2_history_button"),
         page.click("button.ui.primary.button.cw2_history_button"),
     ]);
 
     // Wait for the chart to be rendered
     await new Promise(resolve => setTimeout(resolve, 2000));
 
-    const elem = await page.$('#page_content');
-    const boundingBox = await elem.boundingBox();
-    // console.log('boundingBox', boundingBox)
-
-    // Set the viewport size based on the width and height
-    // await page.setViewport({ width: 1080, height: parseInt(boundingBox.height) - 3300 });
-
-    // // Set screen size
+    // Set screen size
     await page.setViewport({ width: 1080, height: 2048 });
 
     // Get the base64-encoded image data
@@ -475,26 +476,24 @@ async function playerHistory(url) {
     await browser.close();
 }
 
-async function renderCommand(interaction, tmpFile, wait, screenReduce) {
+async function renderCommand(interaction, tmpFile, wait) {
     const browser = await puppeteer.launch({ headless: 'new' });
     const page = await browser.newPage();
 
     // Navigate to a blank HTML page
     await page.goto(`file:${path.join(__dirname, '../' + tmpFile)}`);
 
-    // Get the bounding box of the body
-    const elem = await page.$('body');
-    const boundingBox = await elem.boundingBox();
-    // console.log('boundingBox', boundingBox)
+    // Get the current viewport size
+    const viewport = page.viewport();
 
-    // Set the viewport size based on the width and height of the body
-    await page.setViewport({ width: 1920, height: parseInt(boundingBox.height) + 20 - screenReduce });
+    // Set the new viewport size
+    await page.setViewport({ width: 1920, height: viewport.height });
 
     // Wait for the chart to be rendered
     await new Promise(resolve => setTimeout(resolve, wait));
 
     // Capture a screenshot of the rendered content
-    await page.screenshot({ path: tmpFile + ".png" });
+    await page.screenshot({ path: tmpFile + ".png", fullPage: true });
 
     await browser.close();
 

@@ -1,4 +1,4 @@
-<div style="position: relative; width: 70%; text-align: center; margin: auto;">
+<div style="position: relative; width: 66%; text-align: center; margin: auto;">
     <br><br><br>
     <h1>Remaining attacks of <b>{{ clan }}</b></h1>
     <br><br><br><br>
@@ -9,8 +9,8 @@
     <div style="column-count: 3; font-size: 2.75em; text-align: left;">
         {{ Attacks }}
     </div>
-    <br><br><br>
-    <p style="text-align: left; display: flex; align-items: center; font-size: 2.25em;">
+    <br><br>
+    <p style="text-align: left; display: flex; align-items: center; font-size: 2.25em; margin-bottom: 10em;">
         <span style="padding: 10 px;">By <b>OPM I Féfé ⚡️</b></span>
         <img src="https://avatars.githubusercontent.com/u/94113911?s=400&v=4" height="30 px">
     </p>
@@ -24,13 +24,13 @@
         pointer: {
             length: 0.6, // // Relative to gauge radius
             strokeWidth: 0.035, // The thickness
-            color: '#FFF' // Fill color
+            color: '#000000' // Fill color
         },
         limitMax: true,     // If false, max value increases automatically if value > maxValue
         limitMin: true,     // If true, the min value of the gauge will be fixed
         colorStart: '#6F6EA0',   // Colors
-        colorStop: '#C0C0DB',    // just experiment with them
-        strokeColor: '#EEEEEE',  // to see which ones work best for you
+        colorStop: '#C0C0DB',
+        strokeColor: '#EEEEEE',
         generateGradient: false,
         highDpiSupport: true,     // High resolution support
         renderTicks: {
@@ -52,7 +52,7 @@
         staticLabels: {
             font: "15px sans-serif",  // Specifies font
             labels: [100, 140, 160, 180, 200, 250],  // Print labels at these values
-            color: "#FFF",  // Optional: Label text color
+            color: "#000000",  // Optional: Label text color
             fractionDigits: 0  // Optional: Numerical precision. 0=round off.
         },
     };
@@ -78,10 +78,9 @@
         height: 40px;
         background-color: #000009;
         text-align: center;
-        /* To center it horizontally (if you want) */
-        line-height: 40px;
         /* To center it vertically */
-        color: white;
+        line-height: 40px;
+        color: black;
         font-size: 60%;
     }
 
@@ -90,10 +89,9 @@
         height: 40px;
         background-color: #000008;
         text-align: center;
-        /* To center it horizontally (if you want) */
-        line-height: 40px;
         /* To center it vertically */
-        color: white;
+        line-height: 40px;
+        color: black;
         font-size: 60%;
     }
 </style>

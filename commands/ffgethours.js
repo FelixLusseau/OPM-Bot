@@ -25,7 +25,7 @@ module.exports = {
                         reject(err);
                     } else {
                         // console.log(row);
-                        hours += "<tr style='line-height: 10em;'>\n<td><span style='font-size: 3em;'>" + clansDict[row.Clan] + "</span></td>\n<td style='font-size: 5em;'>" + row.Hour + "</td>\n</tr>";
+                        hours += "<tr style='line-height: 10em;'>\n<td><span style='font-size: 2.5em;'>" + clansDict[row.Clan] + "</span></td>\n<td style='font-size: 4.5em;'>" + row.Hour + "</td>\n</tr>";
                     }
                 }, (err, count) => {
                     if (err) {
@@ -59,6 +59,7 @@ module.exports = {
                 let result = data2.replace(/{{ Hours }}/g, hours);
 
                 let html = data.replace(/{{ body }}/g, result);
+                html = html.replace(/{{Background}}/g, 'Background_small')
 
                 fs.writeFile('./' + tmpFile, html, 'utf8', function (err) {
                     if (err) return console.log(err);
@@ -67,6 +68,6 @@ module.exports = {
 
         });
 
-        await functions.renderCommand(interaction, tmpFile, 0, 150)
+        await functions.renderCommand(interaction, tmpFile, 0)
     },
 };

@@ -61,6 +61,7 @@ module.exports = {
                 result = result.replace(/{{ clan }}/g, (clansDict[clan] != undefined) ? clansDict[clan] : clan);
 
                 let html = data.replace(/{{ body }}/g, result);
+                html = html.replace(/{{Background}}/g, 'Background_normal')
 
                 fs.writeFile('./' + tmpFile, html, 'utf8', function (err) {
                     if (err) return console.log(err);
@@ -69,7 +70,7 @@ module.exports = {
 
         });
 
-        await functions.renderCommand(interaction, tmpFile, 0, 100)
+        await functions.renderCommand(interaction, tmpFile, 0)
 
         if (text != null) {
             const membersEmbed = new EmbedBuilder();

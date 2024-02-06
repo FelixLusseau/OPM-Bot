@@ -32,9 +32,9 @@ module.exports = {
                 console.error('Error:', error);
             }
             try {
-                fs.unlinkSync('./playerHistory.png')
-                fs.unlinkSync('./playerHistoryCanvas.png')
-                // Files removed
+                // Remove files
+                // fs.unlinkSync('./playerHistory.png')
+                // fs.unlinkSync('./playerHistoryCanvas.png')
             } catch (err) {
                 console.error(err)
             }

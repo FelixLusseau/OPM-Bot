@@ -57,7 +57,7 @@ module.exports = {
             }
             // Make the string from the clans' names, tags, locations, trophies and numbers of members
             Opponents += "- __**" + RiverRace.clans[i].name + "**__ " + " :\n" + RiverRace.clans[i].tag + ", " + clan.location.name + ", " + clan.clanWarTrophies + " tr, " + clan.members + " members\n\n"
-            opponentsText += "<b><span style='font-size: 2.5em;'>" + RiverRace.clans[i].name + "</span></b> : <br>" + RiverRace.clans[i].tag + ", " + clan.location.name + ", " + clan.clanWarTrophies + " tr, " + clan.members + " members\n\n<br><br>"
+            opponentsText += "<b><span style='font-size: 2.5em;'>" + RiverRace.clans[i].name + " : </span></b><br>" + RiverRace.clans[i].tag + ", " + clan.location.name + ", " + clan.clanWarTrophies + " tr, " + clan.members + " members\n\n<br><br>"
             let history = await functions.fetchHist(RiverRace.clans[i].tag.substring(1)); // Get the clans' history from RoyaleAPI
             let clanScores = []
             for (let h = 0; h < history.items.length; h++) {
@@ -127,6 +127,7 @@ module.exports = {
                 result = result.replace(/{{ Opponents }}/g, opponentsText);
 
                 let html = data.replace(/{{ body }}/g, result);
+                html = html.replace(/{{Background}}/g, 'Background_high')
 
                 fs.writeFile('./' + tmpFile, html, 'utf8', function (err) {
                     if (err) return console.log(err);
@@ -135,7 +136,7 @@ module.exports = {
 
         });
 
-        await functions.renderCommand(interaction, tmpFile, 0, 740)
+        await functions.renderCommand(interaction, tmpFile, 0)
 
         if (text != null) {
             const opponentsEmbed = new EmbedBuilder();

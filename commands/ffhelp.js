@@ -24,6 +24,7 @@ module.exports = {
             // + "- `/ffrmrotate` : Removes an entry from the rotations\n"
             + "- `/ffsethours` : Sets the hours for the daily reports and resets on the calling channel\n"
             // + "- `/ffsetrotates` : Sets the rotations of the players between the clans\n"
+            + "- `/fftag` : Shows the information of a not registered clan\n"
             + "- `/ffunregister` : Unregisters the clan from the server's commands\n"
             + "\u200B"
 

@@ -5,11 +5,10 @@ async function ffrace(bot, api, interaction, channel, clan, report) {
     // Check if the command was run by an interaction or a scheduled message
     if (interaction != null) {
         await interaction.deferReply({ ephemeral: false });
-        clan = interaction.options.getString('clan');
-        if (functions.isRegisteredClan(bot, interaction, interaction.channel, clan) == false) // Check if the clan is registered
-            return
-        if (interaction.options.getString('custom_tag') && functions.isValidTag(interaction.options.getString('custom_tag'))) { // For a custom tag clan
-            clan = interaction.options.getString('custom_tag');
+        if (interaction.options.getString('clan')) {
+            clan = interaction.options.getString('clan');
+            if (functions.isRegisteredClan(bot, interaction, interaction.channel, clan) == false) // Check if the clan is registered
+                return
         }
     }
 
@@ -152,10 +151,7 @@ module.exports = {
             option.setName('clan')
                 .setDescription('Clan to check')
                 .setAutocomplete(true)
-                .setRequired(true))
-        .addStringOption(option =>
-            option.setName('custom_tag')
-                .setDescription('Tag of the foreign clan to check (nothing happens if wrong)')),
+                .setRequired(true)),
     async execute(bot, api, interaction) {
         ffrace(bot, api, interaction, null, null, false)
     }

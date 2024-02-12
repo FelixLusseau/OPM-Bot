@@ -30,9 +30,6 @@ async function ffresults(bot, api, interaction, clan) {
                 return
             }
         }
-        if (interaction.options.getString('custom_tag') && functions.isValidTag(interaction.options.getString('custom_tag'))) { // For a custom tag clan
-            clan = interaction.options.getString('custom_tag');
-        }
     }
 
     let Players = "";
@@ -126,9 +123,6 @@ module.exports = {
         .addBooleanOption(option =>
             option.setName('include_zero_players')
                 .setDescription('Include the players with 0 pts'))
-        .addStringOption(option =>
-            option.setName('custom_tag')
-                .setDescription('Tag of the foreign clan to check (nothing happens if wrong)'))
         .addBooleanOption(option =>
             option.setName('text_version')
                 .setDescription('Show the text version of the command too')),

@@ -8,14 +8,13 @@ async function ffattacks(bot, api, interaction, pingBool, channel, clan, guildID
     if (interaction != null) {
         await interaction.deferReply({ ephemeral: false });
         pingBool = interaction.options.getBoolean('ping');
-        clan = interaction.options.getString('clan');
-        if (functions.isRegisteredClan(bot, interaction, interaction.channel, clan) == false) // Check if the clan is registered
-            return
+        if (interaction.options.getString('clan')) {
+            clan = interaction.options.getString('clan');
+            if (functions.isRegisteredClan(bot, interaction, interaction.channel, clan) == false) // Check if the clan is registered
+                return
+        }
         text = interaction.options.getBoolean('text_version'); // For text version too
         guildID = interaction.guildId
-        if (interaction.options.getString('custom_tag') && functions.isValidTag(interaction.options.getString('custom_tag'))) { // For a custom tag clan
-            clan = interaction.options.getString('custom_tag');
-        }
     }
 
     let Players4 = "";
@@ -321,13 +320,6 @@ module.exports = {
         .addStringOption(option =>
             option.setName('clan')
                 .setDescription('Clan to check')
-                // .addChoices(
-                //     { name: 'OPM', value: '#YRLJGL9' },
-                //     { name: 'NF', value: '#L2L8V08' },
-                //     { name: 'TDS', value: '#LVQ8P8YG' },
-                //     { name: '100pct', value: '#LLUC90PP' },
-                //     { name: 'TPM', value: '#G2CY2PPL' },
-                // )
                 .setAutocomplete(true)
                 .setRequired(true))
         .addBooleanOption(option =>
@@ -335,10 +327,7 @@ module.exports = {
                 .setDescription('Ping the players who don\'t have attacked left'))
         .addBooleanOption(option =>
             option.setName('text_version')
-                .setDescription('Show the text version of the command too'))
-        .addStringOption(option =>
-            option.setName('custom_tag')
-                .setDescription('Tag of the foreign clan to check (nothing happens if wrong)')),
+                .setDescription('Show the text version of the command too')),
     async execute(bot, api, interaction) {
         ffattacks(bot, api, interaction, false, null, null, null)
     },

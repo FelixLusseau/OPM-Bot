@@ -37,7 +37,7 @@ async function ffriver(bot, api, interaction, clan) {
             if (interaction != null)
                 Race += "- __"
                     + (RiverRace.clans[i].tag == clan ? "**" + RiverRace.clans[i].name + "**" : RiverRace.clans[i].name)
-                    + "__ : **War finished**\n<:Retro:1010557231214886933> Tag : "
+                    + "__ : **War finished**\n<:Hashtag:1186369411439923220> Tag : "
                     + RiverRace.clans[i].tag + "\n\n"
             else
                 Race += "- __"
@@ -50,9 +50,9 @@ async function ffriver(bot, api, interaction, clan) {
         if (interaction != null)
             Race += "- __"
                 + (RiverRace.clans[i].tag == clan ? "**" + RiverRace.clans[i].name + "**" : RiverRace.clans[i].name)
-                + "__ :\n<:Retro:1010557231214886933> Tag : "
+                + "__ :\n<:Hashtag:1186369411439923220> Tag : "
                 + RiverRace.clans[i].tag
-                + "\n<:fame:876320149878235136> Pts : **"
+                + "\n<a:Colored_arrow:1186367114190270516> Pts : **"
                 + RiverRace.clans[i].fame
                 + "**\n\n"
         else

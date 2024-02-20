@@ -12,7 +12,7 @@ async function ffrace(bot, api, interaction, channel, clan, report) {
         }
     }
 
-    const raceEmbed = new EmbedBuilder();
+    const raceEmbed = functions.generateEmbed(bot);
     let Labels = [];
     let Datas = [];
     let Race = "";
@@ -116,14 +116,9 @@ async function ffrace(bot, api, interaction, channel, clan, report) {
     const rand = Math.random().toString(36).slice(2); // Generate a random string to avoid the image cache
     try {
         raceEmbed
-            .setColor(0x7C0404)
             .setTitle("__Current war day" + ((RiverRace.periodType == "colosseum") ? " (Colosseum)__ " : "__ ") + ":")
-            .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' })
             .setDescription(Race)
-            .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')
             .setImage(chartUrl)
-            .setTimestamp()
-            .setFooter({ text: 'by OPM | Féfé ⚡', iconURL: 'https://avatars.githubusercontent.com/u/94113911?s=400&v=4?' + rand });
     } catch (e) {
         console.log(e);
     }

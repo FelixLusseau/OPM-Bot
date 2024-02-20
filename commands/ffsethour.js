@@ -35,7 +35,6 @@ module.exports = {
             return
         const hour = interaction.options.getString('hour');
         const channel = interaction.options.getChannel('channel')
-        const resultsEmbed = new EmbedBuilder();
         let valid = false;
 
         try { // Check if the channel is accessible by the bot to send messages without interaction commands
@@ -100,15 +99,11 @@ module.exports = {
             valid = false;
         }
 
-        const rand = Math.random().toString(36).slice(2); // Generate a random string to avoid the image cache
+        const resultsEmbed = functions.generateEmbed(bot);
         try {
             resultsEmbed
-                .setColor(0x7C0404)
                 .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' })
                 .setDescription((valid ? "`" + hour + "` is now the reset hour for **" + clansDict[clan] + "** !" : "**" + hour + "** is not a valid hour !") + "\nThe reports will be sent in the channel : **" + channel.name + "**")
-                .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')
-                .setTimestamp()
-                .setFooter({ text: 'by OPM | Féfé ⚡', iconURL: 'https://avatars.githubusercontent.com/u/94113911?s=400&v=4?' + rand });
         } catch (e) {
             console.log(e);
         }

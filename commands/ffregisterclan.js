@@ -18,7 +18,6 @@ module.exports = {
         await interaction.deferReply({ ephemeral: false });
         const abbr = interaction.options.getString('abbr');
         const tag = interaction.options.getString('tag');
-        const registerEmbed = new EmbedBuilder();
         let clan = null
 
         valid = false
@@ -76,15 +75,10 @@ module.exports = {
             valid = false;
         }
 
-        const rand = Math.random().toString(36).slice(2); // Generate a random string to avoid the image cache
+        const registerEmbed = functions.generateEmbed(bot);
         try {
             registerEmbed
-                .setColor(0x7C0404)
-                .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' })
                 .setDescription((valid ? tag + " (" + clan.name + ") registered as **" + abbr + "** on this server !" : "**" + tag + "** is not a valid tag !"))
-                .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')
-                .setTimestamp()
-                .setFooter({ text: 'by OPM | Féfé ⚡', iconURL: 'https://avatars.githubusercontent.com/u/94113911?s=400&v=4?' + rand });
         } catch (e) {
             console.log(e);
         }

@@ -236,7 +236,7 @@ async function ffattacks(bot, api, interaction, pingBool, channel, clan, guildID
     }
 
     let attacks = "" // String for the report
-    const attacksEmbed = new EmbedBuilder();
+    const attacksEmbed = functions.generateEmbed(bot);
     if (Players4 != "" || Players3 != "" || Players2 != "" || Players1 != "") { // Check it the strings are not empty
         let ratioEmote = functions.ratioEmote(ratio)
 
@@ -256,15 +256,9 @@ async function ffattacks(bot, api, interaction, pingBool, channel, clan, guildID
             + decksRemaining
             + '\n'
 
-        const rand = Math.random().toString(36).slice(2); // Generate a random string to avoid the image cache
         attacksEmbed
-            .setColor(0x7C0404)
             .setTitle("__Remaining attacks" + ((RiverRace.periodType == "colosseum") ? " (Colosseum)__ " : "__ ") + ":")
-            .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' })
             .setDescription(attacks)
-            .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')
-            .setTimestamp()
-            .setFooter({ text: 'by OPM | Féfé ⚡', iconURL: 'https://avatars.githubusercontent.com/u/94113911?s=400&v=4?' + rand });
         if (Players4 != "") {
             attacksEmbed.addFields({ name: '__4 attacks__ :', value: Players4 })
             attacks += '\n__**4 attacks**__ :\n' + Players4

@@ -15,7 +15,7 @@ async function ffplayer(bot, api, interaction, channel, tag) {
         return
     }
 
-    const playerEmbed = new EmbedBuilder();
+    const playerEmbed = functions.generateEmbed(bot);
     let player_data = "";
     let player = {};
     try {
@@ -56,15 +56,9 @@ async function ffplayer(bot, api, interaction, channel, tag) {
 
     player_data += `\nhttps://royaleapi.com/player/` + tag.substring(1);
 
-    const rand = Math.random().toString(36).slice(2); // Generate a random string to avoid the image cache
     playerEmbed
-        .setColor(0x7C0404)
         .setTitle(player.name)
-        .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' })
         .setDescription(player_data)
-        .setThumbnail('https://cdn.discordapp.com/attachments/527820923114487830/1071116873321697300/png_20230203_181427_0000.png')
-        .setTimestamp()
-        .setFooter({ text: 'by OPM | Féfé ⚡', iconURL: 'https://avatars.githubusercontent.com/u/94113911?s=400&v=4?' + rand });
 
     // If the interaction is not null, edit the reply deferred before
     if (interaction != null)

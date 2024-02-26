@@ -33,8 +33,8 @@ module.exports = {
             }
             try {
                 // Remove files
-                // fs.unlinkSync('./playerHistory.png')
-                // fs.unlinkSync('./playerHistoryCanvas.png')
+                fs.unlinkSync('./playerHistory.png')
+                fs.unlinkSync('./playerHistoryCanvas.png')
             } catch (err) {
                 console.error(err)
             }

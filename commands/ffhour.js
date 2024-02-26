@@ -12,6 +12,7 @@ function isValidTimeFormat(input) {
     return regex.test(input);
 }
 
+// Function to define a report and reset hour for a registered clan
 async function setHour(bot, api, interaction) {
     await interaction.deferReply({ ephemeral: false });
     const clan = interaction.options.getString('clan');
@@ -95,6 +96,7 @@ async function setHour(bot, api, interaction) {
     interaction.editReply({ embeds: [resultsEmbed] });
 }
 
+// Function display the report and reset hours
 async function getHours(bot, api, interaction) {
     await interaction.deferReply({ ephemeral: false });
     let hours = "";
@@ -159,6 +161,7 @@ async function getHours(bot, api, interaction) {
     await functions.renderCommand(interaction, tmpFile, 0)
 }
 
+// Function to remove a report and reset hour for a registered clan
 async function rmHour(bot, api, interaction) {
     await interaction.deferReply({ ephemeral: false });
     const clan = interaction.options.getString('clan');

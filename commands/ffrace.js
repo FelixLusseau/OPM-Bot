@@ -64,7 +64,8 @@ async function ffrace(bot, api, interaction, channel, clan, report) {
     else
         clans.sort((a, b) => (a.periodPoints < b.periodPoints) ? 1 : -1)
 
-    let clanPos = 0
+    let data = {}
+    // Dictionary for estimated positions and other data calculation
     for (let i = 0; i < clans.length; i++) {
         let decksRemaining = 200
         let playersRemaining = 50
@@ -75,17 +76,61 @@ async function ffrace(bot, api, interaction, channel, clan, report) {
             if (clans[i].participants[j].decksUsedToday != 0)
                 playersRemaining -= 1
         }
+        ratio = await functions.ratio(RiverRace, decksRemaining, i) // Calculate the ratio of the clan
+        const estimate = Math.floor(ratio) * ((RiverRace.periodType == "colosseum") ? 800 : 200)// Invert of ratio calculation where the points are the unknown value
+
+        data[clans[i].tag] = { "decksRemaining": decksRemaining, "playersRemaining": playersRemaining, "ratio": ratio, "estimate": estimate, "estimatedPosition": 0 }
+    }
+
+    // Convert the data object to an array of arrays
+    let dataArray = Object.entries(data);
+
+    // Sort the array by estimate value
+    dataArray.sort((a, b) => (b[1].estimate - a[1].estimate));
+
+    // Convert it back to an object
+    let sortedData = Object.fromEntries(dataArray);
+
+    // Calculate the estimated position of the clan
+    for (let i = 0; i < dataArray.length; i++) {
+        if (i > 0 && dataArray[i][1].estimate == dataArray[i - 1][1].estimate)
+            sortedData[dataArray[i][0]].estimatedPosition = sortedData[dataArray[i - 1][0]].estimatedPosition
+        else
+            sortedData[dataArray[i][0]].estimatedPosition = i + 1
+
+        switch (sortedData[dataArray[i][0]].estimatedPosition) {
+            case 1:
+                sortedData[dataArray[i][0]].estimatedPosition = "1st"
+                break
+            case 2:
+                sortedData[dataArray[i][0]].estimatedPosition = "2nd"
+                break
+            case 3:
+                sortedData[dataArray[i][0]].estimatedPosition = "3rd"
+                break
+            default:
+                sortedData[dataArray[i][0]].estimatedPosition = sortedData[dataArray[i][0]].estimatedPosition + "th"
+                break
+        }
+    }
+    // console.log(sortedData);
+
+    let clanPos = 0
+    for (let i = 0; i < clans.length; i++) {
+        const decksRemaining = sortedData[clans[i].tag].decksRemaining
+        const playersRemaining = sortedData[clans[i].tag].playersRemaining
+
         let points = 0
         if (RiverRace.periodType == "colosseum")
             points = clans[i].fame
         else
             points = clans[i].periodPoints
-        let ratio = 0
-        ratio = await functions.ratio(RiverRace, decksRemaining, i) // Calculate the ratio of the clan
-        const estimate = Math.floor(ratio) * ((RiverRace.periodType == "colosseum") ? 800 : 200)// Invert of ratio calculation where the points are the unknown value
+
+        const ratio = sortedData[clans[i].tag].ratio
+        const estimate = sortedData[clans[i].tag].estimate
 
         if (RiverRace.periodType != "colosseum" && clans[i].fame >= 10000) {
-            Race += "- __" + (clans[i].tag == clan ? "**" + clans[i].name + "**" : clans[i].name) + "__ : War finished \n\n"
+            Race += "- __" + (clans[i].tag == clan ? "**" + clans[i].name + "**" : clans[i].name) + "__ : <:Reinearcheres:1216136457601683588> War finished \n\n"
             continue
         }
         // Make the string with the clan name, tag, points, ratio, decks remaining and players remaining
@@ -96,6 +141,7 @@ async function ffrace(bot, api, interaction, channel, clan, report) {
             + "\n<a:Colored_arrow:1186367114190270516> Pts : " + points
             + "\n" + ratioEmote + " Ratio : **" + ratio
             + "**\n<a:Valider:1186367102936952952> Estimate : **" + estimate
+            + "**\n<a:FlechecoloreeH:1216130989663846420> Estimated position : **" + sortedData[clans[i].tag].estimatedPosition
             + "**\n<:Mini_Pekka:1186367104962809947> Attacks : " + decksRemaining
             + "\n<a:Chevalier:1186367120083263594> Players : " + playersRemaining + "\n\n"
         if (clans[i].tag == clan)

@@ -69,6 +69,7 @@ async function setHour(bot, api, interaction) {
         } catch (err) {
             console.error(err);
         }
+
         // Stop the previous cron job and start a new one with the new hour
         try {
             // console.log(clan + interaction.guildId)
@@ -76,7 +77,6 @@ async function setHour(bot, api, interaction) {
         } catch (e) {
             interaction.editReply({ content: "No cron job to stop !" });
         }
-        // schedule.schedule(bot, clan, hour, clan, process.env.OPM_GUILD_ID)
         schedule.schedule(bot, hour, clan, interaction.guildId, channel.id)
 
     }
@@ -87,8 +87,101 @@ async function setHour(bot, api, interaction) {
     const resultsEmbed = functions.generateEmbed(bot);
     try {
         resultsEmbed
-            .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' })
             .setDescription((valid ? "`" + hour + "` is now the reset hour for **" + clansDict[clan] + "** !" : "**" + hour + "** is not a valid hour !") + "\nThe reports will be sent in the channel : **" + channel.name + "**")
+    } catch (e) {
+        console.log(e);
+    }
+
+    interaction.editReply({ embeds: [resultsEmbed] });
+}
+
+// Function to edit the report channel and / or hour
+async function updateHour(bot, api, interaction) {
+    await interaction.deferReply({ ephemeral: false });
+    const clan = interaction.options.getString('clan');
+    if (functions.isRegisteredClan(bot, interaction, interaction.channel, clan) == false) // Check if the clan is registered
+        return
+    const hour = interaction.options.getString('hour');
+    let channel = interaction.options.getChannel('channel')
+    let valid = false;
+    let newChannel;
+
+    if (channel) {
+        try { // Check if the channel is accessible by the bot to send messages without interaction commands
+            await channel.sendTyping()
+        }
+        catch (error) {
+            functions.errorEmbed(bot, interaction, interaction.channel, "The channel **" + channel.name + "** is not accessible by the bot !")
+            return
+        }
+    }
+
+    // Check if the hour given is valid
+    if (isValidTimeFormat(hour)) {
+        valid = true;
+        try {
+            // Open the database
+            let db = new sqlite3.Database('./db/OPM.sqlite3', sqlite3.OPEN_READWRITE, (err) => {
+                if (err) {
+                    console.error(err.message);
+                }
+            });
+
+            if (channel) {
+                // Update the hour and channel in the database
+                sql = `UPDATE Reports SET Hour = ?, Channel = ? WHERE Guild = ? AND Clan = ?`;
+                db.run(sql, [hour, channel.id, interaction.guildId, clan], function (err) {
+                    if (err) {
+                        return console.error(err.message);
+                    }
+                    // console.log(`Row(s) updated ${this.changes}`);
+                });
+            } else {
+                // Update the hour in the database
+                sql = `UPDATE Reports SET Hour = ? WHERE Guild = ? AND Clan = ?`;
+                db.run(sql, [hour, interaction.guildId, clan], function (err) {
+                    if (err) {
+                        return console.error(err.message);
+                    }
+                    // console.log(`Row(s) updated ${this.changes}`);
+                });
+            }
+
+            // Stop the previous cron job and start a new one with the new hour
+            sql = `SELECT Channel FROM Reports WHERE Guild = ? AND Clan = ?`;
+            db.get(sql, [interaction.guildId, clan], (err, row) => {
+                if (err) {
+                    return console.error(err.message);
+                }
+                channel = bot.channels.cache.get(row.Channel);
+                try {
+                    // console.log(clan + interaction.guildId)
+                    reportCron[clan + interaction.guildId].stop();
+                } catch (e) {
+                    interaction.editReply({ content: "No cron job to stop !" });
+                }
+                schedule.schedule(bot, hour, clan, interaction.guildId, channel.id)
+            });
+
+            // Close the database
+            db.close((err) => {
+                if (err) {
+                    console.error(err.message);
+                }
+            });
+
+        } catch (err) {
+            console.error(err);
+        }
+    }
+    else {
+        valid = false;
+    }
+
+    const resultsEmbed = functions.generateEmbed(bot);
+    try {
+        resultsEmbed
+            .setDescription((valid ? "`" + hour + "` is now the reset hour for **" + clansDict[clan] + "** !" : "**" + hour + "** is not a valid hour !") + (channel ? "\nThe reports will be sent in the channel : **" + channel.name + "**" : ""))
     } catch (e) {
         console.log(e);
     }
@@ -206,7 +299,6 @@ async function rmHour(bot, api, interaction) {
     const resultsEmbed = functions.generateEmbed(bot);
     try {
         resultsEmbed
-            .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' })
             .setDescription("Report deleted for **" + clansDict[clan] + "** !")
     } catch (e) {
         console.log(e);
@@ -217,6 +309,7 @@ async function rmHour(bot, api, interaction) {
 
 module.exports = {
     setHour,
+    updateHour,
     getHours,
     rmHour,
     data: new SlashCommandBuilder()
@@ -240,6 +333,22 @@ module.exports = {
                         .setDescription('The channel to send the report')
                         .setRequired(true)))
         .addSubcommand(subcommand =>
+            subcommand
+                .setName('update')
+                .setDescription('Update the hour for the reset and reports !')
+                .addStringOption(option =>
+                    option.setName('clan')
+                        .setDescription('The clan to add the hour to')
+                        .setAutocomplete(true)
+                        .setRequired(true))
+                .addStringOption(option =>
+                    option.setName('hour')
+                        .setDescription('The hour to set at hh:mm format')
+                        .setRequired(true))
+                .addChannelOption(option =>
+                    option.setName('channel')
+                        .setDescription('The channel to send the report')))
+        .addSubcommand(subcommand =>
             subcommand.setName('get')
                 .setDescription('Get the hours for the reset and reports !'))
         .addSubcommand(subcommand =>
@@ -254,6 +363,9 @@ module.exports = {
         switch (interaction.options.getSubcommand()) {
             case 'set':
                 setHour(bot, api, interaction)
+                break;
+            case 'update':
+                updateHour(bot, api, interaction)
                 break;
             case 'get':
                 getHours(bot, api, interaction)

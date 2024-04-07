@@ -124,7 +124,7 @@ async function ratio(RiverRace, decksRemaining, i) {
         const d = new Date();
         const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
         const day = weekday[d.getDay()]
-        const hour = (('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2))
+        const hour = (('0' + d.getHours()).slice(-2) + ':' + ('0' + (d.getMinutes() - 1)).slice(-2)) // -1 min to not apply the new ratio during end war day report
         // Read the war hour from the db
         let warHour = ""
         try {

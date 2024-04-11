@@ -45,7 +45,7 @@ async function ffattacks(bot, api, interaction, pingBool, channel, clan, guildID
     ratio = await functions.ratio(RiverRace, decksRemaining, -1) // Calculate the ratio
     const estimate = Math.floor(ratio) * ((RiverRace.periodType == "colosseum") ? 800 : 200)// Invert of ratio calculation where the points are the unknown value
 
-    if (pingBool && interaction == null && points == 0) // When war is finished when the scheduled message is sent
+    if (pingBool && interaction == null && points == 0 && RiverRace.clan.fame >= 10000) // When war is finished when the scheduled message is sent
     {
         try {
             channel.send("The clan has finished the war !")

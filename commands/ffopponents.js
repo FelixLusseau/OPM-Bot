@@ -143,6 +143,7 @@ async function ffopponents(bot, api, interaction, clan) {
             opponentsEmbed
                 .setTitle('__Current opponents__ :')
                 .setDescription(Opponents)
+                .setImage(chartUrl)
         } catch (e) {
             console.log(e);
         }

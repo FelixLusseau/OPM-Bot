@@ -155,7 +155,8 @@ async function ffrace(bot, api, interaction, channel, clan, report) {
         max = 45000
 
     // Chart construction
-    const chart = functions.barChart('horizontalBar', Labels, Datas, max);
+    Datas = [Datas]
+    const chart = functions.barChart('horizontalBar', Labels, Datas, null, max);
     const encodedChart = encodeURIComponent(JSON.stringify(chart));
     const chartUrl = `https://quickchart.io/chart?c=${encodedChart}`;
 

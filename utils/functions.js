@@ -518,7 +518,7 @@ async function renderCommand(interaction, tmpFile, wait) {
     fs.unlinkSync('./' + tmpFile + '.png');
 }
 
-function barChart(type, Labels, Datas, max) {
+function barChart(type, Labels, Datas, seasons, max) {
     let scales = {}
     if (type == 'bar')
         scales = {
@@ -538,19 +538,35 @@ function barChart(type, Labels, Datas, max) {
                 },
             }],
         };
+
+    const initialDataset = {
+        label: 'Medals',
+        data: [],
+        backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(75, 192, 192, 0.2)', 'rgba(255, 159, 64, 0.2)', 'rgba(54, 162, 235, 0.2)', 'rgba(255, 205, 86, 0.2)'],
+        borderColor: ['rgb(255, 99, 132)', 'rgb(75, 192, 192)', 'rgb(255, 159, 64)', 'rgb(54, 162, 235)', 'rgb(255, 205, 86)'],
+        borderWidth: 1,
+    };
+
+    let Dataset = [JSON.parse(JSON.stringify(initialDataset))]; // Clone the initial dataset to initialize the array
+
+    if (Datas.length == 1)
+        Dataset[0].data = Datas[0]
+    else
+        for (let i = 0; i < Datas.length; i++) {
+            if (i >= Dataset.length)
+                Dataset.push(JSON.parse(JSON.stringify(initialDataset))); // Clone the initial dataset
+            Dataset[i].data = Datas[i]
+            if (seasons)
+                Dataset[i].label = "Season " + seasons[i]
+            Dataset[i].backgroundColor = initialDataset.backgroundColor[i]
+            Dataset[i].borderColor = initialDataset.borderColor[i]
+        }
+
     const chart = {
         type: type,
         data: {
             labels: Labels,
-            datasets: [
-                {
-                    label: 'Medals',
-                    data: Datas,
-                    backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(255, 159, 64, 0.2)', 'rgba(255, 205, 86, 0.2)', 'rgba(75, 192, 192, 0.2)', 'rgba(54, 162, 235, 0.2)'],
-                    borderColor: ['rgb(255, 99, 132)', 'rgb(255, 159, 64)', 'rgb(255, 205, 86)', 'rgb(75, 192, 192)', 'rgb(54, 162, 235)'],
-                    borderWidth: 1,
-                },
-            ],
+            datasets: Dataset,
         },
         options: {
             'scales': scales,
@@ -575,6 +591,8 @@ function barChart(type, Labels, Datas, max) {
                 ]
         },
     };
+    if (seasons)
+        chart.options.plugins = null // Remove the data labels if seasons are defined because there is not enough space to display them
     return chart;
 }
 

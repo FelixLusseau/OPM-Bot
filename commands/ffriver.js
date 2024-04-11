@@ -71,7 +71,8 @@ async function ffriver(bot, api, interaction, clan) {
     else max = 10000
 
     // Chart creation
-    const chart = functions.barChart('bar', Labels, Datas, max);
+    Datas = [Datas]
+    const chart = functions.barChart('bar', Labels, Datas, null, max);
     const encodedChart = encodeURIComponent(JSON.stringify(chart));
     const chartUrl = `https://quickchart.io/chart?c=${encodedChart}`;
     // console.log(chartUrl);

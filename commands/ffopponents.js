@@ -50,37 +50,44 @@ async function ffopponents(bot, api, interaction, clan) {
         opponentsText += "<b><span style='font-size: 2.5em;'>" + RiverRace.clans[i].name + " : </span></b><br>" + RiverRace.clans[i].tag + ", " + clan.location.name + ", " + clan.clanWarTrophies + " tr, " + clan.members + " members\n\n<br><br>"
         let history = await functions.fetchHist(RiverRace.clans[i].tag.substring(1)); // Get the clans' history from RoyaleAPI
         let clanScores = []
+        let ranksScores = []
+        let ranksScoresText = []
         for (let h = 0; h < history.items.length; h++) {
             // Add the colosseum history on the last seasons
             for (let s = 0; s < history.items[h].standings.length; s++) {
                 if (history.items[h].standings[s].clan.tag == RiverRace.clans[i].tag && history.items[h].standings[s].clan.fame > 11000) {
-                    Opponents += "Season " + history.items[h].seasonId + " : **" + history.items[h].standings[s].rank
-                    opponentsText += "Season " + history.items[h].seasonId + " : <b>" + history.items[h].standings[s].rank
+                    let tmp, tmpText = ""
+                    tmp = "Season " + history.items[h].seasonId + " : **" + history.items[h].standings[s].rank
+                    tmpText = /* "Season " + history.items[h].seasonId + " :  */"<b>" + history.items[h].standings[s].rank
                     switch (history.items[h].standings[s].rank) {
                         case 1:
-                            Opponents += "st** with **"
-                            opponentsText += "st</b> with <b>"
+                            tmp += "st 🥇** with **"
+                            tmpText += "st 🥇</b> with <b>"
                             break;
                         case 2:
-                            Opponents += "nd** with **"
-                            opponentsText += "nd</b> with <b>"
+                            tmp += "nd 🥈** with **"
+                            tmpText += "nd 🥈</b> with <b>"
                             break;
                         case 3:
-                            Opponents += "rd** with **"
-                            opponentsText += "rd</b> with <b>"
+                            tmp += "rd 🥉** with **"
+                            tmpText += "rd 🥉</b> with <b>"
                             break;
                         default:
-                            Opponents += "th** with **"
-                            opponentsText += "th</b> with <b>"
+                            tmp += "th** with **"
+                            tmpText += "th</b> with <b>"
                             break;
                     }
-                    Opponents += history.items[h].standings[s].clan.fame + "**\n"
-                    opponentsText += history.items[h].standings[s].clan.fame + "</b><br>\n"
+                    tmp += history.items[h].standings[s].clan.fame + "**\n"
+                    tmpText += history.items[h].standings[s].clan.fame + "</b>\n" //"</b><br>\n"
                     clanScores.push(history.items[h].standings[s].clan.fame)
                     seasons.push(history.items[h].seasonId)
+                    ranksScores.unshift(tmp) // Add the data to the beginning of the array
+                    ranksScoresText.unshift(tmpText)
                 }
             }
         }
+        Opponents += ranksScores.join("")
+        opponentsText += ranksScoresText.join(" / ")
         scores.push(clanScores)
         Opponents += "\n\n"
         opponentsText += "</li>\n"
@@ -89,16 +96,18 @@ async function ffopponents(bot, api, interaction, clan) {
     max = 180000 // Max value for the charts at Colosseum
     // console.log(Labels)
     // console.log(scores)
+    let Datas = []
     for (let i = 0; i < scores[0].length; i++) {
-        let Datas = []
+        let tmpDatas = []
         for (let j = 0; j < scores.length; j++) {
-            Datas.push(scores[j][i])
+            tmpDatas.push(scores[j][i])
         }
-        const chart = functions.barChart('bar', Labels, Datas, max);
-        const encodedChart = encodeURIComponent(JSON.stringify(chart));
-        const chartUrl = `https://quickchart.io/chart?c=${encodedChart}`;
-        charts += "<tr style='background-color: white; border: 1px solid black'>\n<td>Season : " + seasons[i] + "</td>\n<td><img style='height: 450px' src=\"" + chartUrl + "\"></td>\n</tr>\n"
+        Datas.push(tmpDatas)
     }
+    const chart = functions.barChart('bar', Labels, Datas.reverse(), seasons.reverse(), max);
+    const encodedChart = encodeURIComponent(JSON.stringify(chart));
+    const chartUrl = `https://quickchart.io/chart?c=${encodedChart}`;
+    charts += "<tr style='background-color: white; border: 1px solid black'>\n<td><img style='height: 700px' src=\"" + chartUrl + "\"></td>\n</tr>\n"
     // Add a blank character to the end of the string to avoid a bug with the embed (force an empty line)
     Opponents += "\u200b"
 

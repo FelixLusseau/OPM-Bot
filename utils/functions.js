@@ -458,7 +458,7 @@ async function playerHistory(url) {
     ]);
 
     // Wait for the chart to be rendered
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise(resolve => setTimeout(resolve, 2200));
 
     // Set screen size
     await page.setViewport({ width: 1080, height: 2048 });

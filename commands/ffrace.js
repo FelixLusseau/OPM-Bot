@@ -93,11 +93,12 @@ async function ffrace(bot, api, interaction, channel, clan, report) {
 
     // Calculate the estimated position of the clan
     for (let i = 0; i < dataArray.length; i++) {
-        if (i > 0 && dataArray[i][1].estimate == dataArray[i - 1][1].estimate)
+        if (i > 0 && dataArray[i][1].estimate == dataArray[i - 1][1].estimate) {
             sortedData[dataArray[i][0]].estimatedPosition = sortedData[dataArray[i - 1][0]].estimatedPosition
+            continue
+        }
         else
             sortedData[dataArray[i][0]].estimatedPosition = i + 1
-
         switch (sortedData[dataArray[i][0]].estimatedPosition) {
             case 1:
                 sortedData[dataArray[i][0]].estimatedPosition = "1st"

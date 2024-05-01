@@ -450,7 +450,7 @@ async function playerHistory(url) {
     // fs.writeFileSync('source.html', source);
 
     // await page.screenshot({ path: "temp.png" })
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    // await new Promise(resolve => setTimeout(resolve, 1000));
     // Show the player history
     await Promise.all([
         page.waitForSelector("button.ui.primary.button.cw2_history_button"),
@@ -458,7 +458,10 @@ async function playerHistory(url) {
     ]);
 
     // Wait for the chart to be rendered
-    await new Promise(resolve => setTimeout(resolve, 2200));
+    // await new Promise(resolve => setTimeout(resolve, 2200));
+    await Promise.all([
+        page.waitForSelector("table.ui.very.basic.compact.unstackable.player__cw2_history_table.table"),
+    ]);
 
     // Set screen size
     await page.setViewport({ width: 1080, height: 2048 });

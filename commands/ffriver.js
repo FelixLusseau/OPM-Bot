@@ -18,7 +18,7 @@ async function ffriver(bot, api, interaction, clan) {
     try {
         RiverRace = await api.getClanCurrentRiverRace(clan)// Get info about the River Race
     } catch (error) {
-        functions.errorEmbed(bot, interaction, channel, error)
+        functions.errorEmbed(bot, interaction, interaction.channel, error)
         return
     }
 

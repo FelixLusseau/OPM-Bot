@@ -74,7 +74,7 @@ module.exports = {
         if (functions.isValidTag(clan))
             switch (interaction.options.getSubcommand()) {
                 case 'attacks':
-                    ffattacks.ffattacks(bot, api, interaction, null, clan, false)
+                    ffattacks.ffattacks(bot, api, interaction, false, null, clan, null)
                     break;
                 case 'results':
                     ffresults.ffresults(bot, api, interaction, null, clan)
@@ -83,7 +83,7 @@ module.exports = {
                     ffrace.ffrace(bot, api, interaction, null, clan, false)
                     break;
                 case 'river':
-                    ffriver.ffriver(bot, api, interaction, null, clan)
+                    ffriver.ffriver(bot, api, interaction, clan)
                     break;
                 case 'report':
                     ffreport.ffreport(bot, api, interaction, clan)

@@ -54,7 +54,8 @@ async function ffplayer(bot, api, interaction, channel, tag) {
             + `Best path of legends rank: ${player.bestPathOfLegendSeasonResult.rank}\n`;
     }
 
-    player_data += `\nhttps://royaleapi.com/player/` + tag.substring(1);
+    player_data += `\n\n**RoyaleAPI player link :** \nhttps://royaleapi.com/player/` + tag.substring(1);
+    player_data += (player.clan ? `\n\n**RoyaleAPI clan link :** \nhttps://royaleapi.com/clan/${player.clan.tag.substring(1)}` : ``);
 
     playerEmbed
         .setTitle(player.name)

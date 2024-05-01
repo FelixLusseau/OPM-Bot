@@ -147,6 +147,9 @@ async function ffrace(bot, api, interaction, channel, clan, report) {
         if (clans[i].tag == clan)
             clanPos = i + 1
     }
+
+    // Race = Race.replace(/_/g, '\\_') // Escape the underscores to prevent undesired italic formatting
+
     let max = 0
     // Set the max value of the chart depending on the period type
     if (RiverRace.periodType == "colosseum")

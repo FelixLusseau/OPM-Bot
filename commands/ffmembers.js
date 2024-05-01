@@ -26,7 +26,8 @@ async function ffmembers(bot, api, interaction, clan) {
         Members_text += "- **" + response[i].name + "** \n(" + response[i].tag + ", " + response[i].role + ", lvl " + response[i].expLevel + ", " + response[i].trophies + " tr)" + "\n\n"
         Members += "<tr>\n<td>" + response[i].name + "</td>\n<td>" + response[i].tag + "</td>\n<td>" + response[i].role + "</td>\n<td>" + response[i].expLevel + "</td>\n<td>" + response[i].trophies + " 🏆</td>\n</tr>\n"
     }
-    // console.log(Members)
+    Members_text = Members_text.replace(/_/g, '\\_') // Escape the underscores to prevent undesired italic formatting
+    // console.log(Members_text)
 
     const tmpFile = (Math.random() + 1).toString(36).substring(7) + '.html';
     fs.readFile('./html/layout.html', 'utf8', function (err, data) {

@@ -256,6 +256,11 @@ async function ffattacks(bot, api, interaction, pingBool, channel, clan, guildID
             + decksRemaining
             + '\n'
 
+        Players1 = Players1.replace(/_/g, '\\_') // Escape the underscores to prevent undesired italic formatting
+        Players2 = Players2.replace(/_/g, '\\_')
+        Players3 = Players3.replace(/_/g, '\\_')
+        Players4 = Players4.replace(/_/g, '\\_')
+
         attacksEmbed
             .setTitle("__Remaining attacks" + ((RiverRace.periodType == "colosseum") ? " (Colosseum)__ " : "__ ") + ":")
             .setDescription(attacks)
@@ -303,6 +308,7 @@ async function ffattacks(bot, api, interaction, pingBool, channel, clan, guildID
                 console.error("Ping error :" + error)
             }
     }
+    console.log(attacks)
     return attacks // Return the string for the report
 };
 

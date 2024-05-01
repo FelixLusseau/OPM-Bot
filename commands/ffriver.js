@@ -65,6 +65,8 @@ async function ffriver(bot, api, interaction, clan) {
                 + "**\n\n"
     }
 
+    // Race = Race.replace(/_/g, '\\_') // Escape the underscores to prevent undesired italic formatting
+
     // Define the max value of the chart depending on the periode type
     let max = 0
     if (RiverRace.periodType == "colosseum") max = 180000

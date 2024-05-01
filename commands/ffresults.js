@@ -52,6 +52,7 @@ async function ffresults(bot, api, interaction, clan) {
         }
     }
     PlayersHTML += "</ul>\n"
+    Players = Players.replace(/_/g, '\\_') // Escape the underscores to prevent undesired italic formatting
 
     if (interaction != null) {
         const tmpFile = (Math.random() + 1).toString(36).substring(7) + '.html';

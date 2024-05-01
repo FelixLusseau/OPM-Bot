@@ -308,7 +308,6 @@ async function ffattacks(bot, api, interaction, pingBool, channel, clan, guildID
                 console.error("Ping error :" + error)
             }
     }
-    console.log(attacks)
     return attacks // Return the string for the report
 };
 

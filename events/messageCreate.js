@@ -12,6 +12,7 @@ module.exports = {
         // Check if the message contains a tag and send the RoyaleAPI Profile url into the channel
         const regex = /\#[a-zA-Z0-9]{8,9}\b/g
         if (message.content.search(regex) >= 0) {
+            console.log(`[${new Date().toISOString()}] Tag received:`, message.content.match(regex)[0]);
             placeholder = await message.channel.send("Tag received !\nSearching... <a:Mag:1186624382982963290>") // Send a placeholder message to show that the bot is working
             await message.channel.sendTyping();
             const tag = message.content.match(regex)[0].substring(1);

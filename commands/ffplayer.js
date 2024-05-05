@@ -32,7 +32,7 @@ async function ffplayer(bot, api, interaction, channel, tag) {
         + `:trophy: Trophies: **${player.trophies}**\n`
         + `:medal: Best trophies: ${player.bestTrophies}\n`
         + `<:Exp_level:1186623719897051176> Exp Level: **${player.expLevel}**\n`
-        + `:old_man: Years played: **${player.badges[0].level}** year` + (player.badges[0].level > 1 ? `s` : ``) + `\n`;
+        + `:old_man: Years played: **${(player.badges[0]?.level != undefined ? player.badges[0].level : 0)}** year` + (player.badges[0]?.level > 1 ? `s` : ``) + `\n`;
 
     if (interaction && details) {
         player_data += `\nExp Points: ${player.expPoints}\n`

@@ -22,9 +22,10 @@ module.exports = {
             }
 
             try {
+                console.log(`[${new Date().toISOString()}] Executing ${interaction.commandName}`);
                 await command.execute(bot, api, interaction);
             } catch (error) {
-                console.error(`Error executing ${interaction.commandName}`);
+                console.error(`[${new Date().toISOString()}] Error executing ${interaction.commandName}`);
                 console.error(error);
                 if (interaction.replied || interaction.deferred) {
                     await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });

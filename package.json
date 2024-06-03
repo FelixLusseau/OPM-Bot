@@ -9,7 +9,7 @@
   "author": "Félix Lusseau",
   "license": "ISC",
   "dependencies": {
-    "@varandas/clash-royale-api": "1.1.16",
+    "@varandas/clash-royale-api": "^1.1.17",
     "chart": "^0.1.2",
     "discord.js": "^14.15.2",
     "dotenv": "^16.4.5",

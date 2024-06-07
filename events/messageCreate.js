@@ -26,18 +26,14 @@ module.exports = {
                     const playerHistoryCanvas = new AttachmentBuilder('playerHistoryCanvas.png');
                     await ffplayer.ffplayer(bot, api, null, message.channel, '#' + tag);
                     await message.channel.send({ content: url, files: [playerHistory, playerHistoryCanvas] });
+                    // Remove files
+                    fs.unlinkSync('./playerHistory.png')
+                    fs.unlinkSync('./playerHistoryCanvas.png')
                 }
                 else
                     functions.errorEmbed(bot, null, message.channel, "Invalid tag");
             } catch (error) {
                 console.error('Error:', error);
-            }
-            try {
-                // Remove files
-                fs.unlinkSync('./playerHistory.png')
-                fs.unlinkSync('./playerHistoryCanvas.png')
-            } catch (err) {
-                console.error(err)
             }
             try {
                 placeholder.delete(); // Delete the placeholder message

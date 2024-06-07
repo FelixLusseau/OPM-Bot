@@ -82,7 +82,7 @@ function errorEmbed(bot, interaction, channel, error) {
         title = "Error"
     }
     else {
-        myError = '[' + error.response.headers.date + ']: Error: ' + error.response.status + ' ' + error.response.statusText
+        myError = '[' + error.response?.headers.date + ']: Error: ' + error.response?.status + ' ' + error.response?.statusText
         title = "CR-API error"
     }
     console.log(title + " : " + myError)

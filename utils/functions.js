@@ -82,10 +82,10 @@ function errorEmbed(bot, interaction, channel, error) {
         title = "Error"
     }
     else {
-        myError = '[' + error.response?.headers.date + ']: Error: ' + error.response?.status + ' ' + error.response?.statusText
-        title = "CR-API error"
+        myError = error.response?.status + ' ' + error.response?.statusText
+        title = "CR-API Error"
     }
-    console.log(title + " : " + myError)
+    console.log(`\x1b[31m[${new Date().toISOString()}] ` + title + " : \x1b[0m" + myError)
     const errorEmbed = new EmbedBuilder()
     errorEmbed
         .setColor(0x7C0404)

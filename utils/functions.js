@@ -506,7 +506,6 @@ async function renderCommand(interaction, tmpFile, wait) {
 
     // Wait for the chart to be rendered
     await new Promise(resolve => setTimeout(resolve, wait));
-    console.log("ffattacks debug")
 
     // Capture a screenshot of the rendered content
     await page.screenshot({ path: tmpFile + ".png", fullPage: true });

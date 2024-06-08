@@ -232,7 +232,6 @@ async function ffattacks(bot, api, interaction, pingBool, channel, clan, guildID
 
         });
 
-        console.log("ffattacks debug")
         await functions.renderCommand(interaction, tmpFile, 0)
     }
 

@@ -9,7 +9,7 @@ async function ffplayer(bot, api, interaction, channel, tag) {
         details = interaction.options.getBoolean('details');
     }
 
-    const regex = /\#[a-zA-Z0-9]{7,9}\b/g
+    const regex = /\#[a-zA-Z0-9]{6,9}\b/g
     if (tag.search(regex) < 0) { // Prevent the bot from crashing (not happening) if the tag is invalid
         functions.errorEmbed(bot, interaction, channel, "Invalid tag");
         return

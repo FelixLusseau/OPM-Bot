@@ -39,8 +39,12 @@ function schedule(bot, value, tag, guildID, chanID) {
     reportCron[tag + guildID] = cron.schedule(value.substring(3, 5) + ' ' + value.substring(0, 2) + ' * * 5,6,7,1', () => {
         reports.report(bot, api, null, null, channel, tag, guildID)
     });
-    // Schedule ffrace and ffattacks with ping at 01h00 and 23h00 on the war days
+    // Schedule ffrace and ffattacks with ping at 01h00, 21h00 and 23h00 on the war days
     cron.schedule('0 1 * * 5,6,7,1', () => {
+        ffrace.ffrace(bot, api, null, channel, tag, false)
+        ffattacks.ffattacks(bot, api, null, true, channel, tag, guildID)
+    });
+    cron.schedule('0 21 * * 4,5,6,7', () => {
         ffrace.ffrace(bot, api, null, channel, tag, false)
         ffattacks.ffattacks(bot, api, null, true, channel, tag, guildID)
     });
@@ -50,7 +54,7 @@ function schedule(bot, value, tag, guildID, chanID) {
     });
     // console.log('Scheduled ' + key + ' for ' + value.substring(3, 5) + ' ' + value.substring(0, 2) + ' * * 5,6,7,1')
 
-    cron.schedule('55 22 * * 4,5,6,7', () => { // Refresh the guild members list at 22h55 on war days
+    cron.schedule('55 20 * * 4,5,6,7', () => { // Refresh the guild members list at 20h55 on war days
         getGuildMembers(guildsDict)
     })
 }

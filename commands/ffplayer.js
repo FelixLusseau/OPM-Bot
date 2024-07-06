@@ -51,7 +51,11 @@ async function ffplayer(bot, api, interaction, channel, tag) {
             + `Current path of legends rank: ${player.currentPathOfLegendSeasonResult.rank}\n\n`
             + `Best path of legends league: ${player.bestPathOfLegendSeasonResult.leagueNumber}\n`
             + `Best path of legends trophies: ${player.bestPathOfLegendSeasonResult.trophies}\n`
-            + `Best path of legends rank: ${player.bestPathOfLegendSeasonResult.rank}\n`;
+            + `Best path of legends rank: ${player.bestPathOfLegendSeasonResult.rank}\n\n`
+            + `Goblin-road: \n`
+            + `Current Goblin-road trophies: ${player.progress["goblin-road"].trophies}\n`
+            + `Current Goblin-road arena: ${player.progress["goblin-road"].arena.name}\n`
+            + `Best Goblin-road trophies: ${player.progress["goblin-road"].bestTrophies}\n`;
     }
 
     player_data += `\n\n**RoyaleAPI player link :** \nhttps://royaleapi.com/player/` + tag.substring(1);

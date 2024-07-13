@@ -18,7 +18,7 @@ async function ffopponents(bot, api, interaction, clan) {
     try {
         RiverRace = await api.getClanCurrentRiverRace(clan)
     } catch (error) {
-        functions.errorEmbed(bot, interaction, channel, error)
+        functions.errorEmbed(bot, interaction, interaction.channel, error)
         return
     }
 
@@ -31,7 +31,7 @@ async function ffopponents(bot, api, interaction, clan) {
         try {
             clan = await api.getClanByTag(RiverRace.clans[i].tag)// Get the clans' info from the Supercell API
         } catch (error) {
-            functions.errorEmbed(bot, interaction, channel, error)
+            functions.errorEmbed(bot, interaction, interaction.channel, error)
             return
         }
         Labels.push(RiverRace.clans[i].name)

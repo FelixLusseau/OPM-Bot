@@ -40,7 +40,7 @@
   - `/fftag` : Shows the information of a not registered clan
 
 - Scheduled war report has been added to the bot ! It will be sent every day from friday to monday at the reset hour in the clan war channel.
-- Scheduled `/ffrace` and `/ffattacks` with ping has been added to the bot ! It will be sent every day from friday to monday at 01h00 and from Thurday to Sunday at 21h00 and 23h00 in the clan war channels.
+- Scheduled `/ffrace` and `/ffattacks` with ping has been added to the bot ! It will be sent every day from friday to monday at 09h00 and from Thurday to Sunday at 21h00 in the clan war channels.
 
 - Responds a link to the RoyaleAPI player profile when a player tag is sent in a room where the bot is present.
   Sends a screenshot of the player war history and the graph associated.

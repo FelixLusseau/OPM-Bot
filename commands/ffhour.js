@@ -160,7 +160,7 @@ async function updateHour(bot, api, interaction) {
                 } catch (e) {
                     interaction.editReply({ content: "No cron job to stop !" });
                 }
-                schedule.schedule(bot, hour, clan, interaction.guildId, channel.id)
+                schedule.schedule(bot, hour, clan, interaction.guildId, channel.id, true)
             });
 
             // Close the database

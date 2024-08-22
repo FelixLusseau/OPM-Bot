@@ -32,34 +32,35 @@ async function getGuildMembers(guildsDict) {
 }
 
 // Function to schedule the reports and evening reminders
-function schedule(bot, value, tag, guildID, chanID) {
+function schedule(bot, value, tag, guildID, chanID, update = false) {
     const channel = bot.channels.cache.get(chanID);
 
     // Schedule the reports and save them in the global reportCron dictionary
     reportCron[tag + guildID] = cron.schedule(value.substring(3, 5) + ' ' + value.substring(0, 2) + ' * * 5,6,7,1', () => {
         reports.report(bot, api, null, null, channel, tag, guildID)
     });
-    // Schedule ffrace and ffattacks with ping at 01h00, 21h00 and 23h00 on the war days
-    cron.schedule('0 1 * * 5,6,7,1', () => {
-        ffrace.ffrace(bot, api, null, channel, tag, false)
-        ffattacks.ffattacks(bot, api, null, true, channel, tag, guildID)
-    });
-    cron.schedule('0 21 * * 4,5,6,7', () => {
-        ffrace.ffrace(bot, api, null, channel, tag, false)
-        ffattacks.ffattacks(bot, api, null, true, channel, tag, guildID)
-    });
-    cron.schedule('0 23 * * 4,5,6,7', () => {
-        ffrace.ffrace(bot, api, null, channel, tag, false)
-        ffattacks.ffattacks(bot, api, null, true, channel, tag, guildID)
-    });
-    // console.log('Scheduled ' + key + ' for ' + value.substring(3, 5) + ' ' + value.substring(0, 2) + ' * * 5,6,7,1')
-
-    cron.schedule('55 20 * * 4,5,6,7', () => { // Refresh the guild members list at 20h55 on war days
-        getGuildMembers(guildsDict)
-    })
+    if (!update) {
+        // Schedule ffrace and ffattacks with ping at 01h00, 21h00 and 23h00 on the war days
+        cron.schedule('0 1 * * 5,6,7,1', () => {
+            ffrace.ffrace(bot, api, null, channel, tag, false)
+            ffattacks.ffattacks(bot, api, null, true, channel, tag, guildID)
+        });
+        cron.schedule('0 21 * * 4,5,6,7', () => {
+            ffrace.ffrace(bot, api, null, channel, tag, false)
+            ffattacks.ffattacks(bot, api, null, true, channel, tag, guildID)
+        });
+        cron.schedule('0 23 * * 4,5,6,7', () => {
+            ffrace.ffrace(bot, api, null, channel, tag, false)
+            ffattacks.ffattacks(bot, api, null, true, channel, tag, guildID)
+        });
+        // console.log('Scheduled ' + key + ' for ' + value.substring(3, 5) + ' ' + value.substring(0, 2) + ' * * 5,6,7,1')
+    }
 }
 
 async function loadSchedules(bot) {
+    cron.schedule('55 20 * * 4,5,6,7', () => { // Refresh the guild members list at 20h55 on war days
+        getGuildMembers(guildsDict)
+    })
     try {
         let db = new sqlite3.Database('./db/OPM.sqlite3', sqlite3.OPEN_READWRITE, (err) => {
             if (err) {

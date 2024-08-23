@@ -398,7 +398,8 @@ async function excel(scores) {
 }
 
 async function http_head(tag) {
-    const url = 'https://www.cwstats.com' + tag;
+    // const url = 'https://www.cwstats.com' + tag;
+    const url = 'https://www.deckshop.pro/spy' + tag;
     return new Promise((resolve, reject) => {
         const req = https.request(url, { method: 'HEAD' }, (res) => {
             resolve(res.statusCode);

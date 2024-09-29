@@ -7,7 +7,13 @@ module.exports = {
     name: Events.ClientReady,
     once: true,
     async execute(bot) {
-        console.log(`Ready! Logged in as ${bot.user.tag}`);
+        console.log("  ___  ____  __  __      ____  _        _       ")
+        console.log(" / _ \\|  _ \\|  \\/  |    / ___|| |_ __ _| |_ ___")
+        console.log("| | | | |_) | |\\/| |____\\___ \\| __/ _` | __/ __|")
+        console.log("| |_| |  __/| |  | |_____|__) | || (_| | |_\\__ \\")
+        console.log(" \\___/|_|   |_|  |_|    |____/ \\__\\__,_|\\__|___/")
+
+        console.log(`\n\x1b[36m[${new Date().toISOString()}]\x1b[0m Ready! Logged in as ${bot.user.tag}`);
         bot.user.setActivity('your stats', { type: ActivityType.Watching });
 
         // Load the report times from the reset-hours folder and schedule the reports

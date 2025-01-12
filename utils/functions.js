@@ -492,6 +492,44 @@ async function playerHistory(url) {
     await browser.close();
 }
 
+function extractPlayerInfo(str) {
+    const regex = /\[([^\]]+)\]\(https:\/\/dspy\.pro\/en\/p\/([^\)]+)\)/;
+    const match = str.match(regex);
+    if (match) {
+        return {
+            playerName: match[1],
+            playerTag: match[2]
+        };
+    }
+    return null;
+}
+
+async function extractDeckShopTag(deckShopMessage) {
+    if (deckShopMessage.embeds[0].fields[0].name.search("joined") >= 0) {
+        msg = deckShopMessage.embeds[0].fields[0].value
+        const playerInfo = extractPlayerInfo(msg);
+        // console.log(playerInfo);
+        clan = registeredClans[0].tag;
+        const avg = await fetchHist(clan.substring(1)); // Get the clans' score history
+        avgString = JSON.stringify(avg, null, 4) // Convert the JSON object to a string (pretty-printed)
+        if (avgString.search(playerInfo.playerTag) > 0) {
+            for (let p = 0; p < avg.items.length; p++) {
+                for (let h = 0; h < avg.items[p].standings.length; h++) {
+                    if (avg.items[p].standings[h].clan.tag == clan) {
+                        for (let q = 0; q < avg.items[p].standings[h].clan.participants.length; q++) {
+                            let participant = avg.items[p].standings[h].clan.participants[q];
+                            if ('#' + playerInfo.playerTag == participant.tag && participant.fame > 0) {
+                                return; // The player has already joined the clan in the past
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return '#' + playerInfo.playerTag;
+    }
+}
+
 async function renderCommand(interaction, tmpFile, wait) {
     const browser = await puppeteer.launch({ headless: 'new' });
     const page = await browser.newPage();
@@ -612,6 +650,7 @@ module.exports = {
     excel,
     http_head,
     playerHistory,
+    extractDeckShopTag,
     renderCommand,
     barChart
 }

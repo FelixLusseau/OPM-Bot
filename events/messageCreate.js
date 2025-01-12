@@ -36,11 +36,11 @@ module.exports = {
     async execute(bot, api, message) {
         if (message.author.tag == bot.user.tag) return; // Ignore messages from the bot itself
         let placeholder = null
-        // if (message.content == 'ds') {
-        //     if (tag = await functions.extractDeckShopTag({})) {
-        // Check if the message is a DeckShop joining message and send the RoyaleAPI Profile url into the channel
-        if (message.author.tag === 'Deck Shop Logs#0000') {
-            if (tag = await functions.extractDeckShopTag(message)) {
+        if (message.content == 'ds') {
+            if (tag = await functions.extractDeckShopTag({})) {
+                // Check if the message is a DeckShop joining message and send the RoyaleAPI Profile url into the channel
+                // if (message.author.tag === 'Deck Shop Logs#0000') {
+                //     if (tag = await functions.extractDeckShopTag(message)) {
                 console.log(`\x1b[36m[${new Date().toISOString()}]\x1b[0m Tag received from DeckShop bot:`, tag);
                 placeholder = await message.channel.send("Tag received from DeckShop bot !\nSearching... <a:Mag:1186624382982963290>") // Send a placeholder message to show that the bot is working
                 await message.channel.sendTyping();

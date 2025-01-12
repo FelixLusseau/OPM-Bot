@@ -504,25 +504,30 @@ function extractPlayerInfo(str) {
     return null;
 }
 
+function extractDeckShopTagFromURL(url) {
+    const regex = /https:\/\/www\.deckshop\.pro\/spy\/clan\/([A-Z0-9]+)/;
+    const match = url.match(regex);
+    if (match) {
+        return match[1];
+    }
+    return null;
+}
+
 async function extractDeckShopTag(deckShopMessage) {
     if (deckShopMessage.embeds[0].fields[0].name.search("joined") >= 0) {
         msg = deckShopMessage.embeds[0].fields[0].value
         const playerInfo = extractPlayerInfo(msg);
-        // console.log(playerInfo);
-        for (let c = 0; c < registeredClans.length; c++) {
-            if (registeredClans[c].guild != deckShopMessage.guildId) continue; // Check if the clan to check in is registered in the current guild
-            clan = registeredClans[c].tag;
-            const avg = await fetchHist(clan.substring(1)); // Get the clans' score history
-            avgString = JSON.stringify(avg, null, 4) // Convert the JSON object to a string (pretty-printed)
-            if (avgString.search(playerInfo.playerTag) > 0) {
-                for (let p = 0; p < avg.items.length; p++) {
-                    for (let h = 0; h < avg.items[p].standings.length; h++) {
-                        if (avg.items[p].standings[h].clan.tag == clan) {
-                            for (let q = 0; q < avg.items[p].standings[h].clan.participants.length; q++) {
-                                let participant = avg.items[p].standings[h].clan.participants[q];
-                                if ('#' + playerInfo.playerTag == participant.tag && participant.fame > 0) {
-                                    return; // The player has already joined the clan in the past
-                                }
+        clan = '#' + extractDeckShopTagFromURL(deckShopMessage.embeds[0].author.url); // Get the clan tag from the URL shared in the message
+        const avg = await fetchHist(clan.substring(1)); // Get the clans' score history
+        avgString = JSON.stringify(avg, null, 4) // Convert the JSON object to a string (pretty-printed)
+        if (avgString.search(playerInfo.playerTag) > 0) {
+            for (let p = 0; p < avg.items.length; p++) {
+                for (let h = 0; h < avg.items[p].standings.length; h++) {
+                    if (avg.items[p].standings[h].clan.tag == clan) {
+                        for (let q = 0; q < avg.items[p].standings[h].clan.participants.length; q++) {
+                            let participant = avg.items[p].standings[h].clan.participants[q];
+                            if ('#' + playerInfo.playerTag == participant.tag && participant.fame > 0) {
+                                return; // The player has already joined the clan in the past
                             }
                         }
                     }

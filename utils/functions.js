@@ -510,6 +510,7 @@ async function extractDeckShopTag(deckShopMessage) {
         const playerInfo = extractPlayerInfo(msg);
         // console.log(playerInfo);
         for (let c = 0; c < registeredClans.length; c++) {
+            if (registeredClans[c].guild != deckShopMessage.guildId) continue; // Check if the clan to check in is registered in the current guild
             clan = registeredClans[c].tag;
             const avg = await fetchHist(clan.substring(1)); // Get the clans' score history
             avgString = JSON.stringify(avg, null, 4) // Convert the JSON object to a string (pretty-printed)

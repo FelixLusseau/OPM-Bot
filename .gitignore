@@ -2,6 +2,7 @@
 node_modules
 draft.js
 *.log
+*.json
 package-lock.json
 *.xlsx
 db

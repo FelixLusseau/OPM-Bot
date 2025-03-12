@@ -41,6 +41,7 @@ module.exports = {
                     let participant = avg.items[0].standings[h].clan.participants[p];
                     if (participant.fame > 0 || include_all_players) {
                         avgArray[participant.name] = {};
+                        avgArray[participant.name]['clan'] = avg.items[0].standings[h].clan.name;
                         avgArray[participant.name]['fame'] = participant.fame;
                         avgArray[participant.name]['array'] = [participant.fame, null, null, null, null, null, null, null, null, null];
                         avgArray[participant.name]['count'] = 1;
@@ -68,12 +69,14 @@ module.exports = {
                             continue;
                         }
                         if (avgArray[participant.name]['fame'] > 0) {
+                            avgArray[participant.name]['clan'] = avg.items[p].standings[h].clan.name;
                             avgArray[participant.name]['fame'] += participant.fame;
                             avgArray[participant.name]['array'][p] = participant.fame;
                             avgArray[participant.name]['count'] += 1;
                             avgArray[participant.name]['decksUsed'][p] = participant.decksUsed;
                         }
                         else {
+                            avgArray[participant.name]['clan'] = avg.items[p].standings[h].clan.name;
                             avgArray[participant.name]['fame'] = participant.fame;
                             avgArray[participant.name]['array'] = [null, null, null, null, null, null, null, null, null, null];
                             avgArray[participant.name]['array'][p] = participant.fame;

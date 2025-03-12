@@ -205,18 +205,29 @@ async function fetchHist(tag) {
 }
 
 function generateHtmlTableFromWorksheet(worksheet) {
-    let html = '<table>\n';
+    let html = '<table style="border-collapse: collapse;">\n';
 
     worksheet.eachRow((row, rowNumber) => {
-        html += '<tr>\n';
+        if (rowNumber % 2 == 0) {
+            html += '<tr style="border-top: 1px solid black;">\n';
+        } else {
+            html += '<tr style="border-bottom: 1px solid black;">\n';
+        }
         row.eachCell({ includeEmpty: true }, (cell) => {
+            // console.log(cell);
             if (cell.type == 0) { // Empty cell -> add an empty cell in the HTML table
                 html += `<td> </td>\n`;
             }
             else {
                 const cellColor = cell.fill.fgColor.argb.substring(2);
                 const cellValue = cell.text || '';
-                html += `<td style="background-color:#${cellColor}; text-align: center">${cellValue}</td>\n`;
+                if (cell._mergeCount === 1 && cell.type != 1) { // Vertical merged cell
+                    html += `<td style="background-color:#${cellColor}; text-align: center; border-right: 1px solid black;" rowspan="2">${cellValue}</td>\n`;
+                } else if (cell._mergeCount === 0 && cell.type == 1) {
+                    // Skip the cell if it is part of a merged cell
+                } else {
+                    html += `<td style="background-color:#${cellColor}; text-align: center">${cellValue}</td>\n`;
+                }
             }
         });
         html += '</tr>\n';
@@ -252,7 +263,7 @@ async function exportSheetToPNG(inputFilePath, pngPath) {
         const table = document.querySelector('table');
         return {
             width: table.offsetWidth,
-            height: table.offsetHeight + 50,
+            height: table.offsetHeight + 40,
         };
     });
 
@@ -290,6 +301,9 @@ async function excel(scores) {
     for (const key in scores) {
         if (scores[key]['fame'] == 0) continue;
         worksheet.addRow({ player: key, fame: scores[key]['fame'].toFixed(), week1: scores[key]['array'][0], week2: scores[key]['array'][1], week3: scores[key]['array'][2], week4: scores[key]['array'][3], week5: scores[key]['array'][4], week6: scores[key]['array'][5], week7: scores[key]['array'][6], week8: scores[key]['array'][7], week9: scores[key]['array'][8], week10: scores[key]['array'][9] });
+        worksheet.addRow({ player: key, fame: scores[key]['fame'].toFixed(), week1: scores[key]['decksUsed'][0], week2: scores[key]['decksUsed'][1], week3: scores[key]['decksUsed'][2], week4: scores[key]['decksUsed'][3], week5: scores[key]['decksUsed'][4], week6: scores[key]['decksUsed'][5], week7: scores[key]['decksUsed'][6], week8: scores[key]['decksUsed'][7], week9: scores[key]['decksUsed'][8], week10: scores[key]['decksUsed'][9] });
+        worksheet.mergeCells(worksheet.rowCount - 1, 1, worksheet.rowCount, 1);
+        worksheet.mergeCells(worksheet.rowCount - 1, 2, worksheet.rowCount, 2);
     }
 
     worksheet.columns.forEach((sheetColumn) => {
@@ -329,11 +343,15 @@ async function excel(scores) {
             left: { style: 'medium' },
             right: { style: 'medium' }
         };
-        if (rowNumber > 1) {
+        if (rowNumber > 1 && rowNumber % 2 == 0) { // Scores lines
             const value = cell.value;
 
             for (let i = 1; i <= 12; i++) {
                 const cellToColor = worksheet.getCell(rowNumber, i);
+                cellToColor.border = {
+                    ...cellToColor.border,
+                    top: { style: 'thin' },
+                };
                 if (cellToColor.value == null) continue;
                 if (i <= 2) {
                     if (value < 2400) {
@@ -364,6 +382,39 @@ async function excel(scores) {
                             fgColor: { argb: 'FFD61E1E' } // Red color
                         };
                     } else if (cellToColor.value >= 2400 && cellToColor.value <= 2700) {
+                        cellToColor.fill = {
+                            type: 'pattern',
+                            pattern: 'solid',
+                            fgColor: { argb: 'FFE79A2B' } // Orange color
+                        };
+                    } else {
+                        cellToColor.fill = {
+                            type: 'pattern',
+                            pattern: 'solid',
+                            fgColor: { argb: 'FF18B815' } // Green color
+                        };
+                    }
+                };
+            }
+        }
+        else if (rowNumber > 1 && rowNumber % 2 != 0) { // Decks used lines
+            const value = cell.value;
+
+            for (let i = 1; i <= 12; i++) {
+                const cellToColor = worksheet.getCell(rowNumber, i);
+                cellToColor.border = {
+                    ...cellToColor.border,
+                    bottom: { style: 'thin' },
+                };
+                if (cellToColor.value == null) continue;
+                if (i > 2) {
+                    if (cellToColor.value < 16 && cellToColor.value % 4 != 0) {
+                        cellToColor.fill = {
+                            type: 'pattern',
+                            pattern: 'solid',
+                            fgColor: { argb: 'FFD61E1E' } // Red color
+                        };
+                    } else if (cellToColor.value < 16 && cellToColor.value % 4 == 0) {
                         cellToColor.fill = {
                             type: 'pattern',
                             pattern: 'solid',

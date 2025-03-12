@@ -238,6 +238,15 @@ function generateHtmlTableFromWorksheet(worksheet) {
     return html;
 }
 
+// Function to initialize Puppeteer depending on the OS
+async function puppeteerInit() {
+    if (process.env.NIXPKGS_CONFIG) { // Check if the script is running on NixOS to not install chromium because it is not allowed by NixOS
+        return await puppeteer.launch({ headless: 'new', executablePath: '/run/current-system/sw/bin/google-chrome-stable' });
+    } else {
+        return await puppeteer.launch({ headless: 'new' });
+    }
+}
+
 // Function to read the Excel file and convert the first sheet to a PNG image
 async function exportSheetToPNG(inputFilePath, pngPath) {
     const workbook = new Excel.Workbook();
@@ -247,7 +256,7 @@ async function exportSheetToPNG(inputFilePath, pngPath) {
     // Convert the worksheet to an HTML table
     const table = generateHtmlTableFromWorksheet(worksheet);
 
-    const browser = await puppeteer.launch({ headless: 'new' });
+    const browser = await puppeteerInit();
     const page = await browser.newPage();
 
     // Navigate to a blank HTML page
@@ -478,7 +487,7 @@ function base64ToArrayBuffer(base64) {
 async function playerHistory(url) {
     // console.log('Launching Puppeteer...');
     // Launch the browser and open a new blank page
-    const browser = await puppeteer.launch({ headless: 'new' });
+    const browser = await puppeteerInit();
     const page = await browser.newPage();
 
     // Block requests to specific domains
@@ -590,7 +599,7 @@ async function extractDeckShopTag(deckShopMessage) {
 }
 
 async function renderCommand(interaction, tmpFile, wait) {
-    const browser = await puppeteer.launch({ headless: 'new' });
+    const browser = await puppeteerInit();
     const page = await browser.newPage();
 
     // Navigate to a blank HTML page

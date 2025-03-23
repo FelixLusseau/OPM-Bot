@@ -204,14 +204,20 @@ async function fetchHist(tag) {
     }
 }
 
-function generateHtmlTableFromWorksheet(worksheet) {
-    let html = '<table style="border-collapse: collapse;">\n';
+// Function to generate an HTML table from an Excel worksheet
+function generateHtmlTableFromWorksheet(worksheet, family) {
+    let html = '<table style="border-collapse: collapse; border: 1px solid black;">\n';
 
     worksheet.eachRow((row, rowNumber) => {
-        if (rowNumber % 2 == 0) {
-            html += '<tr style="border-top: 1px solid black;">\n';
-        } else {
-            html += '<tr style="border-bottom: 1px solid black;">\n';
+        if (family) {
+            html += '<tr style="border-top: 1px solid black; border-bottom: 1px solid black;">\n';
+        }
+        else {
+            if (rowNumber % 2 == 0) {
+                html += '<tr style="border-top: 1px solid black;">\n';
+            } else {
+                html += '<tr style="border-bottom: 1px solid black;">\n';
+            }
         }
         row.eachCell({ includeEmpty: true }, (cell) => {
             // console.log(cell);
@@ -219,14 +225,19 @@ function generateHtmlTableFromWorksheet(worksheet) {
                 html += `<td> </td>\n`;
             }
             else {
-                const cellColor = cell.fill.fgColor.argb.substring(2);
+                let cellColor = null;
+                if (cell.fill && cell.fill.fgColor && cell.fill.fgColor.argb) {
+                    cellColor = cell.fill.fgColor.argb.substring(2);
+                }
                 const cellValue = cell.text || '';
                 if (cell._mergeCount === 1 && cell.type != 1) { // Vertical merged cell
-                    html += `<td style="background-color:#${cellColor}; text-align: center; border-right: 1px solid black;" rowspan="2">${cellValue}</td>\n`;
+                    html += `<td style="background-color:#${cellColor}; text-align: center; border-right: 1px solid black; white-space: nowrap; padding-left: 10px; padding-right: 10px;" rowspan="2">${cellValue}</td>\n`;
                 } else if (cell._mergeCount === 0 && cell.type == 1) {
                     // Skip the cell if it is part of a merged cell
+                } else if (family) {
+                    html += `<td style="background-color:#${cellColor}; text-align: center; border-right: 1px solid black; white-space: nowrap; padding-left: 10px; padding-right: 10px;">${cellValue}</td>\n`;
                 } else {
-                    html += `<td style="background-color:#${cellColor}; text-align: center">${cellValue}</td>\n`;
+                    html += `<td style="background-color:#${cellColor}; text-align: center; white-space: nowrap; padding-left: 10px; padding-right: 10px;">${cellValue}</td>\n`;
                 }
             }
         });
@@ -248,13 +259,13 @@ async function puppeteerInit() {
 }
 
 // Function to read the Excel file and convert the first sheet to a PNG image
-async function exportSheetToPNG(inputFilePath, pngPath) {
+async function exportSheetToPNG(inputFilePath, pngPath, family) {
     const workbook = new Excel.Workbook();
     await workbook.xlsx.readFile(inputFilePath);
     const worksheet = workbook.worksheets[0];
 
     // Convert the worksheet to an HTML table
-    const table = generateHtmlTableFromWorksheet(worksheet);
+    const table = generateHtmlTableFromWorksheet(worksheet, family);
 
     const browser = await puppeteerInit();
     const page = await browser.newPage();
@@ -271,8 +282,8 @@ async function exportSheetToPNG(inputFilePath, pngPath) {
     const { width, height } = await page.evaluate(() => {
         const table = document.querySelector('table');
         return {
-            width: table.offsetWidth,
-            height: table.offsetHeight + 40,
+            width: table.offsetWidth + 20,
+            height: table.offsetHeight + 20,
         };
     });
 
@@ -287,32 +298,68 @@ async function exportSheetToPNG(inputFilePath, pngPath) {
     // console.log('Image exported successfully.');
 }
 
-async function excel(scores) {
+// Function to hash a string to an HTML color
+function hashStringToColor(str) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const r = (hash & 0xFF0000) >> 16 | 0x80;
+    const g = (hash & 0x00FF00) >> 8;
+    const b = hash & 0x0000FF | 0x80;
+    color = `#${('00' + r.toString(16)).slice(-2)}${('00' + g.toString(16)).slice(-2)}${('00' + b.toString(16)).slice(-2)}`;
+    // console.log(str, color);
+    return color;
+}
+
+// Function to generate an Excel file from the scores
+async function excel(scores, fileName, family = false) {
     const workbook = new Excel.Workbook();
     const worksheet = workbook.addWorksheet('Averages');
-    const avgColumns = [
-        { key: 'player', header: 'Player name' },
-        { key: 'fame', header: 'Average' },
-        { key: 'week1', header: 'Week -1' },
-        { key: 'week2', header: 'Week -2' },
-        { key: 'week3', header: 'Week -3' },
-        { key: 'week4', header: 'Week -4' },
-        { key: 'week5', header: 'Week -5' },
-        { key: 'week6', header: 'Week -6' },
-        { key: 'week7', header: 'Week -7' },
-        { key: 'week8', header: 'Week -8' },
-        { key: 'week9', header: 'Week -9' },
-        { key: 'week10', header: 'Week -10' },
-    ];
+    let avgColumns = [];
+    if (!family) {
+        avgColumns = [
+            { key: 'clan', header: 'Clan' },
+            { key: 'player', header: 'Player name' },
+            { key: 'fame', header: 'Average' },
+            { key: 'expLevel', header: 'Exp level' },
+            { key: 'week1', header: 'Week -1' },
+            { key: 'week2', header: 'Week -2' },
+            { key: 'week3', header: 'Week -3' },
+            { key: 'week4', header: 'Week -4' },
+            { key: 'week5', header: 'Week -5' },
+            { key: 'week6', header: 'Week -6' },
+            { key: 'week7', header: 'Week -7' },
+            { key: 'week8', header: 'Week -8' },
+            { key: 'week9', header: 'Week -9' },
+            { key: 'week10', header: 'Week -10' },
+        ];
+    } else {
+        avgColumns = [
+            { key: 'clan', header: 'Clan' },
+            { key: 'player', header: 'Player name' },
+            { key: 'fame', header: 'Average' },
+            { key: 'expLevel', header: 'Exp level' },
+            { key: 'targetClan', header: 'Target clan' },
+            { key: 'movement', header: 'Movement' },
+        ];
+    }
+    let columnsCount = avgColumns.length;
 
     worksheet.columns = avgColumns;
 
     for (const key in scores) {
-        if (scores[key]['fame'] == 0) continue;
-        worksheet.addRow({ player: key, fame: scores[key]['fame'].toFixed(), week1: scores[key]['array'][0], week2: scores[key]['array'][1], week3: scores[key]['array'][2], week4: scores[key]['array'][3], week5: scores[key]['array'][4], week6: scores[key]['array'][5], week7: scores[key]['array'][6], week8: scores[key]['array'][7], week9: scores[key]['array'][8], week10: scores[key]['array'][9] });
-        worksheet.addRow({ player: key, fame: scores[key]['fame'].toFixed(), week1: scores[key]['decksUsed'][0], week2: scores[key]['decksUsed'][1], week3: scores[key]['decksUsed'][2], week4: scores[key]['decksUsed'][3], week5: scores[key]['decksUsed'][4], week6: scores[key]['decksUsed'][5], week7: scores[key]['decksUsed'][6], week8: scores[key]['decksUsed'][7], week9: scores[key]['decksUsed'][8], week10: scores[key]['decksUsed'][9] });
-        worksheet.mergeCells(worksheet.rowCount - 1, 1, worksheet.rowCount, 1);
-        worksheet.mergeCells(worksheet.rowCount - 1, 2, worksheet.rowCount, 2);
+        if (scores[key]['fame'] == 0) continue; // Skip players with no fame
+        if (!family) {
+            worksheet.addRow({ clan: scores[key]['clan'], player: key, fame: scores[key]['fame'].toFixed(), expLevel: scores[key]['expLevel'], week1: scores[key]['array'][0], week2: scores[key]['array'][1], week3: scores[key]['array'][2], week4: scores[key]['array'][3], week5: scores[key]['array'][4], week6: scores[key]['array'][5], week7: scores[key]['array'][6], week8: scores[key]['array'][7], week9: scores[key]['array'][8], week10: scores[key]['array'][9] });
+            worksheet.addRow({ clan: scores[key]['clan'], player: key, fame: scores[key]['fame'].toFixed(), expLevel: scores[key]['expLevel'], week1: scores[key]['decksUsed'][0], week2: scores[key]['decksUsed'][1], week3: scores[key]['decksUsed'][2], week4: scores[key]['decksUsed'][3], week5: scores[key]['decksUsed'][4], week6: scores[key]['decksUsed'][5], week7: scores[key]['decksUsed'][6], week8: scores[key]['decksUsed'][7], week9: scores[key]['decksUsed'][8], week10: scores[key]['decksUsed'][9] });
+            // Merge the 4 first columns
+            worksheet.mergeCells(worksheet.rowCount - 1, 1, worksheet.rowCount, 1);
+            worksheet.mergeCells(worksheet.rowCount - 1, 2, worksheet.rowCount, 2);
+            worksheet.mergeCells(worksheet.rowCount - 1, 3, worksheet.rowCount, 3);
+            worksheet.mergeCells(worksheet.rowCount - 1, 4, worksheet.rowCount, 4);
+        } else
+            worksheet.addRow({ clan: scores[key]['clan'], player: key, fame: scores[key]['fame'].toFixed(), expLevel: scores[key]['expLevel'], targetClan: scores[key]['targetClan'], movement: scores[key]['movement'] });
     }
 
     worksheet.columns.forEach((sheetColumn) => {
@@ -324,7 +371,13 @@ async function excel(scores) {
             horizontal: 'center'
         };
         if (sheetColumn.key == 'player') {
-            sheetColumn.width = 30;
+            sheetColumn.width = 25;
+            sheetColumn.font = {
+                bold: true,
+            };
+        }
+        else if (sheetColumn.key == 'clan' || sheetColumn.key == 'targetClan') {
+            sheetColumn.width = 20;
             sheetColumn.font = {
                 bold: true,
             };
@@ -334,35 +387,54 @@ async function excel(scores) {
         }
     });
 
+    // Apply styles to the worksheet headers
     worksheet.getRow(1).font = {
         bold: true,
         size: 13,
     };
-    for (let i = 1; i <= 12; i++) {
+    for (let i = 1; i <= columnsCount; i++) {
         const cellToColor = worksheet.getCell(1, i);
         cellToColor.fill = {
             type: 'pattern',
             pattern: 'solid',
             fgColor: { argb: 'FF949494' } // Gray color
         };
+        if (i <= 4) {
+            cellToColor.border = {
+                ...cellToColor.border,
+                right: { style: 'medium' },
+            };
+        }
     }
 
-    worksheet.getColumn('B').eachCell({ includeEmpty: false }, (cell, rowNumber) => {
+    // Apply styles to the worksheet cells
+    worksheet.getColumn('C').eachCell({ includeEmpty: false }, (cell, rowNumber) => {
         cell.border = {
             left: { style: 'medium' },
             right: { style: 'medium' }
         };
-        if (rowNumber > 1 && rowNumber % 2 == 0) { // Scores lines
-            const value = cell.value;
+        if (rowNumber > 1 && (family || rowNumber % 2 == 0)) { // Scores lines
+            const value = cell.value; // Get the player's average value
 
-            for (let i = 1; i <= 12; i++) {
+            for (let i = 1; i <= columnsCount; i++) {
                 const cellToColor = worksheet.getCell(rowNumber, i);
                 cellToColor.border = {
                     ...cellToColor.border,
                     top: { style: 'thin' },
                 };
-                if (cellToColor.value == null) continue;
-                if (i <= 2) {
+                if (cellToColor.value == null) continue; // Skip coloring empty cells
+                if (i == 1) { // Current clan name
+                    const cellColor = hashStringToColor(cellToColor.value);
+                    cellToColor.fill = {
+                        type: 'pattern',
+                        pattern: 'solid',
+                        fgColor: { argb: cellColor.replace('#', 'FF') } // Hashed color
+                    };
+                    cellToColor.border = {
+                        ...cellToColor.border,
+                        right: { style: 'medium' },
+                    };
+                } else if (i < 4) { // Player name, fame and exp level
                     if (value < 2400) {
                         cellToColor.fill = {
                             type: 'pattern',
@@ -382,8 +454,52 @@ async function excel(scores) {
                             fgColor: { argb: 'FF18B815' } // Green color
                         };
                     }
-                }
-                else {
+                } else if (i == 4) { // Exp level
+                    if (cellToColor.value == 0)
+                        cellToColor.value = "Out of clan";
+                    if (cellToColor.value < 42 || cellToColor.value == "Out of clan") {
+                        cellToColor.fill = {
+                            type: 'pattern',
+                            pattern: 'solid',
+                            fgColor: { argb: 'FFD61E1E' } // Red color
+                        };
+                    } else if (cellToColor.value >= 42 && cellToColor.value <= 54) {
+                        cellToColor.fill = {
+                            type: 'pattern',
+                            pattern: 'solid',
+                            fgColor: { argb: 'FFE79A2B' } // Orange color
+                        };
+                    } else {
+                        cellToColor.fill = {
+                            type: 'pattern',
+                            pattern: 'solid',
+                            fgColor: { argb: 'FF18B815' } // Green color
+                        };
+                    }
+                    cellToColor.border = {
+                        ...cellToColor.border,
+                        right: { style: 'medium' },
+                    };
+                } else if (family && i == 5) { // Target clan
+                    if (cellToColor.value) { // Skip coloring empty cells
+                        const cellColor = hashStringToColor(cellToColor.value);
+                        cellToColor.fill = {
+                            type: 'pattern',
+                            pattern: 'solid',
+                            fgColor: { argb: cellColor.replace('#', 'FF') } // Hashed color
+                        };
+                    }
+                    cellToColor.border = {
+                        ...cellToColor.border,
+                        right: { style: 'medium' },
+                    };
+                } else if (family && i == 6) { // Movement
+                    // No color
+                    cellToColor.border = {
+                        ...cellToColor.border,
+                        right: { style: 'medium' },
+                    };
+                } else {
                     if (cellToColor.value < 2400) {
                         cellToColor.fill = {
                             type: 'pattern',
@@ -407,16 +523,25 @@ async function excel(scores) {
             }
         }
         else if (rowNumber > 1 && rowNumber % 2 != 0) { // Decks used lines
-            const value = cell.value;
-
-            for (let i = 1; i <= 12; i++) {
+            for (let i = 1; i <= columnsCount; i++) {
                 const cellToColor = worksheet.getCell(rowNumber, i);
                 cellToColor.border = {
                     ...cellToColor.border,
                     bottom: { style: 'thin' },
                 };
-                if (cellToColor.value == null) continue;
-                if (i > 2) {
+                if (cellToColor.value == null) continue; // Skip coloring empty cells
+                if (i == 1) { // Current clan name
+                    const cellColor = hashStringToColor(cellToColor.value);
+                    cellToColor.fill = {
+                        type: 'pattern',
+                        pattern: 'solid',
+                        fgColor: { argb: cellColor.replace('#', 'FF') } // Hashed color
+                    };
+                    cellToColor.border = {
+                        ...cellToColor.border,
+                        right: { style: 'medium' },
+                    };
+                } else if (i > 4) { // Decks used
                     if (cellToColor.value < 16 && cellToColor.value % 4 != 0) {
                         cellToColor.fill = {
                             type: 'pattern',
@@ -441,7 +566,7 @@ async function excel(scores) {
         }
     });
 
-    const xlsxPath = path.resolve(__dirname, '../averages.xlsx');
+    const xlsxPath = path.resolve(__dirname, '../' + fileName + '.xlsx');
 
     await workbook.xlsx.writeFile(xlsxPath)
         .then(() => {
@@ -451,8 +576,8 @@ async function excel(scores) {
             console.error('An error occurred while saving the file:', error);
         });
 
-    const pngPath = 'averages.png'; // Replace with the desired output image path
-    await exportSheetToPNG(xlsxPath, pngPath).catch((error) => {
+    const pngPath = fileName + '.png'; // Replace with the desired output image path
+    await exportSheetToPNG(xlsxPath, pngPath, family).catch((error) => {
         console.error('An error occurred:', error);
     });
 }

@@ -31,7 +31,7 @@ async function registerClan(bot, api, interaction) {
                 }
             });
 
-            // Delete previous report entry from the database
+            // Delete previous clan entry from the database
             let sql = `DELETE FROM Clans WHERE Guild=? AND Tag=?`;
             db.run(sql, [interaction.guildId, tag], function (err) {
                 if (err) {
@@ -39,7 +39,7 @@ async function registerClan(bot, api, interaction) {
                 }
                 // console.log(`Row(s) deleted ${this.changes}`);
             });
-            // Insert a new report entry into the database
+            // Insert a new clan entry into the database
             db.run(`INSERT INTO Clans (Guild, Name, Abbr, Tag) VALUES ("${interaction.guildId}", "${clan.name}", "${abbr}", "${tag}")`, function (err) {
                 if (err) {
                     return console.log(err.message);
@@ -117,7 +117,6 @@ async function unregisterClan(bot, api, interaction) {
     const unregisterEmbed = functions.generateEmbed(bot);
     try {
         unregisterEmbed
-            .setAuthor({ name: bot.user.tag, iconURL: 'https://cdn.discordapp.com/avatars/' + bot.user.id + '/' + bot.user.avatar + '.png' })
             .setDescription(("**" + abbr + "** is no longer registered on this server !"))
     } catch (e) {
         console.log(e);

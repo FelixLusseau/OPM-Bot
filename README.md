@@ -53,3 +53,5 @@ Old version is still available with the option `text_version: True`.
 - 15/01/2024 : The bot is now able to be used on multiple servers at the same time !
 
 - 07/02/2024 : New display v2 !
+
+- 23/03/2025 : Added the Family averages calculation.

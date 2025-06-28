@@ -9,7 +9,7 @@ const config = {
         token: process.env.BOT_TOKEN,
         intents: [
             'Guilds',
-            'GuildMembers', 
+            'GuildMembers',
             'GuildMessages',
             'MessageContent'
         ],

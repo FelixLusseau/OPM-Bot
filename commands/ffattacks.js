@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const functions = require('../utils/functions.js');
+const logger = require('../utils/logger');
 const fs = require('fs');
 
 async function ffattacks(bot, api, interaction, pingBool, channel, clan, guildID) {
@@ -50,7 +51,7 @@ async function ffattacks(bot, api, interaction, pingBool, channel, clan, guildID
         try {
             channel.send("The clan has finished the war !")
         } catch (error) {
-            console.error("Ping error :" + error)
+            logger.error("Ping error:", error);
         }
         return
     }
@@ -204,14 +205,14 @@ async function ffattacks(bot, api, interaction, pingBool, channel, clan, guildID
         }
 
         const tmpFile = (Math.random() + 1).toString(36).substring(7) + '.html';
-        fs.readFile('./html/layout.html', 'utf8', function (err, data) {
+    fs.readFile('./html/layout.html', 'utf8', function (err, data) {
+        if (err) {
+            return logger.error('HTML layout file error:', err);
+        }
+        fs.readFile('./html/ffattacks.html', 'utf8', function (err, data2) {
             if (err) {
-                return console.log(err);
+                return logger.error('HTML template file error:', err);
             }
-            fs.readFile('./html/ffattacks.html', 'utf8', function (err, data2) {
-                if (err) {
-                    return console.log(err);
-                }
 
                 let result = data2.replace(/{{ Attacks }}/g, attacksHTML);
                 result = result.replace(/{{ clan }}/g, (clansDict[clan] != undefined) ? clansDict[clan] : clan);
@@ -223,10 +224,10 @@ async function ffattacks(bot, api, interaction, pingBool, channel, clan, guildID
                 result = result.replace(/#000008/g, decksRemainingColor);
 
                 let html = data.replace(/{{ body }}/g, result);
-                html = html.replace(/{{Background}}/g, 'Background_normal')
-
+                html = html.replace(/{{Background}}/g, 'Background_normal');
+                
                 fs.writeFile('./' + tmpFile, html, 'utf8', function (err) {
-                    if (err) return console.log(err);
+                    if (err) return logger.error('HTML file write error:', err);
                 });
             });
 
@@ -290,7 +291,7 @@ async function ffattacks(bot, api, interaction, pingBool, channel, clan, guildID
             try {
                 channel.send({ embeds: [attacksEmbed] });
             } catch (error) {
-                console.error("Ping error :" + error)
+                logger.error("Ping error:", error);
             }
         }
     }
@@ -305,7 +306,7 @@ async function ffattacks(bot, api, interaction, pingBool, channel, clan, guildID
             try {
                 channel.send(ping);
             } catch (error) {
-                console.error("Ping error :" + error)
+                logger.error("Ping error:", error);
             }
     }
     return attacks // Return the string for the report

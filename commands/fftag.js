@@ -7,6 +7,7 @@ const ffreport = require('./ffreport');
 const ffmembers = require('./ffmembers');
 const ffopponents = require('./ffopponents.js');
 const functions = require('../utils/functions.js');
+const logger = require('../utils/logger');
 
 module.exports = {
     data: new SlashCommandBuilder()

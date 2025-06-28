@@ -8,49 +8,49 @@ const logger = require('./utils/logger');
 
 // Validate configuration
 try {
-    config.validate();
-    logger.success('Configuration validated successfully');
+  config.validate();
+  logger.success('Configuration validated successfully');
 } catch (error) {
-    logger.error('Configuration validation failed:', error.message);
-    process.exit(1);
+  logger.error('Configuration validation failed:', error.message);
+  process.exit(1);
 }
 
-const bot = new Client({ 
-    intents: [
-        GatewayIntentBits.Guilds, 
-        GatewayIntentBits.GuildMembers, 
-        GatewayIntentBits.GuildMessages, 
-        GatewayIntentBits.MessageContent
-    ] 
+const bot = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent
+  ]
 });
 bot.commands = new Collection();
 
 // Initialize the CR api with error handling
 try {
-    const api = new ClashRoyaleAPI(config.clashRoyale.token);
-    globals.setApi(api);
-    global.api = api; // Keep for backward compatibility
-    logger.success('Clash Royale API initialized');
+  const api = new ClashRoyaleAPI(config.clashRoyale.token);
+  globals.setApi(api);
+  global.api = api; // Keep for backward compatibility
+  logger.success('Clash Royale API initialized');
 } catch (error) {
-    logger.error('Failed to initialize Clash Royale API:', error.message);
-    process.exit(1);
+  logger.error('Failed to initialize Clash Royale API:', error.message);
+  process.exit(1);
 }
 
 // Global error handlers
 process.on('unhandledRejection', (reason, promise) => {
-    logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
 });
 
 process.on('uncaughtException', (error) => {
-    logger.error('Uncaught Exception:', error);
-    process.exit(1);
+  logger.error('Uncaught Exception:', error);
+  process.exit(1);
 });
 
 // Graceful shutdown
 process.on('SIGINT', () => {
-    logger.shutdown('Received SIGINT. Graceful shutdown...');
-    bot.destroy();
-    process.exit(0);
+  logger.shutdown('Received SIGINT. Graceful shutdown...');
+  bot.destroy();
+  process.exit(0);
 });
 
 const commandsPath = path.join(__dirname, 'commands');
@@ -95,7 +95,7 @@ for (const file of eventFiles) {
 
 // Connect the bot to Discord with error handling
 bot.login(config.discord.token).catch(error => {
-    logger.error('Failed to login to Discord:', error.message);
-    process.exit(1);
+  logger.error('Failed to login to Discord:', error.message);
+  process.exit(1);
 });
 

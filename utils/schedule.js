@@ -47,14 +47,14 @@ function schedule(bot, value, tag, guildID, chanID) {
 
     // Keep backward compatibility
     global.reportCron = globals.reportCron;
-    
+
     logger.schedule('created', `for clan ${tag} in guild ${guildID} at ${value}`);
 }
 
 // Function to stop all cron jobs for a specific clan
 function stopAllCronJobs(tag, guildID) {
     const clanKey = tag + guildID;
-    
+
     try {
         globals.removeCronJobs(clanKey);
         logger.schedule('stopped', `all jobs for clan ${tag} in guild ${guildID}`);
@@ -71,10 +71,9 @@ async function loadSchedules(bot) {
     });
 
     try {
-        let db = new sqlite3.Database(config.database.path, sqlite3.OPEN_READWRITE, (err) => {
+        let db = new sqlite3.Database('./db/OPM.sqlite3', sqlite3.OPEN_READWRITE, (err) => {
             if (err) {
-                logger.error('Database connection error:', err.message);
-                return;
+                console.error(err.message);
             }
         });
 
@@ -98,11 +97,11 @@ async function loadSchedules(bot) {
         // Close the database
         db.close((err) => {
             if (err) {
-                logger.error('Database close error:', err.message);
+                console.error(err.message);
             }
         });
     } catch (err) {
-        logger.error('Error loading schedules:', err);
+        console.error(err);
     }
 }
 

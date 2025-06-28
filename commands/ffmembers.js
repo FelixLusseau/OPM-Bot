@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const fs = require('fs');
 const functions = require('../utils/functions.js');
+const logger = require('../utils/logger');
 
 async function ffmembers(bot, api, interaction, clan) {
     await interaction.deferReply({ ephemeral: false });

@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const functions = require('../utils/functions.js');
+const logger = require('../utils/logger');
 
 async function ffrace(bot, api, interaction, channel, clan, report) {
     // Check if the command was run by an interaction or a scheduled message
@@ -171,7 +172,7 @@ async function ffrace(bot, api, interaction, channel, clan, report) {
             .setDescription(Race)
             .setImage(chartUrl)
     } catch (e) {
-        console.log(e);
+        logger.error('Race embed generation error:', e);
     }
 
     // If the interaction is not null, edit the reply deferred before
@@ -181,7 +182,7 @@ async function ffrace(bot, api, interaction, channel, clan, report) {
         try {
             channel.send({ embeds: [raceEmbed] });
         } catch (error) {
-            console.error("FFRace error :" + error)
+            logger.error("FFRace error:", error);
         }
     }
 

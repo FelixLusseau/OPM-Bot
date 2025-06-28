@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const reports = require('../utils/reports.js');
 const functions = require('../utils/functions.js');
+const logger = require('../utils/logger');
 
 async function ffreport(bot, api, interaction, clan) {
     await interaction.reply({ ephemeral: false, content: "War Report" });

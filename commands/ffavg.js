@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, AttachmentBuilder } = require('discord.js');
 const functions = require('../utils/functions.js');
+const logger = require('../utils/logger');
 const fs = require('fs');
 
 async function ffavg(bot, api, interaction, clan, limit, include_all_players) {
@@ -152,7 +153,7 @@ async function ffavg(bot, api, interaction, clan, limit, include_all_players) {
             fs.unlinkSync('./' + fileName + '.png')
             // Files removed
         } catch (err) {
-            console.error(err)
+            logger.error("File cleanup error:", err);
         }
     }
     return sortedAvgObject;
@@ -282,7 +283,7 @@ async function fffamilyavg(bot, api, interaction, limit, include_all_players) {
             fs.unlinkSync('./' + fileName + '.png')
             // Files removed
         } catch (err) {
-            console.error(err)
+            logger.error("File cleanup error:", err);
         }
     }
 }

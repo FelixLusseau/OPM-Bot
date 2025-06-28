@@ -15,17 +15,15 @@ const logger = require('./logger');
 async function loadRegisteredClans() {
     try {
         // Open the database
-        let db = new sqlite3.Database(config.database.path, sqlite3.OPEN_READONLY, (err) => {
+        let db = new sqlite3.Database('./db/OPM.sqlite3', sqlite3.OPEN_READONLY, (err) => {
             if (err) {
-                logger.error('Database connection error:', err.message);
-                return;
+                console.error(err.message);
             }
         });
 
         db.all('SELECT Guild, Name, Abbr, Tag FROM Clans', [], (err, rows) => {
             if (err) {
-                logger.error('Error loading registered clans:', err);
-                return;
+                throw err;
             }
             
             globals.clansDict = {};
@@ -44,11 +42,11 @@ async function loadRegisteredClans() {
         // Close the database
         db.close((err) => {
             if (err) {
-                logger.error('Database close error:', err.message);
+                console.error(err.message);
             }
         });
     } catch (err) {
-        logger.error('Error in loadRegisteredClans:', err);
+        console.error(err);
     }
 }
 

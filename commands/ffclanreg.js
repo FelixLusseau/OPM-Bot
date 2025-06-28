@@ -2,6 +2,7 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const sqlite3 = require('sqlite3').verbose();
 const functions = require('../utils/functions.js');
 const ffhour = require('./ffhour.js');
+const logger = require('../utils/logger');
 
 // Function to register a clan for the Discord server
 async function registerClan(bot, api, interaction) {
@@ -28,7 +29,7 @@ async function registerClan(bot, api, interaction) {
             // Open the database
             let db = new sqlite3.Database('./db/OPM.sqlite3', sqlite3.OPEN_READWRITE, (err) => {
                 if (err) {
-                    console.error(err.message);
+                    logger.error('Database connection error:', err.message);
                 }
             });
 
@@ -36,14 +37,14 @@ async function registerClan(bot, api, interaction) {
             let sql = `DELETE FROM Clans WHERE Guild=? AND Tag=?`;
             db.run(sql, [interaction.guildId, tag], function (err) {
                 if (err) {
-                    return console.error(err.message);
+                    return logger.error('Database delete error:', err.message);
                 }
                 // console.log(`Row(s) deleted ${this.changes}`);
             });
             // Insert a new clan entry into the database
             db.run(`INSERT INTO Clans (Guild, Name, Abbr, Tag) VALUES ("${interaction.guildId}", "${clan.name}", "${abbr}", "${tag}")`, function (err) {
                 if (err) {
-                    return console.log(err.message);
+                    return logger.error('Database insert error:', err.message);
                 }
                 // get the last insert id
                 // console.log(`A row has been inserted with rowid ${this.lastID}`);
@@ -54,11 +55,11 @@ async function registerClan(bot, api, interaction) {
             // Close the database
             db.close((err) => {
                 if (err) {
-                    console.error(err.message);
+                    logger.error('Database close error:', err.message);
                 }
             });
         } catch (err) {
-            console.error(err);
+            logger.error('Register clan operation error:', err);
         }
     }
     else {
@@ -70,7 +71,7 @@ async function registerClan(bot, api, interaction) {
         registerEmbed
             .setDescription((valid ? tag + " (" + clan.name + ") registered as **" + abbr + "** on this server !" : "**" + tag + "** is not a valid tag !"))
     } catch (e) {
-        console.log(e);
+        logger.error('Register embed generation error:', e);
     }
 
     interaction.editReply({ embeds: [registerEmbed] });
@@ -89,7 +90,7 @@ async function unregisterClan(bot, api, interaction) {
         // Open the database
         let db = new sqlite3.Database('./db/OPM.sqlite3', sqlite3.OPEN_READWRITE, (err) => {
             if (err) {
-                console.error(err.message);
+                logger.error('Database connection error:', err.message);
             }
         });
 
@@ -97,7 +98,7 @@ async function unregisterClan(bot, api, interaction) {
         let sql = `DELETE FROM Clans WHERE Guild=? AND Tag=?`;
         db.run(sql, [interaction.guildId, tag], function (err) {
             if (err) {
-                return console.error(err.message);
+                return logger.error('Database delete error:', err.message);
             }
             // console.log(`Row(s) deleted ${this.changes}`);
             // Reload the registered clans cache
@@ -107,12 +108,12 @@ async function unregisterClan(bot, api, interaction) {
         // Close the database
         db.close((err) => {
             if (err) {
-                console.error(err.message);
+                logger.error('Database close error:', err.message);
             }
         });
 
     } catch (err) {
-        console.error(err);
+        logger.error('Unregister clan operation error:', err);
     }
 
     // Try to remove any associated schedules and reports using rmHour
@@ -120,7 +121,7 @@ async function unregisterClan(bot, api, interaction) {
         await ffhour.rmHour(bot, api, null, tag, interaction.guildId);
     } catch (e) {
         // Silently ignore if there are no schedules to remove
-        console.log('No schedules to remove for clan ' + tag);
+        logger.info('No schedules to remove for clan ' + tag);
     }
 
     const unregisterEmbed = functions.generateEmbed(bot);
@@ -128,7 +129,7 @@ async function unregisterClan(bot, api, interaction) {
         unregisterEmbed
             .setDescription(("**" + abbr + "** is no longer registered on this server !"))
     } catch (e) {
-        console.log(e);
+        logger.error('Unregister operation error:', e);
     }
 
     interaction.editReply({ embeds: [unregisterEmbed] });

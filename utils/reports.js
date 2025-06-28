@@ -3,6 +3,7 @@ const ffresults = require('../commands/ffresults');
 const ffrace = require('../commands/ffrace');
 const { EmbedBuilder } = require('discord.js');
 const functions = require('../utils/functions.js')
+const logger = require('./logger');
 
 async function report(bot, api, interaction, pingBool, channel, clan, guildID) {
     // Get the attacks and results from the ffattacks and ffresults functions

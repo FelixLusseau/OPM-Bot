@@ -20,7 +20,7 @@ module.exports = {
 
         // Initialize global state
         globals.reset();
-        
+
         // Load schedules and other initialization
         try {
             await schedule.loadSchedules(bot);

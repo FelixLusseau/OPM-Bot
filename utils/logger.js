@@ -12,7 +12,7 @@ class Logger {
         const timestamp = new Date().toISOString();
         const colorCode = this.colors[level] || '';
         const resetCode = this.colors.reset;
-        
+
         return `${colorCode}[${timestamp}]${resetCode} ${level.toUpperCase()}: ${message}`;
     }
 

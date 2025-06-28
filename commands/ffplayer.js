@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const functions = require('../utils/functions.js');
+const logger = require('../utils/logger');
 
 async function ffplayer(bot, api, interaction, channel, tag) {
     let details = false;

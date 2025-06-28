@@ -39,7 +39,7 @@ async function setHour(bot, api, interaction) {
             // Open the database
             let db = new sqlite3.Database('./db/OPM.sqlite3', sqlite3.OPEN_READWRITE, (err) => {
                 if (err) {
-                    console.error(err.message);
+                    logger.error('Database connection error:', err.message);
                 }
             });
 
@@ -47,14 +47,14 @@ async function setHour(bot, api, interaction) {
             let sql = `DELETE FROM Reports WHERE Guild=? AND Clan=?`;
             db.run(sql, [interaction.guildId, clan], function (err) {
                 if (err) {
-                    return console.error(err.message);
+                    return logger.error('Database delete error:', err.message);
                 }
                 // console.log(`Row(s) deleted ${this.changes}`);
             });
             // Insert a new report entry into the database
             db.run(`INSERT INTO Reports (Guild, Clan, Hour, Channel) VALUES ("${interaction.guildId}", "${clan}", "${hour}", "${channel.id}")`, function (err) {
                 if (err) {
-                    return console.log(err.message);
+                    return logger.error('Database insert error:', err.message);
                 }
                 // get the last insert id
                 // console.log(`A row has been inserted with rowid ${this.lastID}`);
@@ -64,12 +64,12 @@ async function setHour(bot, api, interaction) {
             // Close the database
             db.close((err) => {
                 if (err) {
-                    console.error(err.message);
+                    logger.error('Database close error:', err.message);
                 }
             });
 
         } catch (err) {
-            console.error(err);
+            logger.error('Set hour operation error:', err);
         }
 
         // Stop the previous cron job and start a new one with the new hour
@@ -91,7 +91,7 @@ async function setHour(bot, api, interaction) {
         resultsEmbed
             .setDescription((valid ? "`" + hour + "` is now the reset hour for **" + clansDict[clan] + "** !" : "**" + hour + "** is not a valid hour !") + "\nThe reports will be sent in the channel : **" + channel.name + "**")
     } catch (e) {
-        console.log(e);
+        logger.error('Result embed generation error:', e);
     }
 
     interaction.editReply({ embeds: [resultsEmbed] });
@@ -125,7 +125,7 @@ async function updateHour(bot, api, interaction) {
             // Open the database
             let db = new sqlite3.Database('./db/OPM.sqlite3', sqlite3.OPEN_READWRITE, (err) => {
                 if (err) {
-                    console.error(err.message);
+                    logger.error('Database connection error:', err.message);
                 }
             });
 
@@ -134,7 +134,7 @@ async function updateHour(bot, api, interaction) {
                 sql = `UPDATE Reports SET Hour = ?, Channel = ? WHERE Guild = ? AND Clan = ?`;
                 db.run(sql, [hour, channel.id, interaction.guildId, clan], function (err) {
                     if (err) {
-                        return console.error(err.message);
+                        return logger.error('Database update error:', err.message);
                     }
                     // console.log(`Row(s) updated ${this.changes}`);
                 });
@@ -143,7 +143,7 @@ async function updateHour(bot, api, interaction) {
                 sql = `UPDATE Reports SET Hour = ? WHERE Guild = ? AND Clan = ?`;
                 db.run(sql, [hour, interaction.guildId, clan], function (err) {
                     if (err) {
-                        return console.error(err.message);
+                        return logger.error('Database update error:', err.message);
                     }
                     // console.log(`Row(s) updated ${this.changes}`);
                 });
@@ -153,7 +153,7 @@ async function updateHour(bot, api, interaction) {
             sql = `SELECT Channel FROM Reports WHERE Guild = ? AND Clan = ?`;
             db.get(sql, [interaction.guildId, clan], (err, row) => {
                 if (err) {
-                    return console.error(err.message);
+                    return logger.error('Database select error:', err.message);
                 }
                 channel = bot.channels.cache.get(row.Channel);
                 try {
@@ -168,12 +168,12 @@ async function updateHour(bot, api, interaction) {
             // Close the database
             db.close((err) => {
                 if (err) {
-                    console.error(err.message);
+                    logger.error('Database close error:', err.message);
                 }
             });
 
         } catch (err) {
-            console.error(err);
+            logger.error('Update hour operation error:', err);
         }
     }
     else {
@@ -200,7 +200,7 @@ async function getHours(bot, api, interaction) {
         // Open the database
         let db = new sqlite3.Database('./db/OPM.sqlite3', sqlite3.OPEN_READONLY, (err) => {
             if (err) {
-                console.error(err.message);
+                logger.error('Database connection error:', err.message);
             }
         });
 
@@ -224,30 +224,29 @@ async function getHours(bot, api, interaction) {
         // Close the database
         db.close((err) => {
             if (err) {
-                console.error(err.message);
+                logger.error('Database close error:', err.message);
             }
         });
     } catch (err) {
-        console.error(err);
+        logger.error('Get hours operation error:', err);
     }
 
-    const tmpFile = (Math.random() + 1).toString(36).substring(7) + '.html';
-    fs.readFile('./html/layout.html', 'utf8', function (err, data) {
-        if (err) {
-            return console.log(err);
-        }
-        fs.readFile('./html/ffgethours.html', 'utf8', function (err, data2) {
+    const tmpFile = (Math.random() + 1).toString(36).substring(7) + '.html';        fs.readFile('./html/layout.html', 'utf8', function (err, data) {
             if (err) {
-                return console.log(err);
+                return logger.error('HTML layout file error:', err);
             }
+            fs.readFile('./html/ffgethours.html', 'utf8', function (err, data2) {
+                if (err) {
+                    return logger.error('HTML template file error:', err);
+                }
 
             let result = data2.replace(/{{ Hours }}/g, hours);
 
             let html = data.replace(/{{ body }}/g, result);
-            html = html.replace(/{{Background}}/g, 'Background_small')
+            html = html.replace(/{{Background}}/g, 'Background_small');
 
             fs.writeFile('./' + tmpFile, html, 'utf8', function (err) {
-                if (err) return console.log(err);
+                if (err) return logger.error('HTML file write error:', err);
             });
         });
 
@@ -279,7 +278,7 @@ async function rmHour(bot, api, interaction, clanParam = null, guildIDParam = nu
         // Open the database
         let db = new sqlite3.Database('./db/OPM.sqlite3', sqlite3.OPEN_READWRITE, (err) => {
             if (err) {
-                console.error(err.message);
+                logger.error('Database connection error:', err.message);
             }
         });
 
@@ -287,7 +286,7 @@ async function rmHour(bot, api, interaction, clanParam = null, guildIDParam = nu
         let sql = `DELETE FROM Reports WHERE Guild=? AND Clan=?`;
         db.run(sql, [guildId, clan], function (err) {
             if (err) {
-                return console.error(err.message);
+                return logger.error('Database delete error:', err.message);
             }
             // console.log(`Row(s) deleted ${this.changes}`);
         });
@@ -296,12 +295,12 @@ async function rmHour(bot, api, interaction, clanParam = null, guildIDParam = nu
         // Close the database
         db.close((err) => {
             if (err) {
-                console.error(err.message);
+                logger.error('Database close error:', err.message);
             }
         });
 
     } catch (err) {
-        console.error(err);
+        logger.error('Remove hour operation error:', err);
     }
     // Stop all cron jobs for this clan
     try {
@@ -310,7 +309,7 @@ async function rmHour(bot, api, interaction, clanParam = null, guildIDParam = nu
         if (interaction) {
             interaction.editReply({ content: "No cron job to stop !" });
         } else {
-            console.log("No cron job to stop for " + clan);
+            logger.info("No cron job to stop for " + clan);
         }
     }
 

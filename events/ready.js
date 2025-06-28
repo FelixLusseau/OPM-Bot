@@ -18,7 +18,6 @@ module.exports = {
 
         // Load the report times from the reset-hours folder and schedule the reports
         global.clansDict = {}
-        global.reportCron = {}
         global.guildMembers = {}
 
         schedule.loadSchedules(bot)

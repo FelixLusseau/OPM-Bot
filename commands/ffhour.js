@@ -73,7 +73,7 @@ async function setHour(bot, api, interaction) {
         // Stop the previous cron job and start a new one with the new hour
         try {
             // console.log(clan + interaction.guildId)
-            reportCron[clan + interaction.guildId].stop();
+            schedule.stopAllCronJobs(clan, interaction.guildId);
         } catch (e) {
             interaction.editReply({ content: "No cron job to stop !" });
         }
@@ -156,11 +156,11 @@ async function updateHour(bot, api, interaction) {
                 channel = bot.channels.cache.get(row.Channel);
                 try {
                     // console.log(clan + interaction.guildId)
-                    reportCron[clan + interaction.guildId].stop();
+                    schedule.stopAllCronJobs(clan, interaction.guildId);
                 } catch (e) {
                     interaction.editReply({ content: "No cron job to stop !" });
                 }
-                schedule.schedule(bot, hour, clan, interaction.guildId, channel.id, true)
+                schedule.schedule(bot, hour, clan, interaction.guildId, channel.id)
             });
 
             // Close the database
@@ -289,9 +289,9 @@ async function rmHour(bot, api, interaction) {
     } catch (err) {
         console.error(err);
     }
-    // Stop the previous cron job and start a new one with the new hour
+    // Stop all cron jobs for this clan
     try {
-        reportCron[clan + interaction.guildId].stop();
+        schedule.stopAllCronJobs(clan, interaction.guildId);
     } catch (e) {
         interaction.editReply({ content: "No cron job to stop !" });
     }

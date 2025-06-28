@@ -32,33 +32,56 @@ async function getGuildMembers(guildsDict) {
 }
 
 // Function to schedule the reports and evening reminders
-function schedule(bot, value, tag, guildID, chanID, update = false) {
+function schedule(bot, value, tag, guildID, chanID) {
     const channel = bot.channels.cache.get(chanID);
+    const clanKey = tag + guildID;
 
-    // Schedule the reports and save them in the global reportCron dictionary
-    reportCron[tag + guildID] = cron.schedule(value.substring(3, 5) + ' ' + value.substring(0, 2) + ' * * 5,6,7,1', () => {
+    // Initialize clan cron jobs storage if it doesn't exist
+    if (!global.clanCronJobs) {
+        global.clanCronJobs = {};
+    }
+    if (!global.clanCronJobs[clanKey]) {
+        global.clanCronJobs[clanKey] = {};
+    }
+
+    // Schedule the reports and save them in the global clanCronJobs structure
+    global.clanCronJobs[clanKey].report = cron.schedule(value.substring(3, 5) + ' ' + value.substring(0, 2) + ' * * 5,6,7,1', () => {
         reports.report(bot, api, null, null, channel, tag, guildID)
     });
 
-    if (!update) {
-        // Schedule ffrace and ffattacks with ping at 01h00, 21h00 and 23h00 on the war days
-        // cron.schedule('0 1 * * 5,6,7,1', () => {
-        //     ffrace.ffrace(bot, api, null, channel, tag, false)
-        //     ffattacks.ffattacks(bot, api, null, true, channel, tag, guildID)
-        // });
-        cron.schedule('0 9 * * 5,6,7,1', () => {
-            ffrace.ffrace(bot, api, null, channel, tag, false)
-            ffattacks.ffattacks(bot, api, null, true, channel, tag, guildID)
-        });
-        cron.schedule('0 21 * * 4,5,6,7', () => {
-            ffrace.ffrace(bot, api, null, channel, tag, false)
-            ffattacks.ffattacks(bot, api, null, true, channel, tag, guildID)
-        });
-        // cron.schedule('0 23 * * 4,5,6,7', () => {
-        //     ffrace.ffrace(bot, api, null, channel, tag, false)
-        //     ffattacks.ffattacks(bot, api, null, true, channel, tag, guildID)
-        // });
-        // console.log('Scheduled ' + key + ' for ' + value.substring(3, 5) + ' ' + value.substring(0, 2) + ' * * 5,6,7,1')
+    // Schedule ffrace and ffattacks with ping at 9h00 and 21h00 on the war days
+    global.clanCronJobs[clanKey].morning = cron.schedule('0 9 * * 5,6,7,1', () => {
+        ffrace.ffrace(bot, api, null, channel, tag, false)
+        ffattacks.ffattacks(bot, api, null, true, channel, tag, guildID)
+    });
+
+    global.clanCronJobs[clanKey].evening = cron.schedule('0 21 * * 4,5,6,7', () => {
+        ffrace.ffrace(bot, api, null, channel, tag, false)
+        ffattacks.ffattacks(bot, api, null, true, channel, tag, guildID)
+    });
+    // console.log('Scheduled ' + clanKey + ' for ' + value.substring(3, 5) + ' ' + value.substring(0, 2) + ' * * 5,6,7,1')
+}
+
+// Function to stop all cron jobs for a specific clan
+function stopAllCronJobs(tag, guildID) {
+    const clanKey = tag + guildID;
+
+    // Stop all cron jobs from the centralized structure
+    try {
+        if (global.clanCronJobs && global.clanCronJobs[clanKey]) {
+            if (global.clanCronJobs[clanKey].report) {
+                global.clanCronJobs[clanKey].report.stop();
+            }
+            if (global.clanCronJobs[clanKey].morning) {
+                global.clanCronJobs[clanKey].morning.stop();
+            }
+            if (global.clanCronJobs[clanKey].evening) {
+                global.clanCronJobs[clanKey].evening.stop();
+            }
+            delete global.clanCronJobs[clanKey];
+        }
+    } catch (e) {
+        console.log('No cron jobs to stop for ' + clanKey);
     }
 }
 
@@ -105,5 +128,6 @@ async function loadSchedules(bot) {
 module.exports = {
     getGuildMembers,
     schedule,
-    loadSchedules
+    loadSchedules,
+    stopAllCronJobs
 }

@@ -1,5 +1,7 @@
 const { Events, ActivityType } = require('discord.js');
-require("dotenv").config();
+const config = require('../config/config');
+const globals = require('../utils/globals');
+const logger = require('../utils/logger');
 const schedule = require('../utils/schedule.js');
 const functions = require('../utils/functions.js');
 
@@ -13,34 +15,41 @@ module.exports = {
         console.log("| |_| |  __/| |  | |_____|__) | || (_| | |_\\__ \\")
         console.log(" \\___/|_|   |_|  |_|    |____/ \\__\\__,_|\\__|___/")
 
-        console.log(`\n\x1b[36m[${new Date().toISOString()}]\x1b[0m Ready! Logged in as ${bot.user.tag}`);
-        bot.user.setActivity('your stats', { type: ActivityType.Watching });
+        logger.startup(`Ready! Logged in as ${bot.user.tag}`);
+        bot.user.setActivity(config.discord.activity.name, { type: ActivityType.Watching });
 
-        // Load the report times from the reset-hours folder and schedule the reports
-        global.clansDict = {}
-        global.guildMembers = {}
+        // Initialize global state
+        globals.reset();
+        
+        // Load schedules and other initialization
+        try {
+            await schedule.loadSchedules(bot);
+            logger.success('Schedules loaded successfully');
+        } catch (error) {
+            logger.error('Failed to load schedules:', error.message);
+        }
 
-        schedule.loadSchedules(bot)
-
-        // console.log("\nAccessible Channels :")
-        // bot.channels.cache.filter(channel => channel.type === 0).forEach(channel => {
-        //     console.log("- " + channel.id, channel.name, "(" + channel.guild.name + ")");
-        // });
-
-        console.log("\nCurrent Guilds :")
+        // Log accessible guilds
+        logger.info("Current Guilds:");
         bot.guilds.cache.forEach(guild => {
-            console.log("- " + guild.id + " : " + guild.name);
+            logger.info(`- ${guild.id} : ${guild.name}`);
+            globals.guildsDict[guild.id] = guild;
         });
 
-        // Get the guild members at the bot startup
-        global.guildsDict = {};
-        bot.guilds.cache.forEach((guild) => {
-            guildsDict[guild.id] = guild;
-        });
-        // console.log(guildsDict);
-        schedule.getGuildMembers(guildsDict)
+        // Get guild members at startup
+        try {
+            await schedule.getGuildMembers(globals.guildsDict);
+            logger.success('Guild members loaded successfully');
+        } catch (error) {
+            logger.error('Failed to load guild members:', error.message);
+        }
 
-        global.registeredClans = [];
-        await functions.loadRegisteredClans()
+        // Load registered clans
+        try {
+            await functions.loadRegisteredClans();
+            logger.success('Registered clans loaded successfully');
+        } catch (error) {
+            logger.error('Failed to load registered clans:', error.message);
+        }
     },
 };

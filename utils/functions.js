@@ -7,43 +7,48 @@ const { AttachmentBuilder, EmbedBuilder } = require('discord.js');
 const { promises } = require('dns');
 const { time } = require('console');
 const sqlite3 = require('sqlite3').verbose();
+const config = require('../config/config');
+const globals = require('./globals');
+const logger = require('./logger');
 
 // Load registered clans from the database
 async function loadRegisteredClans() {
-    clansDict = {}
     try {
         // Open the database
-        let db = new sqlite3.Database('./db/OPM.sqlite3', sqlite3.OPEN_READONLY, (err) => {
+        let db = new sqlite3.Database(config.database.path, sqlite3.OPEN_READONLY, (err) => {
             if (err) {
-                console.error(err.message);
+                logger.error('Database connection error:', err.message);
+                return;
             }
         });
 
         db.all('SELECT Guild, Name, Abbr, Tag FROM Clans', [], (err, rows) => {
             if (err) {
-                throw err;
+                logger.error('Error loading registered clans:', err);
+                return;
             }
-            registeredClans = rows.map(row => {
-                clansDict[row.Name] = row.Tag
-                clansDict[row.Tag] = row.Name
+            
+            globals.clansDict = {};
+            globals.registeredClans = rows.map(row => {
+                globals.addClan(row.Tag, row.Name);
                 return { guild: row.Guild, name: row.Name, abbr: row.Abbr, tag: row.Tag };
             });
 
-            console.log("\nRegistered clans :")
-            console.log(registeredClans);
-
-            // console.log("\nClans dict :")
-            // console.log(clansDict);
+            logger.info(`Loaded ${globals.registeredClans.length} registered clans`);
+            
+            // Keep global variables for backward compatibility
+            global.clansDict = globals.clansDict;
+            global.registeredClans = globals.registeredClans;
         });
 
         // Close the database
         db.close((err) => {
             if (err) {
-                console.error(err.message);
+                logger.error('Database close error:', err.message);
             }
         });
     } catch (err) {
-        console.error(err);
+        logger.error('Error in loadRegisteredClans:', err);
     }
 }
 

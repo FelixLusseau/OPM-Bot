@@ -3,6 +3,8 @@ const schedule = require('../utils/schedule.js');
 const sqlite3 = require('sqlite3').verbose();
 const functions = require('../utils/functions.js');
 const fs = require('fs');
+const config = require('../config/config');
+const logger = require('../utils/logger');
 
 function isValidTimeFormat(input) {
     // Regular expression pattern to match "hh:mm" format

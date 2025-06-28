@@ -1,4 +1,6 @@
 const { Events } = require('discord.js');
+const globals = require('../utils/globals');
+const logger = require('../utils/logger');
 
 module.exports = {
     name: Events.InteractionCreate,
@@ -6,7 +8,7 @@ module.exports = {
         if (interaction.isAutocomplete()) {
             const clan = interaction.options.getString('clan');
 
-            const clans = registeredClans
+            const clans = globals.registeredClans || [];
 
             // Map the clans to the format Discord expects
             const guildClans = clans.filter(clan => clan.guild === interaction.guild.id);
@@ -17,16 +19,15 @@ module.exports = {
             const command = interaction.client.commands.get(interaction.commandName);
 
             if (!command) {
-                console.error(`No command matching ${interaction.commandName} was found.`);
+                logger.error(`No command matching ${interaction.commandName} was found.`);
                 return;
             }
 
             try {
-                console.log(`\x1b[36m[${new Date().toISOString()}]\x1b[0m Executing ${interaction.commandName}`);
+                logger.command(interaction.commandName, interaction.user.id);
                 await command.execute(bot, api, interaction);
             } catch (error) {
-                console.error(`\x1b[31m[${new Date().toISOString()}]\x1b[0m Error executing ${interaction.commandName}`);
-                console.error(error);
+                logger.commandError(interaction.commandName, error, interaction.user.id);
                 if (interaction.replied || interaction.deferred) {
                     await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
                 } else {

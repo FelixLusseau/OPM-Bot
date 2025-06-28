@@ -231,14 +231,14 @@ async function getHours(bot, api, interaction) {
         logger.error('Get hours operation error:', err);
     }
 
-    const tmpFile = (Math.random() + 1).toString(36).substring(7) + '.html';        fs.readFile('./html/layout.html', 'utf8', function (err, data) {
+    const tmpFile = (Math.random() + 1).toString(36).substring(7) + '.html'; fs.readFile('./html/layout.html', 'utf8', function (err, data) {
+        if (err) {
+            return logger.error('HTML layout file error:', err);
+        }
+        fs.readFile('./html/ffgethours.html', 'utf8', function (err, data2) {
             if (err) {
-                return logger.error('HTML layout file error:', err);
+                return logger.error('HTML template file error:', err);
             }
-            fs.readFile('./html/ffgethours.html', 'utf8', function (err, data2) {
-                if (err) {
-                    return logger.error('HTML template file error:', err);
-                }
 
             let result = data2.replace(/{{ Hours }}/g, hours);
 

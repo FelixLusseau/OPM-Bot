@@ -25,7 +25,7 @@ async function loadRegisteredClans() {
             if (err) {
                 throw err;
             }
-            
+
             globals.clansDict = {};
             globals.registeredClans = rows.map(row => {
                 globals.addClan(row.Tag, row.Name);
@@ -33,7 +33,7 @@ async function loadRegisteredClans() {
             });
 
             logger.info(`Loaded ${globals.registeredClans.length} registered clans`);
-            
+
             // Keep global variables for backward compatibility
             global.clansDict = globals.clansDict;
             global.registeredClans = globals.registeredClans;

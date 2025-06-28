@@ -205,14 +205,14 @@ async function ffattacks(bot, api, interaction, pingBool, channel, clan, guildID
         }
 
         const tmpFile = (Math.random() + 1).toString(36).substring(7) + '.html';
-    fs.readFile('./html/layout.html', 'utf8', function (err, data) {
-        if (err) {
-            return logger.error('HTML layout file error:', err);
-        }
-        fs.readFile('./html/ffattacks.html', 'utf8', function (err, data2) {
+        fs.readFile('./html/layout.html', 'utf8', function (err, data) {
             if (err) {
-                return logger.error('HTML template file error:', err);
+                return logger.error('HTML layout file error:', err);
             }
+            fs.readFile('./html/ffattacks.html', 'utf8', function (err, data2) {
+                if (err) {
+                    return logger.error('HTML template file error:', err);
+                }
 
                 let result = data2.replace(/{{ Attacks }}/g, attacksHTML);
                 result = result.replace(/{{ clan }}/g, (clansDict[clan] != undefined) ? clansDict[clan] : clan);
@@ -225,7 +225,7 @@ async function ffattacks(bot, api, interaction, pingBool, channel, clan, guildID
 
                 let html = data.replace(/{{ body }}/g, result);
                 html = html.replace(/{{Background}}/g, 'Background_normal');
-                
+
                 fs.writeFile('./' + tmpFile, html, 'utf8', function (err) {
                     if (err) return logger.error('HTML file write error:', err);
                 });

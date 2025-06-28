@@ -255,11 +255,23 @@ async function getHours(bot, api, interaction) {
 }
 
 // Function to remove a report and reset hour for a registered clan
-async function rmHour(bot, api, interaction) {
-    await interaction.deferReply({ ephemeral: false });
-    const clan = interaction.options.getString('clan');
-    if (functions.isRegisteredClan(bot, interaction, interaction.channel, clan) == false) // Check if the clan is registered
-        return
+async function rmHour(bot, api, interaction, clanParam = null, guildIDParam = null) {
+    // Handle different call patterns
+    let clan, guildId;
+
+    if (interaction == null) {
+        // Called programmatically with parameters
+        clan = clanParam;
+        guildId = guildIDParam;
+    } else {
+        // Called from Discord interaction
+        await interaction.deferReply({ ephemeral: false });
+        clan = interaction.options.getString('clan');
+        guildId = interaction.guildId;
+
+        if (functions.isRegisteredClan(bot, interaction, interaction.channel, clan) == false) // Check if the clan is registered
+            return
+    }
 
     try {
         // Open the database
@@ -271,7 +283,7 @@ async function rmHour(bot, api, interaction) {
 
         // Delete a report entry from the database
         let sql = `DELETE FROM Reports WHERE Guild=? AND Clan=?`;
-        db.run(sql, [interaction.guildId, clan], function (err) {
+        db.run(sql, [guildId, clan], function (err) {
             if (err) {
                 return console.error(err.message);
             }
@@ -291,20 +303,27 @@ async function rmHour(bot, api, interaction) {
     }
     // Stop all cron jobs for this clan
     try {
-        schedule.stopAllCronJobs(clan, interaction.guildId);
+        schedule.stopAllCronJobs(clan, guildId);
     } catch (e) {
-        interaction.editReply({ content: "No cron job to stop !" });
+        if (interaction) {
+            interaction.editReply({ content: "No cron job to stop !" });
+        } else {
+            console.log("No cron job to stop for " + clan);
+        }
     }
 
-    const resultsEmbed = functions.generateEmbed(bot);
-    try {
-        resultsEmbed
-            .setDescription("Report deleted for **" + clansDict[clan] + "** !")
-    } catch (e) {
-        console.log(e);
-    }
+    // Only reply if called from Discord interaction
+    if (interaction) {
+        const resultsEmbed = functions.generateEmbed(bot);
+        try {
+            resultsEmbed
+                .setDescription("Report deleted for **" + clansDict[clan] + "** !")
+        } catch (e) {
+            console.log(e);
+        }
 
-    interaction.editReply({ embeds: [resultsEmbed] });
+        interaction.editReply({ embeds: [resultsEmbed] });
+    }
 }
 
 module.exports = {

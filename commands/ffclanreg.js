@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const sqlite3 = require('sqlite3').verbose();
 const functions = require('../utils/functions.js');
+const ffhour = require('./ffhour.js');
 
 // Function to register a clan for the Discord server
 async function registerClan(bot, api, interaction) {
@@ -92,7 +93,7 @@ async function unregisterClan(bot, api, interaction) {
             }
         });
 
-        // Delete previous report entry from the database
+        // Delete clan entry from the database
         let sql = `DELETE FROM Clans WHERE Guild=? AND Tag=?`;
         db.run(sql, [interaction.guildId, tag], function (err) {
             if (err) {
@@ -112,6 +113,14 @@ async function unregisterClan(bot, api, interaction) {
 
     } catch (err) {
         console.error(err);
+    }
+
+    // Try to remove any associated schedules and reports using rmHour
+    try {
+        await ffhour.rmHour(bot, api, null, tag, interaction.guildId);
+    } catch (e) {
+        // Silently ignore if there are no schedules to remove
+        console.log('No schedules to remove for clan ' + tag);
     }
 
     const unregisterEmbed = functions.generateEmbed(bot);

@@ -585,6 +585,7 @@ async function excel(scores, fileName, family = false) {
 async function http_head(tag) {
     // const url = 'https://www.cwstats.com' + tag;
     const url = 'https://www.deckshop.pro/spy' + tag;
+    return 200; // Disable tag check temporarily
     return new Promise((resolve, reject) => {
         const req = https.request(url, { method: 'HEAD' }, (res) => {
             resolve(res.statusCode);

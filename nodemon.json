@@ -1,0 +1,18 @@
+{
+    "watch": [
+        "."
+    ],
+    "ext": "js,json",
+    "ignore": [
+        "node_modules/",
+        "db/*.sqlite3",
+        "*.xlsx",
+        "*.png",
+        "*.log",
+        "html/"
+    ],
+    "delay": "1000",
+    "env": {
+        "NODE_ENV": "development"
+    }
+}

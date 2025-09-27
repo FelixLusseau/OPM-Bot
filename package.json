@@ -4,7 +4,9 @@
   "description": "",
   "main": "OPM-Bot.js",
   "scripts": {
-    "start": "node OPM-Bot.js"
+    "start": "node OPM-Bot.js",
+    "dev": "nodemon OPM-Bot.js",
+    "dev:native": "node --watch OPM-Bot.js"
   },
   "author": "Félix Lusseau",
   "license": "ISC",
@@ -19,5 +21,8 @@
     "node-fetch": "^3.3.2",
     "puppeteer": "^24.22.3",
     "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
   }
 }

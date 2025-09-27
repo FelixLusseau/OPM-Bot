@@ -322,6 +322,7 @@ async function excel(scores, fileName, family = false) {
             { key: 'clan', header: 'Clan' },
             { key: 'player', header: 'Player name' },
             { key: 'fame', header: 'Average' },
+            { key: 'role', header: 'Role' },
             { key: 'expLevel', header: 'Exp level' },
             { key: 'week1', header: 'Week -1' },
             { key: 'week2', header: 'Week -2' },
@@ -339,6 +340,7 @@ async function excel(scores, fileName, family = false) {
             { key: 'clan', header: 'Clan' },
             { key: 'player', header: 'Player name' },
             { key: 'fame', header: 'Average' },
+            { key: 'role', header: 'Role' },
             { key: 'expLevel', header: 'Exp level' },
             { key: 'targetClan', header: 'Target clan' },
             { key: 'movement', header: 'Movement' },
@@ -351,15 +353,16 @@ async function excel(scores, fileName, family = false) {
     for (const key in scores) {
         if (scores[key]['fame'] == 0) continue; // Skip players with no fame
         if (!family) {
-            worksheet.addRow({ clan: scores[key]['clan'], player: key, fame: scores[key]['fame'].toFixed(), expLevel: scores[key]['expLevel'], week1: scores[key]['array'][0], week2: scores[key]['array'][1], week3: scores[key]['array'][2], week4: scores[key]['array'][3], week5: scores[key]['array'][4], week6: scores[key]['array'][5], week7: scores[key]['array'][6], week8: scores[key]['array'][7], week9: scores[key]['array'][8], week10: scores[key]['array'][9] });
-            worksheet.addRow({ clan: scores[key]['clan'], player: key, fame: scores[key]['fame'].toFixed(), expLevel: scores[key]['expLevel'], week1: scores[key]['decksUsed'][0], week2: scores[key]['decksUsed'][1], week3: scores[key]['decksUsed'][2], week4: scores[key]['decksUsed'][3], week5: scores[key]['decksUsed'][4], week6: scores[key]['decksUsed'][5], week7: scores[key]['decksUsed'][6], week8: scores[key]['decksUsed'][7], week9: scores[key]['decksUsed'][8], week10: scores[key]['decksUsed'][9] });
-            // Merge the 4 first columns
+            worksheet.addRow({ clan: scores[key]['clan'], player: key, fame: scores[key]['fame'].toFixed(), role: scores[key]['role'] || '', expLevel: scores[key]['expLevel'], week1: scores[key]['array'][0], week2: scores[key]['array'][1], week3: scores[key]['array'][2], week4: scores[key]['array'][3], week5: scores[key]['array'][4], week6: scores[key]['array'][5], week7: scores[key]['array'][6], week8: scores[key]['array'][7], week9: scores[key]['array'][8], week10: scores[key]['array'][9] });
+            worksheet.addRow({ clan: scores[key]['clan'], player: key, fame: scores[key]['fame'].toFixed(), role: scores[key]['role'] || '', expLevel: scores[key]['expLevel'], week1: scores[key]['decksUsed'][0], week2: scores[key]['decksUsed'][1], week3: scores[key]['decksUsed'][2], week4: scores[key]['decksUsed'][3], week5: scores[key]['decksUsed'][4], week6: scores[key]['decksUsed'][5], week7: scores[key]['decksUsed'][6], week8: scores[key]['decksUsed'][7], week9: scores[key]['decksUsed'][8], week10: scores[key]['decksUsed'][9] });
+            // Merge the 5 first columns
             worksheet.mergeCells(worksheet.rowCount - 1, 1, worksheet.rowCount, 1);
             worksheet.mergeCells(worksheet.rowCount - 1, 2, worksheet.rowCount, 2);
             worksheet.mergeCells(worksheet.rowCount - 1, 3, worksheet.rowCount, 3);
             worksheet.mergeCells(worksheet.rowCount - 1, 4, worksheet.rowCount, 4);
+            worksheet.mergeCells(worksheet.rowCount - 1, 5, worksheet.rowCount, 5);
         } else
-            worksheet.addRow({ clan: scores[key]['clan'], player: key, fame: scores[key]['fame'].toFixed(), expLevel: scores[key]['expLevel'], targetClan: scores[key]['targetClan'], movement: scores[key]['movement'] });
+            worksheet.addRow({ clan: scores[key]['clan'], player: key, fame: scores[key]['fame'].toFixed(), role: scores[key]['role'] || '', expLevel: scores[key]['expLevel'], targetClan: scores[key]['targetClan'], movement: scores[key]['movement'] });
     }
 
     worksheet.columns.forEach((sheetColumn) => {
@@ -382,6 +385,9 @@ async function excel(scores, fileName, family = false) {
                 bold: true,
             };
         }
+        else if (sheetColumn.key == 'role') {
+            sheetColumn.width = 12;
+        }
         else {
             sheetColumn.width = 15;
         }
@@ -399,7 +405,7 @@ async function excel(scores, fileName, family = false) {
             pattern: 'solid',
             fgColor: { argb: 'FF949494' } // Gray color
         };
-        if (i <= 4) {
+        if (i <= 5) {
             cellToColor.border = {
                 ...cellToColor.border,
                 right: { style: 'medium' },
@@ -434,7 +440,7 @@ async function excel(scores, fileName, family = false) {
                         ...cellToColor.border,
                         right: { style: 'medium' },
                     };
-                } else if (i < 4) { // Player name, fame and exp level
+                } else if (i < 5) { // Player name, fame and role
                     if (value < 2400) {
                         cellToColor.fill = {
                             type: 'pattern',
@@ -454,7 +460,7 @@ async function excel(scores, fileName, family = false) {
                             fgColor: { argb: 'FF18B815' } // Green color
                         };
                     }
-                } else if (i == 4) { // Exp level
+                } else if (i == 5) { // Exp level
                     if (cellToColor.value == 0)
                         cellToColor.value = "Out of clan";
                     if (cellToColor.value < 42 || cellToColor.value == "Out of clan") {
@@ -480,7 +486,7 @@ async function excel(scores, fileName, family = false) {
                         ...cellToColor.border,
                         right: { style: 'medium' },
                     };
-                } else if (family && i == 5) { // Target clan
+                } else if (family && i == 6) { // Target clan
                     if (cellToColor.value) { // Skip coloring empty cells
                         const cellColor = hashStringToColor(cellToColor.value);
                         cellToColor.fill = {
@@ -493,7 +499,7 @@ async function excel(scores, fileName, family = false) {
                         ...cellToColor.border,
                         right: { style: 'medium' },
                     };
-                } else if (family && i == 6) { // Movement
+                } else if (family && i == 7) { // Movement
                     // No color
                     cellToColor.border = {
                         ...cellToColor.border,
@@ -541,7 +547,7 @@ async function excel(scores, fileName, family = false) {
                         ...cellToColor.border,
                         right: { style: 'medium' },
                     };
-                } else if (i > 4) { // Decks used
+                } else if (i > 5) { // Decks used
                     if (cellToColor.value < 16 && cellToColor.value % 4 != 0) {
                         cellToColor.fill = {
                             type: 'pattern',

@@ -11,13 +11,13 @@
   "dependencies": {
     "@varandas/clash-royale-api": "^2.2.0",
     "chart": "^0.1.2",
-    "discord.js": "^14.21.0",
-    "dotenv": "^17.0.0",
+    "discord.js": "^14.22.1",
+    "dotenv": "^17.2.2",
     "exceljs": "^4.4.0",
     "fs": "^0.0.1-security",
-    "node-cron": "^4.1.1",
+    "node-cron": "^4.2.1",
     "node-fetch": "^3.3.2",
-    "puppeteer": "^24.11.1",
+    "puppeteer": "^24.22.3",
     "sqlite3": "^5.1.7"
   }
 }

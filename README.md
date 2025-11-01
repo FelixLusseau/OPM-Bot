@@ -55,3 +55,5 @@ Old version is still available with the option `text_version: True`.
 - 07/02/2024 : New display v2 !
 
 - 23/03/2025 : Added the Family averages calculation.
+
+- The bot now supports Hour change due to Daylight Saving Time for end of war day reports.

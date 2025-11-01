@@ -2,24 +2,25 @@
   "name": "OPM-Stats",
   "version": "4.3.0",
   "description": "",
-  "main": "OPM-Bot.js",
+  "main": "OPM-Stats.js",
   "scripts": {
-    "start": "node OPM-Bot.js",
-    "dev": "nodemon OPM-Bot.js",
-    "dev:native": "node --watch OPM-Bot.js"
+    "start": "node OPM-Stats.js",
+    "dev": "nodemon OPM-Stats.js",
+    "dev:native": "node --watch OPM-Stats.js"
   },
   "author": "Félix Lusseau",
   "license": "ISC",
   "dependencies": {
-    "@varandas/clash-royale-api": "^2.2.0",
+    "@varandas/clash-royale-api": "^2.3.0",
     "chart": "^0.1.2",
-    "discord.js": "^14.22.1",
-    "dotenv": "^17.2.2",
+    "discord.js": "^14.24.2",
+    "dotenv": "^17.2.3",
     "exceljs": "^4.4.0",
     "fs": "^0.0.1-security",
+    "luxon": "^3.7.2",
     "node-cron": "^4.2.1",
     "node-fetch": "^3.3.2",
-    "puppeteer": "^24.22.3",
+    "puppeteer": "^24.27.0",
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {

@@ -3,6 +3,8 @@ const schedule = require('../utils/schedule.js');
 const sqlite3 = require('sqlite3').verbose();
 const functions = require('../utils/functions.js');
 const fs = require('fs');
+const { DateTime } = require('luxon');
+const { DEFAULT_TIMEZONE } = require('../config.js');
 
 function isValidTimeFormat(input) {
     // Regular expression pattern to match "hh:mm" format
@@ -10,6 +12,25 @@ function isValidTimeFormat(input) {
 
     // Check if the input matches the pattern
     return regex.test(input);
+}
+
+// Convert local time to UTC (returns format "HH:mmZ")
+function localToUTC(localHour, timezone = DEFAULT_TIMEZONE) {
+    const [hours, minutes] = localHour.split(':').map(Number);
+    const localTime = DateTime.now()
+        .setZone(timezone)
+        .set({ hour: hours, minute: minutes, second: 0, millisecond: 0 });
+    return localTime.toUTC().toFormat('HH:mm') + 'Z';
+}
+
+// Convert UTC time to local time (accepts "HH:mm" or "HH:mmZ")
+function utcToLocal(utcHour, timezone = DEFAULT_TIMEZONE) {
+    // Remove 'Z' suffix if present
+    const cleanHour = utcHour.endsWith('Z') ? utcHour.slice(0, -1) : utcHour;
+    const [hours, minutes] = cleanHour.split(':').map(Number);
+    const utcTime = DateTime.utc()
+        .set({ hour: hours, minute: minutes, second: 0, millisecond: 0 });
+    return utcTime.setZone(timezone).toFormat('HH:mm');
 }
 
 // Function to define a report and reset hour for a registered clan
@@ -21,6 +42,7 @@ async function setHour(bot, api, interaction) {
     const hour = interaction.options.getString('hour');
     const channel = interaction.options.getChannel('channel')
     let valid = false;
+    let hourUTC;
 
     try { // Check if the channel is accessible by the bot to send messages without interaction commands
         await channel.sendTyping()
@@ -33,6 +55,10 @@ async function setHour(bot, api, interaction) {
     // Check if the hour given is valid
     if (isValidTimeFormat(hour)) {
         valid = true;
+
+        // Convert local time to UTC
+        hourUTC = localToUTC(hour, DEFAULT_TIMEZONE);
+
         try {
             // Open the database
             let db = new sqlite3.Database('./db/OPM.sqlite3', sqlite3.OPEN_READWRITE, (err) => {
@@ -49,8 +75,8 @@ async function setHour(bot, api, interaction) {
                 }
                 // console.log(`Row(s) deleted ${this.changes}`);
             });
-            // Insert a new report entry into the database
-            db.run(`INSERT INTO Reports (Guild, Clan, Hour, Channel) VALUES ("${interaction.guildId}", "${clan}", "${hour}", "${channel.id}")`, function (err) {
+            // Insert a new report entry into the database (store UTC time)
+            db.run(`INSERT INTO Reports (Guild, Clan, Hour, Channel) VALUES ("${interaction.guildId}", "${clan}", "${hourUTC}", "${channel.id}")`, function (err) {
                 if (err) {
                     return console.log(err.message);
                 }
@@ -70,14 +96,14 @@ async function setHour(bot, api, interaction) {
             console.error(err);
         }
 
-        // Stop the previous cron job and start a new one with the new hour
+        // Stop the previous cron job and start a new one with the new hour (UTC)
         try {
             // console.log(clan + interaction.guildId)
             schedule.stopAllCronJobs(clan, interaction.guildId);
         } catch (e) {
             interaction.editReply({ content: "No cron job to stop !" });
         }
-        schedule.schedule(bot, hour, clan, interaction.guildId, channel.id)
+        schedule.schedule(bot, hourUTC, clan, interaction.guildId, channel.id)
 
     }
     else {
@@ -87,7 +113,7 @@ async function setHour(bot, api, interaction) {
     const resultsEmbed = functions.generateEmbed(bot);
     try {
         resultsEmbed
-            .setDescription((valid ? "`" + hour + "` is now the reset hour for **" + clansDict[clan] + "** !" : "**" + hour + "** is not a valid hour !") + "\nThe reports will be sent in the channel : **" + channel.name + "**")
+            .setDescription((valid ? "`" + hour + "` (local time, " + hourUTC + " UTC) is now the reset hour for **" + clansDict[clan] + "** !" : "**" + hour + "** is not a valid hour !") + "\nThe reports will be sent in the channel : **" + channel.name + "**")
     } catch (e) {
         console.log(e);
     }
@@ -105,6 +131,7 @@ async function updateHour(bot, api, interaction) {
     let channel = interaction.options.getChannel('channel')
     let valid = false;
     let newChannel;
+    let hourUTC;
 
     if (channel) {
         try { // Check if the channel is accessible by the bot to send messages without interaction commands
@@ -119,6 +146,10 @@ async function updateHour(bot, api, interaction) {
     // Check if the hour given is valid
     if (isValidTimeFormat(hour)) {
         valid = true;
+
+        // Convert local time to UTC
+        hourUTC = localToUTC(hour, DEFAULT_TIMEZONE);
+
         try {
             // Open the database
             let db = new sqlite3.Database('./db/OPM.sqlite3', sqlite3.OPEN_READWRITE, (err) => {
@@ -128,18 +159,18 @@ async function updateHour(bot, api, interaction) {
             });
 
             if (channel) {
-                // Update the hour and channel in the database
+                // Update the hour and channel in the database (store UTC time)
                 sql = `UPDATE Reports SET Hour = ?, Channel = ? WHERE Guild = ? AND Clan = ?`;
-                db.run(sql, [hour, channel.id, interaction.guildId, clan], function (err) {
+                db.run(sql, [hourUTC, channel.id, interaction.guildId, clan], function (err) {
                     if (err) {
                         return console.error(err.message);
                     }
                     // console.log(`Row(s) updated ${this.changes}`);
                 });
             } else {
-                // Update the hour in the database
+                // Update the hour in the database (store UTC time)
                 sql = `UPDATE Reports SET Hour = ? WHERE Guild = ? AND Clan = ?`;
-                db.run(sql, [hour, interaction.guildId, clan], function (err) {
+                db.run(sql, [hourUTC, interaction.guildId, clan], function (err) {
                     if (err) {
                         return console.error(err.message);
                     }
@@ -147,7 +178,7 @@ async function updateHour(bot, api, interaction) {
                 });
             }
 
-            // Stop the previous cron job and start a new one with the new hour
+            // Stop the previous cron job and start a new one with the new hour (UTC)
             sql = `SELECT Channel FROM Reports WHERE Guild = ? AND Clan = ?`;
             db.get(sql, [interaction.guildId, clan], (err, row) => {
                 if (err) {
@@ -160,7 +191,7 @@ async function updateHour(bot, api, interaction) {
                 } catch (e) {
                     interaction.editReply({ content: "No cron job to stop !" });
                 }
-                schedule.schedule(bot, hour, clan, interaction.guildId, channel.id)
+                schedule.schedule(bot, hourUTC, clan, interaction.guildId, channel.id)
             });
 
             // Close the database
@@ -181,7 +212,7 @@ async function updateHour(bot, api, interaction) {
     const resultsEmbed = functions.generateEmbed(bot);
     try {
         resultsEmbed
-            .setDescription((valid ? "`" + hour + "` is now the reset hour for **" + clansDict[clan] + "** !" : "**" + hour + "** is not a valid hour !") + (channel ? "\nThe reports will be sent in the channel : **" + channel.name + "**" : ""))
+            .setDescription((valid ? "`" + hour + "` (local time, " + hourUTC + " UTC) is now the reset hour for **" + clansDict[clan] + "** !" : "**" + hour + "** is not a valid hour !") + (channel ? "\nThe reports will be sent in the channel : **" + channel.name + "**" : ""))
     } catch (e) {
         console.log(e);
     }
@@ -208,7 +239,9 @@ async function getHours(bot, api, interaction) {
                     reject(err);
                 } else {
                     // console.log(row);
-                    hours += "<tr style='line-height: 10em;'>\n<td><span style='font-size: 2.5em;'>" + clansDict[row.Clan] + "</span></td>\n<td style='font-size: 4.5em;'>" + row.Hour + "</td>\n</tr>";
+                    // Convert UTC time to local time for display
+                    const hourLocal = utcToLocal(row.Hour, DEFAULT_TIMEZONE);
+                    hours += "<tr style='line-height: 10em;'>\n<td><span style='font-size: 2.5em;'>" + clansDict[row.Clan] + "</span></td>\n<td style='font-size: 4.5em;'>" + hourLocal + "</td>\n</tr>";
                 }
             }, (err, count) => {
                 if (err) {

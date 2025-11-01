@@ -44,12 +44,21 @@ function schedule(bot, value, tag, guildID, chanID) {
         global.clanCronJobs[clanKey] = {};
     }
 
-    // Schedule the reports and save them in the global clanCronJobs structure
-    global.clanCronJobs[clanKey].report = cron.schedule(value.substring(3, 5) + ' ' + value.substring(0, 2) + ' * * 5,6,7,1', () => {
+    // Value is in UTC format (HH:mmZ or HH:mm for backward compatibility)
+    // Remove 'Z' suffix if present
+    const cleanValue = value.endsWith('Z') ? value.slice(0, -1) : value;
+    const hourUTC = cleanValue.substring(0, 2);
+    const minuteUTC = cleanValue.substring(3, 5);
+
+    // Schedule the reports using UTC time (stored value is already UTC)
+    // Using timezone: 'UTC' ensures execution at UTC time regardless of system timezone
+    global.clanCronJobs[clanKey].report = cron.schedule(minuteUTC + ' ' + hourUTC + ' * * 5,6,7,1', () => {
         reports.report(bot, api, null, null, channel, tag, guildID)
+    }, {
+        timezone: 'UTC'
     });
 
-    // Schedule ffrace and ffattacks with ping at 9h00 and 21h00 on the war days
+    // Schedule ffrace and ffattacks with ping at 9h00 and 21h00 LOCAL TIME on the war days
     global.clanCronJobs[clanKey].morning = cron.schedule('0 9 * * 5,6,7,1', () => {
         ffrace.ffrace(bot, api, null, channel, tag, false)
         ffattacks.ffattacks(bot, api, null, true, channel, tag, guildID)
@@ -59,7 +68,7 @@ function schedule(bot, value, tag, guildID, chanID) {
         ffrace.ffrace(bot, api, null, channel, tag, false)
         ffattacks.ffattacks(bot, api, null, true, channel, tag, guildID)
     });
-    // console.log('Scheduled ' + clanKey + ' for ' + value.substring(3, 5) + ' ' + value.substring(0, 2) + ' * * 5,6,7,1')
+    // console.log('Scheduled ' + clanKey + ' for ' + minuteUTC + ' ' + hourUTC + ' * * 5,6,7,1 (UTC)')
 }
 
 // Function to stop all cron jobs for a specific clan

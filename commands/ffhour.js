@@ -113,7 +113,7 @@ async function setHour(bot, api, interaction) {
     const resultsEmbed = functions.generateEmbed(bot);
     try {
         resultsEmbed
-            .setDescription((valid ? "`" + hour + "` (local time, " + hourUTC + " UTC) is now the reset hour for **" + clansDict[clan] + "** !" : "**" + hour + "** is not a valid hour !") + "\nThe reports will be sent in the channel : **" + channel.name + "**")
+            .setDescription((valid ? "`" + hour + "` (" + hourUTC.slice(0, -1) + " UTC) is now the reset hour for **" + clansDict[clan] + "** !" : "**" + hour + "** is not a valid hour !") + "\nThe reports will be sent in the channel : **" + channel.name + "**")
     } catch (e) {
         console.log(e);
     }
@@ -212,7 +212,7 @@ async function updateHour(bot, api, interaction) {
     const resultsEmbed = functions.generateEmbed(bot);
     try {
         resultsEmbed
-            .setDescription((valid ? "`" + hour + "` (local time, " + hourUTC + " UTC) is now the reset hour for **" + clansDict[clan] + "** !" : "**" + hour + "** is not a valid hour !") + (channel ? "\nThe reports will be sent in the channel : **" + channel.name + "**" : ""))
+            .setDescription((valid ? "`" + hour + "` (" + hourUTC.slice(0, -1) + " UTC) is now the reset hour for **" + clansDict[clan] + "** !" : "**" + hour + "** is not a valid hour !") + (channel ? "\nThe reports will be sent in the channel : **" + channel.name + "**" : ""))
     } catch (e) {
         console.log(e);
     }

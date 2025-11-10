@@ -251,10 +251,30 @@ function generateHtmlTableFromWorksheet(worksheet, family) {
 
 // Function to initialize Puppeteer depending on the OS
 async function puppeteerInit() {
+    const baseArgs = [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-gpu'
+    ];
+
     if (process.env.NIXPKGS_CONFIG) { // Check if the script is running on NixOS to not install chromium because it is not allowed by NixOS
-        return await puppeteer.launch({ headless: 'new', executablePath: '/run/current-system/sw/bin/google-chrome-stable' });
+        return await puppeteer.launch({
+            headless: 'new',
+            executablePath: '/run/current-system/sw/bin/google-chrome-stable',
+            args: baseArgs
+        });
+    } else if (process.env.PUPPETEER_EXECUTABLE_PATH) { // Check if running in Docker
+        return await puppeteer.launch({
+            headless: 'new',
+            executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
+            args: baseArgs
+        });
     } else {
-        return await puppeteer.launch({ headless: 'new' });
+        return await puppeteer.launch({
+            headless: 'new',
+            args: baseArgs
+        });
     }
 }
 

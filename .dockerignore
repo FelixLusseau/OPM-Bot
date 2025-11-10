@@ -1,0 +1,17 @@
+node_modules
+npm-debug.log
+.env
+.git
+.gitignore
+README.md
+LICENSE.txt
+*.log
+.vscode
+.idea
+*.md
+!CONFIG.md
+db/*.sqlite3
+!db/.gitkeep
+Dockerfile
+docker-compose.yml
+.dockerignore

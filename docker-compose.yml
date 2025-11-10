@@ -1,0 +1,39 @@
+services:
+  opm-stats:
+    # Use the image from GHCR instead of building locally
+    image: ghcr.io/felixlusseau/opm-stats:master
+    # Uncomment to build locally:
+    # build: .
+    
+    container_name: opm-stats
+    restart: unless-stopped
+    
+    # Environment variables
+    environment:
+      - NODE_ENV=production
+    
+    # .env file for tokens
+    env_file:
+      - .env
+    
+    # Volumes to persist data
+    volumes:
+      - ./db:/app/db
+    
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+    
+    # Healthcheck
+    healthcheck:
+      test: ["CMD", "node", "-e", "process.exit(0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s

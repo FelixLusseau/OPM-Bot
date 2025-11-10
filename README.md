@@ -1,4 +1,4 @@
-# OPM Bot
+# OPM Stats
 
 <img src="OPM-Stats.png" alt="Fire punch logo" width="150" height="150"/> <br>
 
@@ -57,3 +57,5 @@ Old version is still available with the option `text_version: True`.
 - 23/03/2025 : Added the Family averages calculation.
 
 - The bot now supports Hour change due to Daylight Saving Time for end of war day reports.
+
+- 10/11/2025 : Added Docker Image on GHCR.

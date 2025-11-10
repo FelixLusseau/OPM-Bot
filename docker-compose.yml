@@ -1,7 +1,7 @@
 services:
   opm-stats:
     # Use the image from GHCR instead of building locally
-    image: ghcr.io/felixlusseau/opm-stats:latest
+    image: ghcr.io/felixlusseau/opm-stats:main
     # Uncomment to build locally:
     # build: .
     

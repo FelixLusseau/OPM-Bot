@@ -5,14 +5,9 @@ FROM node:25.1-alpine
 RUN apk add --no-cache \
     chromium \
     nss \
-    freetype \
-    harfbuzz \
     ca-certificates \
     ttf-freefont \
-    font-noto-emoji \
-    python3 \
-    make \
-    g++ 
+    font-noto-emoji 
 
 # Définir les variables d'environnement pour Puppeteer
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \

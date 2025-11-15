@@ -1,7 +1,7 @@
 const { Events, AttachmentBuilder } = require('discord.js');
 const functions = require('../utils/functions.js');
 const fs = require('fs');
-const ffplayer = require('../commands/ffplayer.js');
+const ffplayer = require('../commands/ffplayer.ts');
 
 async function royaleAPIHistory(bot, message, placeholder, tag) {
     try {

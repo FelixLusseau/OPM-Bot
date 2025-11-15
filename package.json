@@ -2,11 +2,13 @@
   "name": "OPM-Stats",
   "version": "4.5.0",
   "description": "",
-  "main": "OPM-Stats.js",
+  "main": "dist/OPM-Stats.js",
   "scripts": {
-    "start": "node OPM-Stats.js",
-    "dev": "nodemon OPM-Stats.js",
-    "dev:native": "node --watch OPM-Stats.js"
+    "start": "ts-node OPM-Stats.ts",
+    "dev": "nodemon --exec ts-node OPM-Stats.ts",
+    "dev:native": "ts-node OPM-Stats.ts",
+    "build": "tsc",
+    "start:prod": "node dist/OPM-Stats.js"
   },
   "author": "Félix Lusseau",
   "license": "ISC",
@@ -24,6 +26,10 @@
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
-    "nodemon": "^3.1.10"
+    "@types/node": "^24.10.1",
+    "@types/sqlite3": "^3.1.11",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
   }
 }

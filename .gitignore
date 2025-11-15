@@ -9,3 +9,5 @@ db
 playerHistory*
 *.html
 *.png
+dist/
+*.js.map

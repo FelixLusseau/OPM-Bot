@@ -52,10 +52,15 @@ async function ffplayer(bot, api, interaction, channel, tag) {
             + `Best path of legends league: ${player.bestPathOfLegendSeasonResult.leagueNumber}\n`
             + `Best path of legends trophies: ${player.bestPathOfLegendSeasonResult.trophies}\n`
             + `Best path of legends rank: ${player.bestPathOfLegendSeasonResult.rank}\n\n`
-            + `Goblin-road: \n`
-            + `Current Goblin-road trophies: ${player.progress["goblin-road"].trophies}\n`
-            + `Current Goblin-road arena: ${player.progress["goblin-road"].arena.name}\n`
-            + `Best Goblin-road trophies: ${player.progress["goblin-road"].bestTrophies}\n`;
+            // + `Support cards: \n`
+            // + player.supportCards.map(card => ` - ${card.name}: Level ${card.level}`).join('\n') + `\n`
+            + `Current favorite card: ${player.currentFavouriteCard.name}\n\n`
+            + `Current deck: \n`
+            // + player.currentDeck.map(card => ` - ${card.name}, Level: ${card.level}`).join('\n') + `\n`
+            + player.currentDeck.map(card => ` - ${card.name}`).join('\n') //+ `\n`
+            // + `Current favorite card: ${player.currentFavoriteCard.name}, Level: ${player.currentFavoriteCard.level}\n`
+            // + `\n`
+            ;
     }
 
     player_data += `\n\n**RoyaleAPI player link :** \nhttps://royaleapi.com/player/` + tag.substring(1);
